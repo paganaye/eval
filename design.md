@@ -62,6 +62,13 @@ So we want to see a nice layout.
 
 
 
+# Wizardz
+
+Eval work with multi-page.
+Perhaps the name should be wizard then...  
+
+
+
 
 
 

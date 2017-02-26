@@ -12,5 +12,5 @@ const fuse = FuseBox.init({
     }
 });
 
-fuse.devServer("> app.ts", {});
+fuse.devServer("> App.ts", {});
 

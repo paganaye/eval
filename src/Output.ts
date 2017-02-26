@@ -1,0 +1,108 @@
+import { app } from './App';
+import { YoutubeView } from './views/Youtube';
+import { ObjectView } from './views/Object';
+import { JSONView } from './views/JSONView';
+import { TypeDefinition, Type } from './Types';
+import { View } from './View';
+import { Runtime } from './Runtime';
+
+
+export class Output {
+	public html: String[] = [];
+
+	defaultViews: { [key: string]: View<any> } = {};
+
+	constructor(private runtime: Runtime) {
+	}
+
+	
+	clear() {
+		this.html = [];
+	}
+
+	printText(text: string) {
+		this.html.push(
+			"<span class=\"print\">"
+			+ Output.escapeHtml(text)
+			+ "</span>");
+	}
+
+	printHTML(html: string) {
+		this.html.push(html);
+	}
+
+	printTag(tag: string, attributes: any, content?: string) {
+		this.html.push("<" + tag);
+		for (var key in attributes) {
+			this.html.push(' ' + key + '="' + Output.escapeAttribute(attributes[key]) + '"');
+		}
+		if (content || !Output.selfClosing[tag.toLowerCase()]) {
+			this.html.push('>');
+			this.html.push(Output.escapeHtml(content));
+			this.html.push('</' + tag + '>');
+		} else {
+			this.html.push(' />');
+		}
+	}
+
+	printProperty(key: string, model: any, typeDefinition: TypeDefinition) {
+		this.printHTML("<div>");
+		this.printTag("label", { for: key }, key);
+		this.print(model, typeDefinition);
+		this.printHTML("</div>");
+	}
+
+
+	print(model: any, type: Type) {
+		if (!type && model.type) type = model.type;
+		if (typeof type == "string") type = this.runtime.types[type];
+		if (!type) type = this.runtime.types[typeof model] || this.runtime.objectType;
+
+		var view: View<any> = type.view || this.defaultViews[type.type] || this.runtime.jsonView;
+		view.render(model, type as TypeDefinition, this);
+	}
+
+	toString(): string {
+		return this.html.join("");
+	}
+
+	static selfClosing = {
+		'area': true,
+		'base': true,
+		'br': true,
+		'col': true,
+		'command': true,
+		'embed': true,
+		'hr': true,
+		'img': true,
+		'input': true,
+		'keygen': true,
+		'link': true,
+		'meta': true,
+		'param': true,
+		'source': true,
+		'track': true,
+		'wbr': true
+	}
+
+	static entityMap = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;'
+	};
+
+	static escapeHtml(string) {
+		return String(string).replace(/[&<>"]/g, (s) => {
+			return Output.entityMap[s];
+		});
+	}
+
+	static escapeAttribute(string) {
+		return String(string).replace(/[&<>"]/g, (s) => {
+			return Output.entityMap[s];
+		});
+	}
+
+}
+

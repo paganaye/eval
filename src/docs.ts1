@@ -1,0 +1,328 @@
+
+export var views: { [key: string]: View<any> } = {};
+export var cache: { [key: string]: CacheEntry } = {};
+var reparsing: boolean;
+
+
+export abstract class View<T> {
+    abstract renderJson(data: T): Node | Node[] | string;
+}
+
+interface CacheEntry {
+    loading: boolean;
+    found: boolean;
+    value: any;
+    listeners: ((any) => void)[];
+}
+
+interface IPendingRender {
+    source: any;
+    tempElement: HTMLElement;
+}
+
+function renderWithCallback(view: string, src: any, callBack: (Node) => void): void {
+    if (view === null) view = "default";
+    var viewInstance = views[view];
+    if (!viewInstance) {
+        viewInstance = new TemporaryView(view);
+        views[view] = viewInstance;
+    }
+    var result: Node | Node[] | string;
+
+    if (typeof src === 'string' && src.length > 0 && src[0] === '{') {
+        try {
+            src = JSON.parse(src);
+        } catch (e) { /* ignore */ }
+    }
+    if (src === undefined) src = {};
+
+    result = viewInstance.renderJson(<any>src);
+
+    switch (typeof (result)) {
+        case "object":
+            if (Array.isArray(result)) {
+                var arr = <Node[]>result;
+                for (var i = 0; i < arr.length; i++) {
+                    callBack(arr[i]);
+                }
+            } else {
+                var elt = <Node>result;
+                callBack(elt);
+            }
+            break;
+        default:
+            var dummyDiv = document.createElement("div");
+            dummyDiv.innerText = <string>result;
+            var children: Node[] = [];
+            for (var i = 0; i < dummyDiv.childNodes.length; i++) {
+                children.push(dummyDiv.childNodes[i]);
+            }
+            children.map(callBack);
+
+            break;
+    }
+
+    if (!reparsing) {
+        reparsing = true;
+        setTimeout(() => {
+            reparsing = false;
+            console.log("Reparsing docs.")
+            parseDocs();
+        }, 35);
+    }
+}
+
+export function renderAndReplace(view: string, src: string, dst: Node) {
+    var first: boolean = true;
+    var nextSibling: Node;
+    var parent = dst.parentElement;
+    renderWithCallback(view, src, (elt) => {
+        if (first) {
+            parent.replaceChild(elt, dst);
+            first = false;
+            nextSibling = elt.nextSibling;
+        } else {
+            parent.insertBefore(elt, nextSibling);
+        }
+    });
+    if (first) parent.removeChild(dst);
+}
+
+
+export var renderAndAppend = function (view: string, src: string, parent: Node) {
+    renderWithCallback(view, src, (elt) => {
+        parent.appendChild(elt);
+    });
+}
+
+function fullURL(url: string): string {
+    // a full URL behaves better in chrome for debugging  
+    var div = document.createElement('div');
+    var a = document.createElement('a');
+    div.appendChild(a);
+    a.href = url; // Ensures that the href is properly escaped
+    div.innerHTML = div.innerHTML; // Run the current innerHTML back through the parser
+    return (<HTMLAnchorElement>div.firstChild).href;
+}
+
+class TemporaryView extends View<any> {
+    pendingRenders: IPendingRender[] = [];
+    failed: boolean;
+    message: string;
+
+
+    constructor(private name: string) {
+        super();
+        this.message = "Loading " + name + "...";
+
+        $.getScript(fullURL("views/" + name + ".js"))
+            .done((source) => {
+                //render(view, source, dst);
+                if (views[name] === this) {
+                    this.message = "Module " + name + " did not register properly.";
+                    this.failed = true;
+                }
+                this.renderAll()
+            })
+            .fail(() => {
+                this.message = "Failed loading " + name + ".";
+                this.failed = true;
+                this.renderAll()
+            });
+    }
+
+    renderAll() {
+        for (var pendingRender of this.pendingRenders) {
+            var result = renderAndReplace(this.name, pendingRender.source, pendingRender.tempElement);
+        }
+    }
+
+    renderJson(data: any): Node {
+        var span = document.createElement("span");
+        span.innerHTML = this.message;
+        if (!this.failed) this.pendingRenders.push({ source: data, tempElement: span });
+        return span;
+    }
+}
+
+function parseDocs() {
+    $("doc").each((i, dst: HTMLElement) => {
+        var view = dst.getAttribute("type") || "default";
+        var src = dst.getAttribute("src");
+        if (src) {
+            dst.innerText = "Loading...";
+            $.getJSON(src)
+                .done((source) => {
+                    renderAndReplace(view, source, dst);
+                })
+                .fail(() => {
+                    dst.outerHTML = "Document " + src + " does not exist."
+                });
+        } else {
+            renderAndReplace(view, dst.innerHTML, dst);
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function (event) {
+    parseDocs()
+});
+
+
+export function getDoc(url: string, callBack: (newType: any) => void) {
+    url = fullURL(url);
+    var cacheEntry = cache[url];
+    if (cacheEntry === undefined) {
+        cacheEntry = {
+            loading: true,
+            found: false,
+            value: undefined,
+            listeners: [callBack]
+        };
+        cache[url] = cacheEntry;
+        $.getJSON(url)
+            .done((source) => {
+                cacheEntry.found = true;
+                cacheEntry.value = source;
+            })
+            .always(() => {
+                cacheEntry.loading = false;
+                for (var listener of cacheEntry.listeners) {
+                    try {
+                        listener(cacheEntry.value);
+                    } catch (error) {
+                        console.log('Error in getDoc callback', url);
+                    }
+                }
+                delete cacheEntry.listeners;
+            });
+    } else if (cacheEntry.loading) {
+        cacheEntry.listeners.push(callBack);
+    } else {
+        callBack(cacheEntry.value);
+    }
+}
+
+//---------------------------------------
+
+interface ObjectDefinition {
+    type: "object";
+    properties: ObjectField[];
+}
+
+interface ObjectField {
+    name: string;
+    objectType: TypeDefinition;
+}
+
+interface ArrayDefinition {
+    type: "array";
+    entryType: TypeDefinition;
+    minimumCount?: number;
+    maximumCount?: number;
+    canAddOrDelete?: boolean;
+    canReorder?: boolean;
+}
+
+interface MapDefinition {
+    type: "map";
+    entryType: TypeDefinition;
+    key: string;
+}
+
+interface EnumDefinition {
+    type: "enum";
+    mandatory: boolean;
+    defaultValue?: string;
+    entries: EnumEntry[];
+    multiple?: boolean;
+}
+
+interface EnumEntry {
+    key: string
+    label?: string
+}
+
+interface NumberDefinition {
+    type: "number";
+    mandatory: boolean;
+    defaultValue?: number
+    minimalValue?: number;
+    maximalValue?: number;
+    nbDecimals?: number;
+}
+
+interface StringDefinition {
+    type: "string";
+    mandatory: boolean;
+    defaultValue?: string;
+    minimalLength?: number;
+    maximalLength?: number;
+    regexp?: string;
+    regexpMessage?: string;
+}
+
+interface BooleanDefinition {
+    type: "boolean";
+    mandatory: boolean;
+    defaultValue?: boolean;
+}
+
+interface ExternalDefinition {
+    type: "external";
+    src: string;
+}
+
+interface ColorDefinition {
+    type: "color";
+}
+interface DateDefinition {
+    type: "date";
+}
+interface DatetimeLocalDefinition {
+    type: "datetime-local";
+}
+interface EmaiDefinition {
+    type: "email";
+}
+interface MonthDefinition {
+    type: "month";
+}
+interface RangeDefinition {
+    type: "range";
+}
+interface TelDefinition {
+    type: "tel";
+}
+interface TextDefinition {
+    type: "text";
+}
+interface TimeDefinition {
+    type: "time";
+}
+interface UrlDefinition {
+    type: "url";
+}
+interface WeekDefinition {
+    type: "week";
+}
+
+// case   "datetime-local":	//	Defines a date and time control (year, month, day, hour, minute, second, and fraction of a second (no time zone)
+
+type TypeDefinition = NumberDefinition | StringDefinition | BooleanDefinition
+    | EnumDefinition | ColorDefinition | DateDefinition | DatetimeLocalDefinition
+    | EmaiDefinition | MonthDefinition | RangeDefinition | TelDefinition
+    | TextDefinition | TimeDefinition
+    | UrlDefinition | WeekDefinition | ExternalDefinition
+    | ObjectDefinition | ArrayDefinition | MapDefinition;
+
+//---live value experiments------------------------------------
+interface IHasValue {
+    subscribeListener(listener: IListener);
+    revoke(listener: IListener);
+}
+
+interface IListener {
+    ValueChanged(value: IHasValue)
+}
+//---live value experiments------------------------------------
