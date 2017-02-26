@@ -1,0 +1,21 @@
+CACHE MANIFEST
+# 2017-02-26 v5
+
+CACHE:
+/
+app.js
+app.css
+index.html
+favicon.ico
+http://code.jquery.com/jquery-3.1.1.min.js
+http://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js
+http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js
+http://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.0.5/js/jquery.terminal.min.js
+http://www.gstatic.com/firebasejs/3.6.10/firebase.js
+http://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.0.5/css/jquery.terminal.min.css
+http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css
+http://fonts.googleapis.com/css?family=Ubuntu|Ubuntu+Mono
+
+FALLBACK:
+/ index.html
+NETWORK:

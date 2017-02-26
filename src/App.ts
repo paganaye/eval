@@ -3,10 +3,9 @@ import { EvalConsole } from './EvalConsole';
 import { Database } from './Database';
 import { View } from './View';
 import { Output } from './Output';
-import { TypeDefinition } from './Types';
+import { TypeDefinition, Type } from './Types';
 import { Tests } from './Tests';
-import { Commands } from './Commands';
-import { Runtime } from './Runtime';
+import { Context } from './Context';
 import { RomanView } from './views/Roman';
 import { YoutubeView } from './views/Youtube';
 
@@ -16,12 +15,13 @@ class App {
 	output: Output;
 	output1: HTMLDivElement;
 	reload: number;
-	runtime: Runtime;
+	context: Context;
+
 
 	initialize() {
 		this.incrementReload();
+		this.initEval();
 		this.initConsole();
-		this.initOutput();
 		//this.initDatabase();
 
 		//this.testOutput();
@@ -40,13 +40,14 @@ class App {
 		this.database = new Database(this.reload);
 	}
 
-	initOutput() {
-		this.runtime = new Runtime();
+	initEval() {
+		this.context = new Context();
 
-		this.runtime.registerType("roman", { type: "object", view: new RomanView() });
-		this.runtime.registerType("youtube", { type: "object", view: new YoutubeView() });
+		this.context.registerType("roman", { type: "object", view: new RomanView() });
+		this.context.registerType("youtube", { type: "object", view: new YoutubeView() });
 
-		this.output = new Output(this.runtime);
+
+		this.output = new Output(this.context);
 		this.output1 = document.getElementById('output1') as HTMLDivElement;
 		this.output1.innerHTML = "";
 	}
@@ -54,6 +55,7 @@ class App {
 	renderOutput() {
 		var html = this.output.toString();
 		this.output1.innerHTML = html;
+		this.output.clear();
 	}
 
 	initConsole() {
@@ -62,7 +64,7 @@ class App {
 			consoleElt.innerHTML = "";
 		} else {
 			// console is first to display the rest of the initializations
-			this.evalConsole = new EvalConsole();
+			this.evalConsole = new EvalConsole(this.context);
 			consoleElt = this.evalConsole.initialize();
 			consoleElt.id = "console1";
 			consoleElt.style.display = "none";
@@ -92,7 +94,7 @@ class App {
 			{ type: "object", properties: { y: "youtube", z: "roman" } });
 	}
 
-	print(model: any, type?: TypeDefinition) {
+	print(model: any, type?: Type) {
 		this.output.print(model, type);
 	}
 }

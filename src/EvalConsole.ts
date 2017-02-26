@@ -1,19 +1,29 @@
 import { CommandParser } from './CommandParser';
 import { Tests } from './Tests';
-import { Commands } from './Commands'
+import { Context } from './Context';
+import { CommandParameter } from './Command';
+import { app } from './App';
 
 export class EvalConsole {
    commandParser: CommandParser;
-   commands: Commands;
-   originalConsole: any;
+   originalConsole: Console;
    terminal: any;
+
+   constructor(private context: Context) { }
 
    echo(msg: string): void {
       if (typeof msg !== "string") msg = JSON.stringify(msg);
       this.terminal.echo(msg);
    }
    error(msg: string): void {
-      if (typeof msg !== "string") msg = JSON.stringify(msg);
+      if (typeof msg !== "string") {
+         if (msg instanceof Error) {
+            msg = (msg as Error).name + " " + (msg as Error).message;
+            this.originalConsole.error(msg)
+            return;
+         }
+         msg = JSON.stringify(msg);
+      }
       this.terminal.error(msg);
    }
 
@@ -27,9 +37,7 @@ export class EvalConsole {
             prompt: '$ ',
             height: '180px'
          });
-      this.commands = new Commands();
-      this.commandParser = new CommandParser(this.commands);
-
+      this.commandParser = new CommandParser(this.context);
       this.originalConsole = (window as any).console;
       (window as any).console = this;
       return elt;
@@ -43,13 +51,29 @@ export class EvalConsole {
       this.originalConsole.log(arguments);
    }
 
-   public processCommand(command: string) {
+   public processCommand(commandString: string) {
       try {
-         var res = this.commandParser.parse(command)
-         this.echo(res.getName());
-         this.echo(res.getParameters())
+         var res = this.commandParser.parse(commandString)
+         var command = res.getCommand();
+         var givenParameters = res.getParameters();
+
+         this.echo((command.constructor as any).name);
+         this.echo(givenParameters)
+         var parameters = command.createParameters();
+         this.echo(parameters);
+         var keys = Object.keys(parameters);
+         for (var i in givenParameters) {
+            var givenValue = givenParameters[i];
+            if (/[0-9]+/.test(i)) {
+               i = keys[i];
+            }
+            (parameters[i] as CommandParameter<any>).setValue(givenValue);
+         }
+         res.getCommand().run(this.context, parameters);
+
       } catch (error) {
          this.error(error);
       }
+      app.renderOutput();      
    }
 }

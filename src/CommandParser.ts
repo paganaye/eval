@@ -1,5 +1,5 @@
 import { CommandCall } from './CommandCall';
-import { Commands } from './Commands'
+import { Context } from './Context';
 
 //TODO: understand JSON litterals
 //TODO: understand HTML litterals
@@ -12,13 +12,12 @@ export class CommandParser {
 	commandName: string;
 	parameters: any;
 	useNamedParameters: boolean;
-	allDelimiters =  /[ \t:{}\[\]<>,'"]/;
+	allDelimiters = /[ \t:{}\[\]<>,'"]/;
 
-	constructor(commands: Commands) {
-
+	constructor(private context: Context) {
 	}
 
-	private nextChar() {
+	private nextChar(): void {
 		if (this.pos < this.len) {
 			this.pos++
 			if (this.pos < this.len) {
@@ -42,7 +41,12 @@ export class CommandParser {
 			this.parseParameter();
 			this.skipSpaces();
 		}
-		return new CommandCall(source, this.commandName, this.parameters);
+		var command = this.context.commands[this.commandName.toLowerCase()];
+		if (!command) {
+			throw "Unknown command " + this.commandName;
+		}
+
+		return new CommandCall(source, command, this.parameters);
 	}
 
 	parseString(delimiters: RegExp): string {
@@ -58,6 +62,9 @@ export class CommandParser {
 	parseQuotedString(): string {
 		var closingQuote: string = this.curChar;
 		var result: string = '';
+		if (this.curChar != '"' && this.curChar != "'") {
+			throw "Unexpected character " + this.curChar + " at position " + this.pos + ". Expected ' or \".";
+		}
 		this.nextChar();
 
 		while (this.curChar && this.curChar != closingQuote) {
@@ -76,6 +83,7 @@ export class CommandParser {
 			result += this.curChar;
 			this.nextChar();
 		}
+		if (result.length == 0) throw "Unexpected character " + this.curChar + " at position " + this.pos;
 		return result;
 	}
 
@@ -106,7 +114,7 @@ export class CommandParser {
 			case ":":
 				throw "Unexpected colon character at position " + this.pos;
 			case "<":
-				value = this.parseHTML();
+				value = this.parseHTMLTag();
 				break;
 			case "{":
 				value = this.parseJSONObject();
@@ -127,8 +135,79 @@ export class CommandParser {
 		return value;
 	}
 
-	parseHTML() {
-		return this.parseNonQuotedString(/>/); // TODO
+	parseHTMLTag(): string {
+		var tags = [];
+		var result = "";
+		while (this.curChar) {
+			if (this.curChar == '<') {
+				this.nextChar();
+			} else throw "Tags start with the character <."
+
+			var closing = (this.curChar as string == '/');
+			if (closing) this.nextChar();
+			var tagName = this.parseNonQuotedString(this.allDelimiters);
+
+			if (closing) {
+				this.skipSpaces();
+				if (this.curChar as string == '>') this.nextChar();
+				else throw "Invalid character " + this.curChar + " at position " + this.pos + ". Expected: >.";
+
+				if (tags.length == 0) throw "Invalid HTML tag at position " + this.pos;
+
+				result += "</" + tagName + ">";
+				var expectedTag = tags.pop();
+				if (tagName == expectedTag) {
+					if (tags.length == 0) return result;
+				} else throw "Invalid closing tag </" + tagName + ">. Expected </" + expectedTag + ">";
+			} else {
+				tags.push(tagName);
+				result += "<" + tagName;
+			}
+			this.skipSpaces();
+			var inText = false;
+			var empty = false;
+			while (this.curChar && !inText) {
+				switch (this.curChar as string) {
+					case ' ':
+					case '\t':
+						this.nextChar();
+						break;
+
+					case '>':
+						this.nextChar();
+						result += ">";
+						inText = true;
+						break;
+
+					case '/':
+						this.nextChar();
+						if (this.curChar as string == '>') {
+							this.nextChar();
+							empty = true;
+							inText = true;
+						}
+						else throw "Unexpected character " + this.curChar + " at position " + this.pos;
+						break;
+
+					default:
+						var attributeName = this.parseNonQuotedString(this.allDelimiters);
+						this.skipSpaces();
+						if (this.curChar as string == '=') {
+							this.nextChar();
+							this.skipSpaces();
+							var attributeValue = this.parseQuotedString();
+							result += " " + attributeName + "=" + attributeValue;
+						}
+				}
+			}
+			// in text
+			while (this.curChar && this.curChar != '<') {
+				result += this.curChar;
+				this.nextChar();
+
+			}
+		}
+		throw "Unexpected character " + this.curChar + " at position " + this.pos;
 	}
 
 	parseJSONObject(): any {

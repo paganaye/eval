@@ -1,6 +1,6 @@
 
 export interface ParameterDefinition {
-   parameterName: string;
+   name: string;
    type: string;
-   nullable: boolean;   
+   optional?: boolean;   
 }

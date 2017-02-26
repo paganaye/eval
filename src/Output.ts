@@ -4,7 +4,7 @@ import { ObjectView } from './views/Object';
 import { JSONView } from './views/JSONView';
 import { TypeDefinition, Type } from './Types';
 import { View } from './View';
-import { Runtime } from './Runtime';
+import { Context } from './Context';
 
 
 export class Output {
@@ -12,10 +12,10 @@ export class Output {
 
 	defaultViews: { [key: string]: View<any> } = {};
 
-	constructor(private runtime: Runtime) {
+	constructor(private context: Context) {
 	}
 
-	
+
 	clear() {
 		this.html = [];
 	}
@@ -52,13 +52,12 @@ export class Output {
 		this.printHTML("</div>");
 	}
 
-
 	print(model: any, type: Type) {
 		if (!type && model.type) type = model.type;
-		if (typeof type == "string") type = this.runtime.types[type];
-		if (!type) type = this.runtime.types[typeof model] || this.runtime.objectType;
+		if (typeof type == "string") type = this.context.types[type];
+		if (!type) type = this.context.types[typeof model] || this.context.objectType;
 
-		var view: View<any> = type.view || this.defaultViews[type.type] || this.runtime.jsonView;
+		var view: View<any> = type.view || this.defaultViews[type.type] || this.context.jsonView;
 		view.render(model, type as TypeDefinition, this);
 	}
 

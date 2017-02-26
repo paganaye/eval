@@ -1,15 +1,16 @@
+import { Command } from './Command';
+
 export class CommandCall {
 
-   constructor(private source: string, private name: string, private parameters: any) {
-
+   constructor(private source: string, private command: Command<any>, private parameters: any) {
    }
 
    getSource() {
       return this.source;
    }
 
-   getName() {
-      return this.name;
+   getCommand(): Command<any> {
+      return this.command;
    }
 
    getParameters(): any {
