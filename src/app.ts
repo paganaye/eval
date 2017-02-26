@@ -13,14 +13,12 @@ class App {
 		document.body.appendChild(this.console.render());
 
 		this.database = new Database();
-		this.database.initialize();
+		
 
 	}
 }
 
 var app: App;
-
-//firebase.initializeApp({});
 
 $(function () {
 	app = new App();

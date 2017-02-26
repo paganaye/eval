@@ -1,3 +1,5 @@
+var firebase: any;
+
 export class Database {
     config = {
         apiKey: "AIzaSyDJ-Y0blEFCKL-5mzDGKCvAduCmDQwBz6k",
@@ -8,11 +10,6 @@ export class Database {
     };
 
     constructor() {
-        console.log("database constructor");
-    }
-
-    initialize() {
-        console.log("database initialize");
         firebase.initializeApp(this.config)
         var db = firebase.database().ref();
         db.on('value', function (snap) {
