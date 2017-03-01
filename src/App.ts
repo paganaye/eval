@@ -24,9 +24,7 @@ class App {
 		this.initConsole();
 		//this.initDatabase();
 
-		//this.testOutput();
-		//this.database.test();
-		this.testCommand();
+		this.tests();
 		this.renderOutput();
 	}
 
@@ -61,16 +59,15 @@ class App {
 	initConsole() {
 		var consoleElt = document.getElementById('console1') as HTMLElement;
 		if (consoleElt) {
-			consoleElt.innerHTML = "";
-		} else {
-			// console is first to display the rest of the initializations
-			this.evalConsole = new EvalConsole(this.context);
-			consoleElt = this.evalConsole.initialize();
-			consoleElt.id = "console1";
-			consoleElt.style.display = "none";
-			document.body.appendChild(consoleElt);
-
+			consoleElt.remove();
 		}
+		// console is first to display the rest of the initializations
+		this.evalConsole = new EvalConsole(this.context);
+		consoleElt = this.evalConsole.initialize();
+		consoleElt.id = "console1";
+		consoleElt.style.display = "block";
+		document.body.appendChild(consoleElt);
+
 
 		$(document).keyup(function (e) {
 			if (e.keyCode == 27) { // escape key maps to keycode `27`
@@ -79,9 +76,16 @@ class App {
 		});
 	}
 
-	testCommand() {
+	tests() {
 		var tests = new Tests(this.evalConsole);
-		tests.selfTests();
+
+		//this.testOutput();
+		//this.database.test();
+		try {
+			tests.selfTests();
+		} catch (e) {
+			this.evalConsole.error(e.toString());
+		}
 
 	}
 

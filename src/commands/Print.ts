@@ -57,7 +57,7 @@ export class Print extends Command<PrintParameters> {
    }
 
    run(context: Context, parameters: PrintParameters) {
-      debugger;
+      //debugger;
       var model = parameters.model.getValue();
       var type = parameters.type.getValue();
       app.print(model, type);

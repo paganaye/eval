@@ -254,7 +254,6 @@ class InputView extends Docs.View<IInput> {
     }
 
     renderInput(container: HTMLDivElement, value: any, inputType?: string) {
-        debugger;
         var input = document.createElement("input");
         if (!inputType) {
             switch (typeof value) {

@@ -1,11 +1,11 @@
-import { CommandParser } from './CommandParser';
+import { Parser } from './Parser';
 import { Tests } from './Tests';
 import { Context } from './Context';
 import { CommandParameter } from './Command';
 import { app } from './App';
 
 export class EvalConsole {
-   commandParser: CommandParser;
+   parser: Parser;
    originalConsole: Console;
    terminal: any;
 
@@ -37,7 +37,7 @@ export class EvalConsole {
             prompt: '$ ',
             height: '180px'
          });
-      this.commandParser = new CommandParser(this.context);
+      this.parser = new Parser(this.context);
       this.originalConsole = (window as any).console;
       (window as any).console = this;
       return elt;
@@ -53,24 +53,8 @@ export class EvalConsole {
 
    public processCommand(commandString: string) {
       try {
-         var res = this.commandParser.parse(commandString)
-         var command = res.getCommand();
-         var givenParameters = res.getParameters();
-
-         this.echo((command.constructor as any).name);
-         this.echo(givenParameters)
-         var parameters = command.createParameters();
-         this.echo(parameters);
-         var keys = Object.keys(parameters);
-         for (var i in givenParameters) {
-            var givenValue = givenParameters[i];
-            if (/[0-9]+/.test(i)) {
-               i = keys[i];
-            }
-            (parameters[i] as CommandParameter<any>).setValue(givenValue);
-         }
-         res.getCommand().run(this.context, parameters);
-
+         var res = this.parser.parseCommand(commandString)
+         res.run();
       } catch (error) {
          this.error(error);
       }
