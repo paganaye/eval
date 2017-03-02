@@ -10,33 +10,40 @@ export class Tests {
 		this.console.echo("Running tests...");
 		//this.testNextChar();
 		//this.testTokenizer();
-		this.testParser();
+		//this.testParser();
+		this.testCommand();
 	}
 
 	public testParser() {
 		this.console.echo("Parser...");
 		this.assertParse(17, "1+2*3+10")
 		this.assertParse("AB", "\"A\" + \"B\"")
-
-		//this.assertParse(true, "12+2*3=18")
-
-		//this.assertParse(true, "12+2*3=18")
-		debugger;
-		var context = new Context();
-		var parser = new Parser(context);
-		var command = parser.parseCommand("print 1+2");
-		command.run();
-
-		//this.assertCommand("")
-		//var result = tree.getValue()
-		//this.assert(expectedValue, result, expression);
 	}
 
+	public testCommand() {
+		var context = new Context();
+		var parser = new Parser(context);
+
+		var command = parser.parseCommand("print 1+2");
+		this.assert("print", command.getName());
+		this.assert({ model: { value: 3 }, type: {} }, command.getParamValues(context));
+
+		parser.parseCommand("a=1+1");
+		this.assert(2, context.getVariable("a"));
+	}
+
+	public assertCommandParser(expectedName: string, expectedParameters: any, line: string) {
+		// var commandParser = this.console.commandParser;
+		// var commandCall = commandParser.parse(line);
+		// this.assert({ name: expectedName, parameters: expectedParameters },
+		// 	{ name: commandCall.getCommand().getName(), parameters: commandCall.getParameters() },
+		// 	line);
+	}
 
 	public assertParse(expectedValue: any, expression: string) {
 		var parser = new Parser();
 		var node = parser.parse(expression);
-		var result = node.getValue()
+		var result = node.getValue(null)
 		this.assert(expectedValue, result, expression);
 	}
 
@@ -96,13 +103,6 @@ export class Tests {
 		}
 	}
 
-	public assertCommandParser(expectedName: string, expectedParameters: any, line: string) {
-		// var commandParser = this.console.commandParser;
-		// var commandCall = commandParser.parse(line);
-		// this.assert({ name: expectedName, parameters: expectedParameters },
-		// 	{ name: commandCall.getCommand().getName(), parameters: commandCall.getParameters() },
-		// 	line);
-	}
 	public assert(expected, actual, message?: string) {
 		if (!message) message = "";
 		var expectedJSON = JSON.stringify(expected);

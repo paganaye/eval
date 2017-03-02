@@ -2,5 +2,11 @@
 {
 	"files.autoSave": "afterDelay",
 	"files.autoSaveDelay": 500,
-	"editor.tabSize": 3
+	"editor.tabSize": 3,
+   "files.exclude": {
+      ".fusebox": true,
+      "app.js": true,
+      "**/*.map": true
+   },
+   "window.zoomLevel": 1
 }

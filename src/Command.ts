@@ -2,7 +2,6 @@ import { ParameterDefinition } from './ParameterDefinition';
 import { Context } from './Context';
 
 export abstract class Command<TParameters> {
-   abstract getName(): string;
    abstract createParameters(): TParameters;
    abstract run(context: Context, parameters: TParameters): void;
 }
@@ -13,7 +12,7 @@ export class CommandParameter<T> {
    public constructor(private options?: any) {
    }
 
-   getValue(): T {
+   getValue(context: Context): T {
       return this.value;
    }
 

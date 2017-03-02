@@ -149,11 +149,7 @@ export class Parser {
 			}
 
 		}
-		var command = this.context.commands[commandName.toLowerCase()];
-		if (!command) {
-			throw "Unknown command " + commandName;
-		}
-		return new CommandCall(this.context, expression, command, parameters);
+		return new CommandCall(this.context, expression, commandName, parameters);
 	}
 
 
@@ -291,14 +287,14 @@ export class Parser {
 }
 
 export abstract class ExpressionNode {
-	abstract getValue(): any;
+	abstract getValue(context: Context): any;
 }
 
 class Const extends ExpressionNode {
 	constructor(private value: any) {
 		super();
 	}
-	getValue(): any {
+	getValue(context: Context): any {
 		return this.value;
 	}
 }
@@ -307,8 +303,8 @@ class GetVariable extends ExpressionNode {
 	constructor(private variableName: any) {
 		super();
 	}
-	getValue(): any {
-		return "todo";
+	getValue(context: Context): any {		
+		return context.getVariable(this.variableName);
 	}
 }
 
@@ -316,12 +312,12 @@ class UnaryOp extends ExpressionNode {
 	constructor(private op1: ExpressionNode, private operator: string) {
 		super();
 	}
-	getValue(): any {
+	getValue(context: Context): any {
 		switch (this.operator) {
 			case '+':
-				return + this.op1.getValue();
+				return + this.op1.getValue(context);
 			case '-':
-				return - this.op1.getValue();
+				return - this.op1.getValue(context);
 		}
 	}
 }
@@ -329,28 +325,28 @@ class BinaryOp extends ExpressionNode {
 	constructor(private operator: string, private op1: ExpressionNode, private op2: ExpressionNode) {
 		super();
 	}
-	getValue(): any {
+	getValue(context: Context): any {
 		switch (this.operator) {
 			case '+':
-				return this.op1.getValue() + this.op2.getValue();
+				return this.op1.getValue(context) + this.op2.getValue(context);
 			case '-':
-				return this.op1.getValue() - this.op2.getValue();
+				return this.op1.getValue(context) - this.op2.getValue(context);
 			case '*':
-				return this.op1.getValue() * this.op2.getValue();
+				return this.op1.getValue(context) * this.op2.getValue(context);
 			case '/':
-				return this.op1.getValue() / this.op2.getValue();
+				return this.op1.getValue(context) / this.op2.getValue(context);
 			case '<':
-				return this.op1.getValue() < this.op2.getValue();
+				return this.op1.getValue(context) < this.op2.getValue(context);
 			case '<=':
-				return this.op1.getValue() <= this.op2.getValue();
+				return this.op1.getValue(context) <= this.op2.getValue(context);
 			case '==':
-				return this.op1.getValue() == this.op2.getValue();
+				return this.op1.getValue(context) == this.op2.getValue(context);
 			case '>=':
-				return this.op1.getValue() >= this.op2.getValue();
+				return this.op1.getValue(context) >= this.op2.getValue(context);
 			case '>':
-				return this.op1.getValue() > this.op2.getValue();
+				return this.op1.getValue(context) > this.op2.getValue(context);
 			case '!=':
-				return this.op1.getValue() != this.op2.getValue();
+				return this.op1.getValue(context) != this.op2.getValue(context);
 		}
 	}
 }

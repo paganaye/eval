@@ -4,6 +4,7 @@ import { ObjectView } from './views/Object';
 import { View } from './View';
 import { Command, CommandParameter } from './Command';
 import { Print } from './commands/Print';
+import { Hello } from './commands/Hello';
 
 export class Context {
    jsonView: JSONView
@@ -11,6 +12,7 @@ export class Context {
 
    types: { [key: string]: TypeDefinition } = {};
    commands: { [key: string]: Command<any> } = {};
+   variables: { [key: string]: any } = {};
 
    booleanType: BooleanDefinition;
    stringType: StringDefinition;
@@ -28,6 +30,8 @@ export class Context {
       this.registerNativeType(this.objectType = { type: "object", view: this.objectView });
 
       this.registerCommand("print", new Print());
+      this.registerCommand("hello", new Hello())
+      this.registerCommand("hi", new Hello())
    }
 
 
@@ -47,5 +51,12 @@ export class Context {
       return null;
    }
 
+   getVariable(variableName: string): any {
+      var result = this.variables[variableName];
+      if (result == null) {
+
+      }
+      return result;
+   }
 
 }

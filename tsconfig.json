@@ -13,8 +13,9 @@
     "listFiles": false,
     "listEmittedFiles": false,
     "pretty": true,
-    "types": [
-      
+    "emitDecoratorMetadata": true,  
+    "experimentalDecorators": true,
+    "types": [      
     ]
   },
   "include": [
