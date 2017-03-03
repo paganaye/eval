@@ -54,7 +54,7 @@ export class EvalConsole {
    public processCommand(commandString: string) {
       try {
          var res = this.parser.parseCommand(commandString)
-         res.run();
+         res.run(this.context);
       } catch (error) {
          this.error(error);
       }

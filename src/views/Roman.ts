@@ -1,5 +1,4 @@
 import { View } from '../View';
-import { app } from '../App';
 import { Output } from '../Output';
 import { TypeDefinition } from '../Types';
 

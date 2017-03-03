@@ -28,7 +28,9 @@ export class Tests {
 		this.assert("print", command.getName());
 		this.assert({ model: { value: 3 }, type: {} }, command.getParamValues(context));
 
-		parser.parseCommand("a=1+1");
+		debugger;
+		var command = parser.parseCommand("a=1+1");
+		command.run(context);
 		this.assert(2, context.getVariable("a"));
 	}
 

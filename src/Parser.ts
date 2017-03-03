@@ -103,7 +103,7 @@ export class Parser {
 				}
 				break;
 			case TokenType.Keyword:
-				result = new GetVariable(this.token.numberValue);
+				result = new GetVariable(this.token.stringValue);
 				this.nextToken();
 				return result;
 			case TokenType.Number:
@@ -130,6 +130,12 @@ export class Parser {
 		}
 		var commandName = this.token.stringValue;
 		this.nextToken();
+		if (this.token.type === TokenType.Operator && this.token.stringValue == '=') {
+			// variable assignment
+			this.nextToken();
+			parameters[0] = new Const(commandName);
+			commandName = 'assign'
+		}
 		while (this.token.type != TokenType.EOF) {
 			var value = this.parseExpression(Priority.None);
 			//.parseValue(this.allDelimiters);
@@ -147,7 +153,6 @@ export class Parser {
 				}
 				parameters[parameterNumber++] = value;
 			}
-
 		}
 		return new CommandCall(this.context, expression, commandName, parameters);
 	}
@@ -303,7 +308,7 @@ class GetVariable extends ExpressionNode {
 	constructor(private variableName: any) {
 		super();
 	}
-	getValue(context: Context): any {		
+	getValue(context: Context): any {
 		return context.getVariable(this.variableName);
 	}
 }

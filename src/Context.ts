@@ -1,10 +1,12 @@
 import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition } from './Types';
-import { JSONView } from './views/JSONView';
-import { ObjectView } from './views/Object';
+import { app } from './App';
 import { View } from './View';
 import { Command, CommandParameter } from './Command';
+import { JSONView } from './views/JSONView';
+import { ObjectView } from './views/Object';
 import { Print } from './commands/Print';
 import { Hello } from './commands/Hello';
+import { Assign } from './commands/Assign';
 
 export class Context {
    jsonView: JSONView
@@ -32,6 +34,7 @@ export class Context {
       this.registerCommand("print", new Print());
       this.registerCommand("hello", new Hello())
       this.registerCommand("hi", new Hello())
+      this.registerCommand("assign", new Assign())
    }
 
 
@@ -59,4 +62,11 @@ export class Context {
       return result;
    }
 
+   setVariable(variableName: string, value: any): void {
+      this.variables[variableName] = value;
+   }
+
+   print(model: any, type?: Type) {
+      app.print(model, type);
+   }
 }

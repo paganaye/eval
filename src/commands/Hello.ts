@@ -1,5 +1,4 @@
 import { Command, CommandParameter } from '../Command';
-import { app } from '../App';
 import { ParameterDefinition } from '../ParameterDefinition';
 import { Type } from '../Types';
 import { Context } from '../Context';
@@ -20,7 +19,7 @@ export class Hello extends Command<HelloParameters> {
    run(context: Context, parameters: HelloParameters) {
       //debugger;
       var model = parameters.who.getValue(context);
-      app.print(model);
+      context.print(model);
    }
 }
 
