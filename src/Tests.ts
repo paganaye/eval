@@ -8,10 +8,10 @@ export class Tests {
 
 	public selfTests() {
 		this.console.echo("Running tests...");
-		//this.testNextChar();
-		//this.testTokenizer();
-		//this.testParser();
-		//this.testFunctions();
+		this.testNextChar();
+		this.testTokenizer();
+		this.testParser();
+		this.testFunctions();
 		this.testCommands();
 	}
 
@@ -22,6 +22,7 @@ export class Tests {
 
 	public testParser() {
 		this.console.echo("Parser...");
+		debugger;
 		this.assertParse(17, "1+2*3+10")
 		this.assertParse(1, "6/2/3")
 		this.assertParse("AB", "\"A\" + \"B\"")

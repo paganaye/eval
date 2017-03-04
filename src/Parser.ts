@@ -353,15 +353,60 @@ export class Parser {
 	}
 }
 
-export abstract class ExpressionNode {
-	abstract getValue(context: Context): any;
+export interface Subscriber {
+	on(publisher: Publisher);
+}
+
+export interface Publisher {
+	addSubscriber(subscriber: Subscriber): void;
+	removeSubscriber(subscriber: Subscriber): void;
+}
+
+export abstract class ExpressionNode implements Publisher, Subscriber {
+	private subscribers: Subscriber[] = [];
+	private modified: boolean = true;
+	private calculatedValue: any;
+
+	abstract recalcValue(context: Context): any;
+
+	getValue(context: Context): any {
+		if (this.modified) {
+			this.calculatedValue = this.recalcValue(context);
+			this.modified = false;
+		}
+		return this.calculatedValue;
+	}
+
+	constructor(...publishers: Publisher[]) {
+		publishers.forEach(p => p.addSubscriber(this));
+	}
+
+	addSubscriber(subscriber: Subscriber): void {
+		if (this.subscribers.filter(s => s === subscriber).length > 0) return;
+		this.subscribers.push(subscriber);
+	}
+
+	removeSubscriber(subscriber: Subscriber): void {
+		this.subscribers = this.subscribers.filter(s => s != subscriber);
+	}
+
+	protected publish() {
+		this.subscribers.forEach(s => s.on(this));
+	}
+
+	on(publisher: Publisher) {
+		if (!this.modified) {
+			this.modified = true;
+			this.publish();
+		}
+	}
 }
 
 class Const extends ExpressionNode {
 	constructor(private value: any) {
 		super();
 	}
-	getValue(context: Context): any {
+	recalcValue(context: Context): any {
 		return this.value;
 	}
 }
@@ -372,7 +417,7 @@ class GetVariable extends ExpressionNode {
 	}
 
 	getVariableName(): string { return this.variableName; }
-	getValue(context: Context): any {
+	recalcValue(context: Context): any {
 		return context.getVariable(this.variableName);
 	}
 }
@@ -381,7 +426,7 @@ class UnaryOp extends ExpressionNode {
 	constructor(private op1: ExpressionNode, private operator: string) {
 		super();
 	}
-	getValue(context: Context): any {
+	recalcValue(context: Context): any {
 		switch (this.operator) {
 			case "+":
 				return + this.op1.getValue(context);
@@ -394,7 +439,7 @@ class BinaryOp extends ExpressionNode {
 	constructor(private operator: string, private op1: ExpressionNode, private op2: ExpressionNode) {
 		super();
 	}
-	getValue(context: Context): any {
+	recalcValue(context: Context): any {
 		switch (this.operator) {
 			case "+":
 				return this.op1.getValue(context) + this.op2.getValue(context);
@@ -449,7 +494,7 @@ export class FunctionCall extends ExpressionNode {
 		return paramValues;
 	}
 
-	getValue(context: Context): any {
+	recalcValue(context: Context): any {
 		var result = this.evalFunction.eval(this.context, this.getParamValues(context))
 		return result;
 	}
@@ -466,7 +511,7 @@ export class JsonObject extends ExpressionNode {
 		this.members[key] = value;
 	}
 
-	getValue(context: Context): any {
+	recalcValue(context: Context): any {
 		var result = {};
 		for (var m in this.members) {
 			var value = this.members[m].getValue(context);
@@ -487,7 +532,7 @@ export class JsonArray extends ExpressionNode {
 		this.items.push(value);
 	}
 
-	getValue(context: Context): any {
+	recalcValue(context: Context): any {
 		var result = {};
 		for (var m in this.items) {
 			var value = this.items[m].getValue(context);
