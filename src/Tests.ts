@@ -11,7 +11,13 @@ export class Tests {
 		//this.testNextChar();
 		//this.testTokenizer();
 		//this.testParser();
-		this.testCommand();
+		//this.testCommand();
+		this.testFunctions();
+	}
+
+	public testFunctions() {
+		this.console.echo("Functions...");
+		this.assertParse(1, "abs(-1)")
 	}
 
 	public testParser() {
@@ -28,7 +34,6 @@ export class Tests {
 		this.assert("print", command.getName());
 		this.assert({ model: { value: 3 }, type: {} }, command.getParamValues(context));
 
-		debugger;
 		var command = parser.parseCommand("a=1+1");
 		command.run(context);
 		this.assert(2, context.getVariable("a"));
@@ -43,9 +48,10 @@ export class Tests {
 	}
 
 	public assertParse(expectedValue: any, expression: string) {
-		var parser = new Parser();
+		var context = new Context();
+		var parser = new Parser(context);
 		var node = parser.parse(expression);
-		var result = node.getValue(null)
+		var result = node.getValue(context)
 		this.assert(expectedValue, result, expression);
 	}
 

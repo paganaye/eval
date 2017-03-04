@@ -1,11 +1,11 @@
 import { Context } from './Context';
 
-export abstract class Command<TParameters> {
+export abstract class EvalFunction<TParameters> {
    abstract createParameters(): TParameters;
-   abstract run(context: Context, parameters: TParameters): void;
+   abstract eval(context: Context, parameters: TParameters): any;
 }
 
-export class CommandParameter<T> {
+export class FunctionParameter<T> {
    value: T;
 
    public constructor(private options?: any) {

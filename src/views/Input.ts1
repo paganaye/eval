@@ -216,7 +216,6 @@ class InputView extends Docs.View<IInput> {
         var select = document.createElement('select');
         container.appendChild(select);
         var found = false;
-        //debugger;
         for (var entry of type.entries) {
             var option = document.createElement('option');
             option.value = entry.key;
@@ -281,7 +280,6 @@ class InputView extends Docs.View<IInput> {
     }
 
     renderJson(data: IInput): Node[] {
-        //debugger;
         var result: Node[] = [];
         this.renderField((n) => result.push(n), data.label, data.type, data.value || data)
 

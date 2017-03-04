@@ -1,5 +1,4 @@
 import { Command, CommandParameter } from './Command';
-import { ParameterDefinition } from './ParameterDefinition';
 import { Context } from './Context';
 import { ExpressionNode } from './Parser';
 
@@ -43,6 +42,7 @@ export class CommandCall {
       }
       return paramValues;
    }
+
    run(context: Context) {
       this.command.run(this.context, this.getParamValues(context))
    }

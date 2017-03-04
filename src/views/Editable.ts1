@@ -11,7 +11,6 @@ class EditableView extends Docs.View<any> {
 
 
     renderJson(data: any): string {
-        // debugger;
         // var form = document.createElement("form");
         // var value = data.value;
         // if (typeof value !== "object" || value === null) {

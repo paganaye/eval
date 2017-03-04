@@ -1,6 +1,7 @@
 import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from './CommandCall';
 import { Context } from './Context';
+import { EvalFunction, FunctionParameter } from './EvalFunction';
 
 // we keep the same priorities than javascript but with less operators.
 // pure function only (no assignment)
@@ -22,7 +23,7 @@ export class Parser {
 	token: Token;
 	expression: string;
 
-	constructor(private context?: Context) {
+	constructor(private context: Context) {
 	}
 
 	private init(expression: string) {
@@ -69,10 +70,14 @@ export class Parser {
 							this.nextToken();
 							result = new BinaryOp(op, result, this.parseExpression(Priority.Comparison));
 							break;
+						default:
+							// closing brackets were here.
+							return result;
 					}
 					break;
 				default:
-					this.unexpectedToken();
+					// someone else will parse it.
+					return result;
 			}
 
 		}
@@ -95,6 +100,7 @@ export class Parser {
 				switch (this.token.stringValue) {
 					case '+':
 					case '-':
+						this.nextToken();
 						result = new UnaryOp(this.parseLeft(Priority.UnaryPlusMinus), op);
 						return result;
 					default:
@@ -103,8 +109,13 @@ export class Parser {
 				}
 				break;
 			case TokenType.Keyword:
-				result = new GetVariable(this.token.stringValue);
+				var variableOrFunction = this.token.stringValue;
 				this.nextToken();
+				if (this.token.type as TokenType == TokenType.Operator && this.token.stringValue == "(") {
+					result = this.parseFunctionCall(variableOrFunction);
+				} else {
+					result = new GetVariable(variableOrFunction);
+				}
 				return result;
 			case TokenType.Number:
 				result = new Const(this.token.numberValue);
@@ -118,13 +129,22 @@ export class Parser {
 		this.unexpectedToken();
 	}
 
+	parseFunctionCall(functionName: string): ExpressionNode {
+		if (this.token.type !== TokenType.Operator || this.token.stringValue !== "(") {
+			this.unexpectedToken("Expected parenthesis in function call.");
+		}
+		this.nextToken();
+		var parameters = {};
+		var useNamedParameters = false;
+		this.parseParameters(parameters, true);
+		return new FunctionCall(this.context, functionName, parameters);
+	}
+
 	parseCommand(expression: string): CommandCall {
 		this.init(expression);
 		//this.commandName = this.parseString(this.allDelimiters);
 		var parameters = {};
-		//this.useNamedParameters = false;
 
-		var useNamedParameters = false;
 		if (this.token.type != TokenType.Keyword) {
 			this.unexpectedToken("Keyword expected.")
 		}
@@ -136,10 +156,15 @@ export class Parser {
 			parameters[0] = new Const(commandName);
 			commandName = 'assign'
 		}
+		this.parseParameters(parameters, false);
+		return new CommandCall(this.context, expression, commandName, parameters);
+	}
+
+	parseParameters(parameters: any, requireClosingParenthesis: boolean) {
+		var useNamedParameters = false;
 		while (this.token.type != TokenType.EOF) {
 			var value = this.parseExpression(Priority.None);
 			//.parseValue(this.allDelimiters);
-
 			if ((this.token.type == TokenType.Operator
 				&& this.token.stringValue == ':')) {
 				useNamedParameters = true;
@@ -153,10 +178,16 @@ export class Parser {
 				}
 				parameters[parameterNumber++] = value;
 			}
+			if (requireClosingParenthesis
+				&& this.token.type == TokenType.Operator
+				&& this.token.stringValue == ')') {
+				return;
+			}
 		}
-		return new CommandCall(this.context, expression, commandName, parameters);
+		if (requireClosingParenthesis) {
+			this.unexpectedToken("Expected closing parenthesis.");
+		}
 	}
-
 
 	// parseHTMLTag(): string {
 	// 	var tags = [];
@@ -353,5 +384,36 @@ class BinaryOp extends ExpressionNode {
 			case '!=':
 				return this.op1.getValue(context) != this.op2.getValue(context);
 		}
+	}
+}
+
+export class FunctionCall extends ExpressionNode {
+	private evalFunction: EvalFunction<any>;
+
+	constructor(private context: Context, private functionName, private parameters: { [key: string]: ExpressionNode }) {
+		super();
+		this.evalFunction = this.context.functions[functionName.toLowerCase()];
+		if (!this.evalFunction) {
+			throw "Unknown function " + functionName;
+		}
+	}
+
+	getParamValues(context: Context): any {
+		var paramValues = this.evalFunction.createParameters();
+		var keys = Object.keys(paramValues);
+		for (var i in this.parameters) {
+			var paramExpression = this.parameters[i];
+			if (/[0-9]+/.test(i)) {
+				i = keys[i];
+			}
+			var actualValue = paramExpression.getValue(context);
+			(paramValues[i] as FunctionParameter<any>).setValue(actualValue);
+		}
+		return paramValues;
+	}
+
+	getValue(context: Context): any {
+		var result = this.evalFunction.eval(this.context, this.getParamValues(context))
+		return result;
 	}
 }

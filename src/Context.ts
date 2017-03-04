@@ -7,6 +7,8 @@ import { ObjectView } from './views/Object';
 import { Print } from './commands/Print';
 import { Hello } from './commands/Hello';
 import { Assign } from './commands/Assign';
+import { EvalFunction } from './EvalFunction';
+import { AbsFunction } from './functions/Abs';
 
 export class Context {
    jsonView: JSONView
@@ -14,6 +16,7 @@ export class Context {
 
    types: { [key: string]: TypeDefinition } = {};
    commands: { [key: string]: Command<any> } = {};
+   functions: { [key: string]: EvalFunction<any> } = {};
    variables: { [key: string]: any } = {};
 
    booleanType: BooleanDefinition;
@@ -35,11 +38,17 @@ export class Context {
       this.registerCommand("hello", new Hello())
       this.registerCommand("hi", new Hello())
       this.registerCommand("assign", new Assign())
+
+      this.registerFunctions("abs", new AbsFunction())
    }
 
 
    registerCommand(name: string, command: Command<any>) {
       this.commands[name] = command;
+   }
+
+   registerFunctions(name: string, evalFunction: EvalFunction<any>) {
+      this.functions[name] = evalFunction;
    }
 
    registerNativeType(typeDefinition: TypeDefinition) {

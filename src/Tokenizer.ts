@@ -103,7 +103,10 @@ export class Tokenizer {
             };
          }
       } else if ((this.curChar === '+') || (this.curChar === '-')
-         || (this.curChar === '*') || (this.curChar === '/')) {
+         || (this.curChar === '*') || (this.curChar === '/') 
+         || (this.curChar === '(') || (this.curChar === ')') 
+         || (this.curChar === '[') || (this.curChar === ']') 
+         || (this.curChar === '{') || (this.curChar === '}')) {
          var op = this.curChar;
          this.nextChar();
          return {
@@ -139,10 +142,10 @@ export class Tokenizer {
          var op = this.curChar;
          this.nextChar();
          if (this.curChar as string === '=') {
-            op+='=';
+            op += '=';
             this.nextChar();
          }
-         return { 
+         return {
             position: startPos,
             type: TokenType.Operator,
             stringValue: op
