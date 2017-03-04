@@ -35,62 +35,11 @@ export class Parser {
 	nextToken(): void {
 		this.token = this.tokenizer.nextToken();
 	}
+
 	parse(expression: string) {
 		this.init(expression);
 		return this.parseExpression(Priority.None);
 	}
-
-	parseExpression(priority: Priority): ExpressionNode {
-		var result = this.parseLeft(priority);
-		while (this.token.type != TokenType.EOF) {
-			switch (this.token.type) {
-				case TokenType.Operator:
-					var op = this.token.stringValue;
-					if (op == '=') op = '==';
-					switch (op) {
-						case '+':
-						case '-':
-							if (priority > Priority.Addition) return result;
-							this.nextToken();
-							result = new BinaryOp(op, result, this.parseExpression(Priority.Addition));
-							break;
-						case '*':
-						case '/':
-							if (priority > Priority.Multiplication) return result;
-							this.nextToken();
-							result = new BinaryOp(op, result, this.parseExpression(Priority.Multiplication));
-							break;
-						case '<':
-						case '<=':
-						case '==':
-						case '>=':
-						case '>':
-						case '!=':
-							if (priority > Priority.Comparison) return result;
-							this.nextToken();
-							result = new BinaryOp(op, result, this.parseExpression(Priority.Comparison));
-							break;
-						default:
-							// closing brackets were here.
-							return result;
-					}
-					break;
-				default:
-					// someone else will parse it.
-					return result;
-			}
-
-		}
-		return result;
-	}
-
-	unexpectedToken(detail?: string): void {
-		throw "Unexpected "
-		+ TokenType[this.token.type]
-		+ " " + (this.token.numberValue || this.token.stringValue || "")
-		+ " at position " + this.token.position + "." + detail || "";
-	}
-
 
 	parseLeft(priority: Priority): ExpressionNode {
 		var result: ExpressionNode;
@@ -103,6 +52,16 @@ export class Parser {
 						this.nextToken();
 						result = new UnaryOp(this.parseLeft(Priority.UnaryPlusMinus), op);
 						return result;
+					case '(':
+						this.nextToken();
+						result = this.parseExpression(Priority.None);
+						if (this.token.type == TokenType.Operator
+							&& this.token.stringValue as string == ')') {
+							this.nextToken();
+							return result;
+						}
+						this.unexpectedToken("Expecting closing parenthesis.");
+						break;
 					default:
 						this.unexpectedToken("Only + and - operator are tolerated.");
 						break;
@@ -127,6 +86,57 @@ export class Parser {
 				return result;
 		}
 		this.unexpectedToken();
+	}
+
+	parseExpression(priority: Priority): ExpressionNode {
+		var result = this.parseLeft(priority);
+		while (this.token.type != TokenType.EOF) {
+			switch (this.token.type) {
+				case TokenType.Operator:
+					var op = this.token.stringValue;
+					if (op == '=') op = '==';
+					switch (op) {
+						case '+':
+						case '-':
+							if (priority >= Priority.Addition) return result;
+							this.nextToken();
+							result = new BinaryOp(op, result, this.parseExpression(Priority.Addition));
+							break;
+						case '*':
+						case '/':
+							if (priority >= Priority.Multiplication) return result;
+							this.nextToken();
+							result = new BinaryOp(op, result, this.parseExpression(Priority.Multiplication));
+							break;
+						case '<':
+						case '<=':
+						case '==':
+						case '>=':
+						case '>':
+						case '!=':
+							if (priority >= Priority.Comparison) return result;
+							this.nextToken();
+							result = new BinaryOp(op, result, this.parseExpression(Priority.Comparison));
+							break;
+						default:
+							// closing brackets were here.
+							return result;
+					}
+					break;
+				default:
+					// someone else will parse it.
+					return result;
+			}
+
+		}
+		return result;
+	}
+
+	unexpectedToken(detail?: string): void {
+		throw "Unexpected "
+		+ TokenType[this.token.type]
+		+ " " + (this.token.numberValue || this.token.stringValue || "")
+		+ " at position " + this.token.position + "." + detail || "";
 	}
 
 	parseFunctionCall(functionName: string): ExpressionNode {
@@ -173,9 +183,10 @@ export class Parser {
 			var value = this.parseExpression(Priority.None);
 			//.parseValue(this.allDelimiters);
 			if ((this.token.type == TokenType.Operator
-				&& this.token.stringValue == ':')) {
+				&& this.token.stringValue == ':')
+				&& value instanceof (GetVariable)) {
 				useNamedParameters = true;
-				var parameterName = this.token.stringValue;
+				var parameterName = (value as GetVariable).getVariableName();
 				this.nextToken();
 				parameters[parameterName] = this.parseExpression(Priority.None);
 			} else {
@@ -341,6 +352,8 @@ class GetVariable extends ExpressionNode {
 	constructor(private variableName: any) {
 		super();
 	}
+
+	getVariableName(): string { return this.variableName; }
 	getValue(context: Context): any {
 		return context.getVariable(this.variableName);
 	}
@@ -403,13 +416,17 @@ export class FunctionCall extends ExpressionNode {
 	getParamValues(context: Context): any {
 		var paramValues = this.evalFunction.createParameters();
 		var keys = Object.keys(paramValues);
-		for (var i in this.parameters) {
-			var paramExpression = this.parameters[i];
-			if (/[0-9]+/.test(i)) {
-				i = keys[i];
-			}
+
+		for (var idx in this.parameters) {
+			var paramExpression = this.parameters[idx];
+			var isNumber = /^[0-9]+$/.test(idx);
+			if (isNumber) {
+				var key = keys[idx] as string;
+			} else key = idx;
 			var actualValue = paramExpression.getValue(context);
-			(paramValues[i] as FunctionParameter<any>).setValue(actualValue);
+			var param = (paramValues[key] as FunctionParameter<any>);
+			if (param instanceof FunctionParameter) param.setValue(actualValue);
+			else throw "Parameter " + (isNumber ? (parseInt(idx) + 1).toString() : key) + " does not exist in function " + this.functionName + ".";
 		}
 		return paramValues;
 	}

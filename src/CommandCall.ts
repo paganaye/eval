@@ -30,15 +30,19 @@ export class CommandCall {
    }
 
    getParamValues(context: Context): any {
+      // TODO: we could be doing some of this in the constructor
       var paramValues = this.command.createParameters();
       var keys = Object.keys(paramValues);
-      for (var i in this.parameters) {
-         var paramExpression = this.parameters[i];
-         if (/[0-9]+/.test(i)) {
-            i = keys[i];
-         }
+      for (var idx in this.parameters) {
+         var paramExpression = this.parameters[idx];
+         var isNumber = /^[0-9]+$/.test(idx);
+         if (isNumber) {
+            var key = keys[idx] as string;
+         } else key = idx;
          var actualValue = paramExpression.getValue(context);
-         (paramValues[i] as CommandParameter<any>).setValue(actualValue);
+         var param = (paramValues[key] as CommandParameter<any>);
+         if (param instanceof CommandParameter) param.setValue(actualValue);
+         else throw "Parameter " + (isNumber ? (parseInt(idx) + 1).toString() : key) + " does not exist in command " + this.commandName + ".";
       }
       return paramValues;
    }

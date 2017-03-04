@@ -104,6 +104,7 @@ export class Tokenizer {
          }
       } else if ((this.curChar === '+') || (this.curChar === '-')
          || (this.curChar === '*') || (this.curChar === '/') 
+         || (this.curChar === ':') || (this.curChar === ',') 
          || (this.curChar === '(') || (this.curChar === ')') 
          || (this.curChar === '[') || (this.curChar === ']') 
          || (this.curChar === '{') || (this.curChar === '}')) {
