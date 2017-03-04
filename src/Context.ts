@@ -8,7 +8,9 @@ import { Print } from './commands/Print';
 import { Hello } from './commands/Hello';
 import { Assign } from './commands/Assign';
 import { EvalFunction } from './EvalFunction';
-import { AbsFunction } from './functions/Abs';
+import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
+import { NowFunction } from './functions/Time';
+import { Alert } from './commands/Alert';
 
 export class Context {
    jsonView: JSONView
@@ -35,11 +37,15 @@ export class Context {
       this.registerNativeType(this.objectType = { type: "object", view: this.objectView });
 
       this.registerCommand("print", new Print());
-      this.registerCommand("hello", new Hello())
-      this.registerCommand("hi", new Hello())
-      this.registerCommand("assign", new Assign())
+      this.registerCommand("hello", new Hello());
+      this.registerCommand("hi", new Hello());
+      this.registerCommand("assign", new Assign());
+      this.registerCommand("alert", new Alert());
 
-      this.registerFunctions("abs", new AbsFunction())
+      this.registerFunctions("abs", new AbsFunction());
+      this.registerFunctions("round", new RoundFunction());
+      this.registerFunctions("random", new RandomFunction());
+      this.registerFunctions("now", new NowFunction());
    }
 
 
@@ -77,5 +83,9 @@ export class Context {
 
    print(model: any, type?: Type) {
       app.print(model, type);
+   }
+
+   stringify(model: any, type?: Type): string {
+      return app.stringify(model, type);
    }
 }

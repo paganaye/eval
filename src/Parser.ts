@@ -163,6 +163,13 @@ export class Parser {
 	parseParameters(parameters: any, requireClosingParenthesis: boolean) {
 		var useNamedParameters = false;
 		while (this.token.type != TokenType.EOF) {
+			if (requireClosingParenthesis
+				&& this.token.type == TokenType.Operator
+				&& this.token.stringValue == ')') {
+				this.nextToken();
+				return;
+			}
+
 			var value = this.parseExpression(Priority.None);
 			//.parseValue(this.allDelimiters);
 			if ((this.token.type == TokenType.Operator
@@ -177,11 +184,6 @@ export class Parser {
 					throw "Parameter " + (parameterNumber + 1) + " must be named.";
 				}
 				parameters[parameterNumber++] = value;
-			}
-			if (requireClosingParenthesis
-				&& this.token.type == TokenType.Operator
-				&& this.token.stringValue == ')') {
-				return;
 			}
 		}
 		if (requireClosingParenthesis) {

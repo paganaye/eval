@@ -101,6 +101,11 @@ class App {
 	print(model: any, type?: Type) {
 		this.output.print(model, type);
 	}
+
+	stringify(model: any, type?: Type) {
+		return JSON.stringify(model);
+	}
+	
 }
 
 export var app: App;

@@ -11,8 +11,8 @@ export class Tests {
 		//this.testNextChar();
 		//this.testTokenizer();
 		//this.testParser();
-		//this.testCommand();
-		this.testFunctions();
+		//this.testFunctions();
+		this.testCommands();
 	}
 
 	public testFunctions() {
@@ -26,7 +26,7 @@ export class Tests {
 		this.assertParse("AB", "\"A\" + \"B\"")
 	}
 
-	public testCommand() {
+	public testCommands() {
 		var context = new Context();
 		var parser = new Parser(context);
 
@@ -37,6 +37,9 @@ export class Tests {
 		var command = parser.parseCommand("a=1+1");
 		command.run(context);
 		this.assert(2, context.getVariable("a"));
+		debugger;
+		var command = parser.parseCommand("print abs(-1)");
+		command.run(context);
 	}
 
 	public assertCommandParser(expectedName: string, expectedParameters: any, line: string) {
