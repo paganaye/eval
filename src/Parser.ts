@@ -2,6 +2,7 @@ import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from "./CommandCall";
 import { Context } from "./Context";
 import { EvalFunction, FunctionParameter } from "./EvalFunction";
+import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject } from './Expression';
 
 // we keep the same priorities than javascript but with less operators.
 // pure function only (no assignment)
@@ -41,8 +42,8 @@ export class Parser {
 		return this.parseExpression(Priority.None);
 	}
 
-	parseLeft(priority: Priority): ExpressionNode {
-		var result: ExpressionNode;
+	parseLeft(priority: Priority): Expression {
+		var result: Expression;
 		switch (this.token.type) {
 			case TokenType.Operator:
 				var op = this.token.stringValue;
@@ -94,7 +95,7 @@ export class Parser {
 		this.unexpectedToken();
 	}
 
-	parseExpression(priority: Priority): ExpressionNode {
+	parseExpression(priority: Priority): Expression {
 		var result = this.parseLeft(priority);
 		while (this.token.type != TokenType.EOF) {
 			switch (this.token.type) {
@@ -145,7 +146,7 @@ export class Parser {
 		+ " at position " + this.token.position + "." + detail || "";
 	}
 
-	parseFunctionCall(functionName: string): ExpressionNode {
+	parseFunctionCall(functionName: string): Expression {
 		if (this.token.type !== TokenType.Operator || this.token.stringValue !== "(") {
 			this.unexpectedToken("Expected parenthesis in function call.");
 		}
@@ -208,84 +209,89 @@ export class Parser {
 		}
 	}
 
-	// parseHTMLTag(): string {
-	// 	var tags = [];
-	// 	var result = "";
-	// 	while (this.curChar) {
-	// 		if (this.curChar == "<") {
-	// 			this.nextChar();
-	// 		} else throw "Tags start with the character <."
+	// print a < p
+	// print a <p x="A">
+	// print a <br />	
+	
+	parseHTMLTag(): string {
+		return null;
+		// 	var tags = [];
+		// 	var result = "";
+		// 	while (this.curChar) {
+		// 		if (this.curChar == "<") {
+		// 			this.nextChar();
+		// 		} else throw "Tags start with the character <."
 
-	// 		var closing = (this.curChar as string == "/");
-	// 		if (closing) this.nextChar();
-	// 		var tagName = this.parseNonQuotedString(this.allDelimiters);
+		// 		var closing = (this.curChar as string == "/");
+		// 		if (closing) this.nextChar();
+		// 		var tagName = this.parseNonQuotedString(this.allDelimiters);
 
-	// 		if (closing) {
-	// 			this.skipSpaces();
-	// 			if (this.curChar as string == ">") this.nextChar();
-	// 			else throw "Invalid character " + this.curChar + " at position " + this.pos + ". Expected: >.";
+		// 		if (closing) {
+		// 			this.skipSpaces();
+		// 			if (this.curChar as string == ">") this.nextChar();
+		// 			else throw "Invalid character " + this.curChar + " at position " + this.pos + ". Expected: >.";
 
-	// 			if (tags.length == 0) throw "Invalid HTML tag at position " + this.pos;
+		// 			if (tags.length == 0) throw "Invalid HTML tag at position " + this.pos;
 
-	// 			result += "</" + tagName + ">";
-	// 			var expectedTag = tags.pop();
-	// 			if (tagName == expectedTag) {
-	// 				if (tags.length == 0) return result;
-	// 			} else throw "Invalid closing tag </" + tagName + ">. Expected </" + expectedTag + ">";
-	// 		} else {
-	// 			tags.push(tagName);
-	// 			result += "<" + tagName;
-	// 		}
-	// 		this.skipSpaces();
-	// 		var inText = false;
-	// 		var empty = false;
-	// 		while (this.curChar && !inText) {
-	// 			switch (this.curChar as string) {
-	// 				case " ":
-	// 				case "\t":
-	// 					this.nextChar();
-	// 					break;
+		// 			result += "</" + tagName + ">";
+		// 			var expectedTag = tags.pop();
+		// 			if (tagName == expectedTag) {
+		// 				if (tags.length == 0) return result;
+		// 			} else throw "Invalid closing tag </" + tagName + ">. Expected </" + expectedTag + ">";
+		// 		} else {
+		// 			tags.push(tagName);
+		// 			result += "<" + tagName;
+		// 		}
+		// 		this.skipSpaces();
+		// 		var inText = false;
+		// 		var empty = false;
+		// 		while (this.curChar && !inText) {
+		// 			switch (this.curChar as string) {
+		// 				case " ":
+		// 				case "\t":
+		// 					this.nextChar();
+		// 					break;
 
-	// 				case ">":
-	// 					this.nextChar();
-	// 					result += ">";
-	// 					inText = true;
-	// 					break;
+		// 				case ">":
+		// 					this.nextChar();
+		// 					result += ">";
+		// 					inText = true;
+		// 					break;
 
-	// 				case "/":
-	// 					this.nextChar();
-	// 					if (this.curChar as string == ">") {
-	// 						this.nextChar();
-	// 						empty = true;
-	// 						inText = true;
-	// 					}
-	// 					else throw "Unexpected character " + this.curChar + " at position " + this.pos;
-	// 					break;
+		// 				case "/":
+		// 					this.nextChar();
+		// 					if (this.curChar as string == ">") {
+		// 						this.nextChar();
+		// 						empty = true;
+		// 						inText = true;
+		// 					}
+		// 					else throw "Unexpected character " + this.curChar + " at position " + this.pos;
+		// 					break;
 
-	// 				default:
-	// 					var attributeName = this.parseNonQuotedString(this.allDelimiters);
-	// 					this.skipSpaces();
-	// 					if (this.curChar as string == "=") {
-	// 						this.nextChar();
-	// 						this.skipSpaces();
-	// 						var attributeValue = this.parseQuotedString();
-	// 						result += " " + attributeName + "=" + attributeValue;
-	// 					}
-	// 			}
-	// 		}
-	// 		// in text
-	// 		while (this.curChar && this.curChar != "<") {
-	// 			result += this.curChar;
-	// 			this.nextChar();
+		// 				default:
+		// 					var attributeName = this.parseNonQuotedString(this.allDelimiters);
+		// 					this.skipSpaces();
+		// 					if (this.curChar as string == "=") {
+		// 						this.nextChar();
+		// 						this.skipSpaces();
+		// 						var attributeValue = this.parseQuotedString();
+		// 						result += " " + attributeName + "=" + attributeValue;
+		// 					}
+		// 			}
+		// 		}
+		// 		// in text
+		// 		while (this.curChar && this.curChar != "<") {
+		// 			result += this.curChar;
+		// 			this.nextChar();
 
-	// 		}
-	// 	}
-	// 	throw "Unexpected character " + this.curChar + " at position " + this.pos;
-	// }
+		// 		}
+		// 	}
+		// 	throw "Unexpected character " + this.curChar + " at position " + this.pos;
+	}
 
 
 
-	parseJSONObject(): ExpressionNode {
+	parseJSONObject(): Expression {
 		this.nextToken();
 		var result = new JsonObject();
 		if (this.token.type as TokenType === TokenType.Operator && this.token.stringValue == "}") {
@@ -353,191 +359,3 @@ export class Parser {
 	}
 }
 
-export interface Subscriber {
-	on(publisher: Publisher);
-}
-
-export interface Publisher {
-	addSubscriber(subscriber: Subscriber): void;
-	removeSubscriber(subscriber: Subscriber): void;
-}
-
-export abstract class ExpressionNode implements Publisher, Subscriber {
-	private subscribers: Subscriber[] = [];
-	private modified: boolean = true;
-	private calculatedValue: any;
-
-	abstract recalcValue(context: Context): any;
-
-	getValue(context: Context): any {
-		if (this.modified) {
-			this.calculatedValue = this.recalcValue(context);
-			this.modified = false;
-		}
-		return this.calculatedValue;
-	}
-
-	constructor(...publishers: Publisher[]) {
-		publishers.forEach(p => p.addSubscriber(this));
-	}
-
-	addSubscriber(subscriber: Subscriber): void {
-		if (this.subscribers.filter(s => s === subscriber).length > 0) return;
-		this.subscribers.push(subscriber);
-	}
-
-	removeSubscriber(subscriber: Subscriber): void {
-		this.subscribers = this.subscribers.filter(s => s != subscriber);
-	}
-
-	protected publish() {
-		this.subscribers.forEach(s => s.on(this));
-	}
-
-	on(publisher: Publisher) {
-		if (!this.modified) {
-			this.modified = true;
-			this.publish();
-		}
-	}
-}
-
-class Const extends ExpressionNode {
-	constructor(private value: any) {
-		super();
-	}
-	recalcValue(context: Context): any {
-		return this.value;
-	}
-}
-
-class GetVariable extends ExpressionNode {
-	constructor(private variableName: any) {
-		super();
-	}
-
-	getVariableName(): string { return this.variableName; }
-	recalcValue(context: Context): any {
-		return context.getVariable(this.variableName);
-	}
-}
-
-class UnaryOp extends ExpressionNode {
-	constructor(private op1: ExpressionNode, private operator: string) {
-		super();
-	}
-	recalcValue(context: Context): any {
-		switch (this.operator) {
-			case "+":
-				return + this.op1.getValue(context);
-			case "-":
-				return - this.op1.getValue(context);
-		}
-	}
-}
-class BinaryOp extends ExpressionNode {
-	constructor(private operator: string, private op1: ExpressionNode, private op2: ExpressionNode) {
-		super();
-	}
-	recalcValue(context: Context): any {
-		switch (this.operator) {
-			case "+":
-				return this.op1.getValue(context) + this.op2.getValue(context);
-			case "-":
-				return this.op1.getValue(context) - this.op2.getValue(context);
-			case "*":
-				return this.op1.getValue(context) * this.op2.getValue(context);
-			case "/":
-				return this.op1.getValue(context) / this.op2.getValue(context);
-			case "<":
-				return this.op1.getValue(context) < this.op2.getValue(context);
-			case "<=":
-				return this.op1.getValue(context) <= this.op2.getValue(context);
-			case "==":
-				return this.op1.getValue(context) == this.op2.getValue(context);
-			case ">=":
-				return this.op1.getValue(context) >= this.op2.getValue(context);
-			case ">":
-				return this.op1.getValue(context) > this.op2.getValue(context);
-			case "!=":
-				return this.op1.getValue(context) != this.op2.getValue(context);
-		}
-	}
-}
-
-export class FunctionCall extends ExpressionNode {
-	private evalFunction: EvalFunction<any>;
-
-	constructor(private context: Context, private functionName, private parameters: { [key: string]: ExpressionNode }) {
-		super();
-		this.evalFunction = this.context.functions[functionName.toLowerCase()];
-		if (!this.evalFunction) {
-			throw "Unknown function " + functionName;
-		}
-	}
-
-	getParamValues(context: Context): any {
-		var paramValues = this.evalFunction.createParameters();
-		var keys = Object.keys(paramValues);
-
-		for (var idx in this.parameters) {
-			var paramExpression = this.parameters[idx];
-			var isNumber = /^[0-9]+$/.test(idx);
-			if (isNumber) {
-				var key = keys[idx] as string;
-			} else key = idx;
-			var actualValue = paramExpression.getValue(context);
-			var param = (paramValues[key] as FunctionParameter<any>);
-			if (param instanceof FunctionParameter) param.setValue(actualValue);
-			else throw "Parameter " + (isNumber ? (parseInt(idx) + 1).toString() : key) + " does not exist in function " + this.functionName + ".";
-		}
-		return paramValues;
-	}
-
-	recalcValue(context: Context): any {
-		var result = this.evalFunction.eval(this.context, this.getParamValues(context))
-		return result;
-	}
-}
-
-export class JsonObject extends ExpressionNode {
-	private members: { [key: string]: ExpressionNode } = {};
-
-	constructor() {
-		super();
-	}
-
-	addMember(key: string, value: ExpressionNode) {
-		this.members[key] = value;
-	}
-
-	recalcValue(context: Context): any {
-		var result = {};
-		for (var m in this.members) {
-			var value = this.members[m].getValue(context);
-			result[m] = value;
-		}
-		return result;
-	}
-}
-
-export class JsonArray extends ExpressionNode {
-	private items: ExpressionNode[] = [];
-
-	constructor() {
-		super();
-	}
-
-	addEntry(value: ExpressionNode) {
-		this.items.push(value);
-	}
-
-	recalcValue(context: Context): any {
-		var result = {};
-		for (var m in this.items) {
-			var value = this.items[m].getValue(context);
-			result[m] = value;
-		}
-		return result;
-	}
-}

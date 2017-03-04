@@ -1,11 +1,11 @@
 import { Command, CommandParameter } from "./Command";
 import { Context } from "./Context";
-import { ExpressionNode } from "./Parser";
+import { Expression } from './Expression';
 
 export class CommandCall {
    private command: Command<any>;
 
-   constructor(private context: Context, private source: string, private commandName, private parameters: { [key: string]: ExpressionNode }) {
+   constructor(private context: Context, private source: string, private commandName, private parameters: { [key: string]: Expression }) {
       this.command = this.context.commands[commandName.toLowerCase()];
       if (!this.command) {
          throw "Unknown command " + commandName;
@@ -25,7 +25,7 @@ export class CommandCall {
       return this.command;
    }
 
-   getParameters(): { [key: string]: ExpressionNode } {
+   getParameters(): { [key: string]: Expression } {
       return this.parameters;
    }
 
