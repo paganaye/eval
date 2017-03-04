@@ -1,4 +1,4 @@
-import { app } from './App';
+import { app } from "./App";
 var firebase: any;
 
 export class Database {
@@ -12,12 +12,12 @@ export class Database {
 
 
     constructor(reload: number) {
-        if (!firebase) firebase = window['firebase'];
+        if (!firebase) firebase = window["firebase"];
         if (!reload) {
             firebase.initializeApp(this.config)
         }
         var db = firebase.database().ref();
-        db.on('value', function (snap) {
+        db.on("value", function (snap) {
             console.log("database content:", JSON.stringify(snap.val()));
         });
     }

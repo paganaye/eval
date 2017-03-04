@@ -29,7 +29,7 @@ function renderWithCallback(view: string, src: any, callBack: (Node) => void): v
     }
     var result: Node | Node[] | string;
 
-    if (typeof src === 'string' && src.length > 0 && src[0] === '{') {
+    if (typeof src === "string" && src.length > 0 && src[0] === "{") {
         try {
             src = JSON.parse(src);
         } catch (e) { /* ignore */ }
@@ -97,8 +97,8 @@ export var renderAndAppend = function (view: string, src: string, parent: Node) 
 
 function fullURL(url: string): string {
     // a full URL behaves better in chrome for debugging  
-    var div = document.createElement('div');
-    var a = document.createElement('a');
+    var div = document.createElement("div");
+    var a = document.createElement("a");
     div.appendChild(a);
     a.href = url; // Ensures that the href is properly escaped
     div.innerHTML = div.innerHTML; // Run the current innerHTML back through the parser
@@ -191,7 +191,7 @@ export function getDoc(url: string, callBack: (newType: any) => void) {
                     try {
                         listener(cacheEntry.value);
                     } catch (error) {
-                        console.log('Error in getDoc callback', url);
+                        console.log("Error in getDoc callback", url);
                     }
                 }
                 delete cacheEntry.listeners;

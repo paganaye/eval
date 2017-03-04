@@ -1,6 +1,6 @@
-import { View } from '../View';
-import { Output } from '../Output';
-import { TypeDefinition } from '../Types';
+import { View } from "../View";
+import { Output } from "../Output";
+import { TypeDefinition } from "../Types";
 
 export class RomanView extends View<number> {
     render(data: number, type: TypeDefinition, output: Output): void {

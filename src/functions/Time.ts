@@ -1,6 +1,6 @@
-import { EvalFunction, FunctionParameter } from '../EvalFunction';
-import { Type } from '../Types';
-import { Context } from '../Context';
+import { EvalFunction, FunctionParameter } from "../EvalFunction";
+import { Type } from "../Types";
+import { Context } from "../Context";
 
 
 class EmptyParameters {

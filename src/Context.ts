@@ -1,16 +1,16 @@
-import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition } from './Types';
-import { app } from './App';
-import { View } from './View';
-import { Command, CommandParameter } from './Command';
-import { JSONView } from './views/JSONView';
-import { ObjectView } from './views/Object';
-import { Print } from './commands/Print';
-import { Hello } from './commands/Hello';
-import { Assign } from './commands/Assign';
-import { EvalFunction } from './EvalFunction';
-import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
-import { NowFunction } from './functions/Time';
-import { Alert } from './commands/Alert';
+import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition } from "./Types";
+import { app } from "./App";
+import { View } from "./View";
+import { Command, CommandParameter } from "./Command";
+import { JSONView } from "./views/JSONView";
+import { ObjectView } from "./views/Object";
+import { Print } from "./commands/Print";
+import { Hello } from "./commands/Hello";
+import { Assign } from "./commands/Assign";
+import { EvalFunction } from "./EvalFunction";
+import { AbsFunction, RoundFunction, RandomFunction } from "./functions/Math";
+import { NowFunction } from "./functions/Time";
+import { Alert } from "./commands/Alert";
 
 export class Context {
    jsonView: JSONView

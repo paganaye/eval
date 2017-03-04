@@ -1,4 +1,4 @@
-import { Context } from './Context';
+import { Context } from "./Context";
 
 export enum TokenType {
    Number,
@@ -48,7 +48,7 @@ export class Tokenizer {
 
 
    public skipSpaces(): void {
-      while (this.curChar === ' ' || this.curChar === '\t') {
+      while (this.curChar === " " || this.curChar === "\t") {
          this.nextChar();
       }
    }
@@ -65,31 +65,31 @@ export class Tokenizer {
 
       var startPos = this.position;
 
-      if ((this.curChar >= 'A' && this.curChar <= 'Z')
-         || (this.curChar >= 'a' && this.curChar <= 'z')
-         || (this.curChar >= '\xA0' && this.curChar <= '\uFFFF')
-         || (this.curChar === '_')
-         || (this.curChar === '$')) {
+      if ((this.curChar >= "A" && this.curChar <= "Z")
+         || (this.curChar >= "a" && this.curChar <= "z")
+         || (this.curChar >= "\xA0" && this.curChar <= "\uFFFF")
+         || (this.curChar === "_")
+         || (this.curChar === "$")) {
          var firstPosition = this.position;
          do {
             this.nextChar();
-         } while ((this.curChar >= 'A' && this.curChar <= 'Z')
-         || (this.curChar >= 'a' && this.curChar <= 'z')
-         || (this.curChar >= '\xA0' && this.curChar <= '\uFFFF')
-         || (this.curChar && this.curChar >= '0' && this.curChar <= '9')
-         || (this.curChar === '_')
-            || (this.curChar === '$'));
+         } while ((this.curChar >= "A" && this.curChar <= "Z")
+         || (this.curChar >= "a" && this.curChar <= "z")
+         || (this.curChar >= "\xA0" && this.curChar <= "\uFFFF")
+         || (this.curChar && this.curChar >= "0" && this.curChar <= "9")
+         || (this.curChar === "_")
+            || (this.curChar === "$"));
          return {
             position: startPos,
             type: TokenType.Keyword,
             stringValue: this.stringFrom(firstPosition)
          };
-      } else if ((this.curChar && this.curChar >= '0' && this.curChar <= '9') || this.curChar === '.') {
+      } else if ((this.curChar && this.curChar >= "0" && this.curChar <= "9") || this.curChar === ".") {
          var firstPosition = this.position;
-         while (this.curChar && this.curChar >= '0' && this.curChar <= '9') this.nextChar();
-         if (this.curChar === '.') {
+         while (this.curChar && this.curChar >= "0" && this.curChar <= "9") this.nextChar();
+         if (this.curChar === ".") {
             this.nextChar();
-            while (this.curChar && this.curChar >= '0' && this.curChar <= '9') this.nextChar();
+            while (this.curChar && this.curChar >= "0" && this.curChar <= "9") this.nextChar();
             return {
                position: startPos,
                type: TokenType.Number,
@@ -102,12 +102,12 @@ export class Tokenizer {
                numberValue: parseInt(this.stringFrom(firstPosition))
             };
          }
-      } else if ((this.curChar === '+') || (this.curChar === '-')
-         || (this.curChar === '*') || (this.curChar === '/') 
-         || (this.curChar === ':') || (this.curChar === ',') 
-         || (this.curChar === '(') || (this.curChar === ')') 
-         || (this.curChar === '[') || (this.curChar === ']') 
-         || (this.curChar === '{') || (this.curChar === '}')) {
+      } else if ((this.curChar === "+") || (this.curChar === "-")
+         || (this.curChar === "*") || (this.curChar === "/") 
+         || (this.curChar === ":") || (this.curChar === ",") 
+         || (this.curChar === "(") || (this.curChar === ")") 
+         || (this.curChar === "[") || (this.curChar === "]") 
+         || (this.curChar === "{") || (this.curChar === "}")) {
          var op = this.curChar;
          this.nextChar();
          return {
@@ -115,11 +115,11 @@ export class Tokenizer {
             type: TokenType.Operator,
             stringValue: op
          };
-      } else if ((this.curChar === '<') || (this.curChar === '>')) {
+      } else if ((this.curChar === "<") || (this.curChar === ">")) {
          var op = this.curChar;
          this.nextChar();
-         if (this.curChar as string === '=') {
-            op += '=';
+         if (this.curChar as string === "=") {
+            op += "=";
             this.nextChar();
          }
          return {
@@ -127,11 +127,11 @@ export class Tokenizer {
             type: TokenType.Operator,
             stringValue: op
          };
-      } else if (this.curChar === '!') {
+      } else if (this.curChar === "!") {
          var op = this.curChar;
          this.nextChar();
-         if (this.curChar as string === '=') {
-            op += '=';
+         if (this.curChar as string === "=") {
+            op += "=";
             this.nextChar();
          }
          return {
@@ -139,11 +139,11 @@ export class Tokenizer {
             type: TokenType.Operator,
             stringValue: op
          };
-      } else if (this.curChar === '=') {
+      } else if (this.curChar === "=") {
          var op = this.curChar;
          this.nextChar();
-         if (this.curChar as string === '=') {
-            op += '=';
+         if (this.curChar as string === "=") {
+            op += "=";
             this.nextChar();
          }
          return {
@@ -151,7 +151,7 @@ export class Tokenizer {
             type: TokenType.Operator,
             stringValue: op
          };
-      } else if (this.curChar === '&' || this.curChar === '|') {
+      } else if (this.curChar === "&" || this.curChar === "|") {
          var op = this.curChar;
          this.nextChar();
          if (this.curChar as string == op) {
@@ -176,7 +176,7 @@ export class Tokenizer {
                };
                this.nextChar();
                return result;
-            } else if (this.curChar as string === '\\') {
+            } else if (this.curChar as string === "\\") {
                this.nextChar();
                if (this.curChar) this.nextChar();
             } else {

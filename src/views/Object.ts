@@ -1,6 +1,6 @@
-import { View } from '../View';
-import { Output } from '../Output';
-import { TypeDefinition, ObjectDefinition } from '../Types';
+import { View } from "../View";
+import { Output } from "../Output";
+import { TypeDefinition, ObjectDefinition } from "../Types";
 
 export class ObjectView extends View<any> {
     render(data: any, type: TypeDefinition, output: Output): void {

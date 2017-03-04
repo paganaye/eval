@@ -1,13 +1,13 @@
-import 'jquery';
-import { EvalConsole } from './EvalConsole';
-import { Database } from './Database';
-import { View } from './View';
-import { Output } from './Output';
-import { TypeDefinition, Type } from './Types';
-import { Tests } from './Tests';
-import { Context } from './Context';
-import { RomanView } from './views/Roman';
-import { YoutubeView } from './views/Youtube';
+import "jquery";
+import { EvalConsole } from "./EvalConsole";
+import { Database } from "./Database";
+import { View } from "./View";
+import { Output } from "./Output";
+import { TypeDefinition, Type } from "./Types";
+import { Tests } from "./Tests";
+import { Context } from "./Context";
+import { RomanView } from "./views/Roman";
+import { YoutubeView } from "./views/Youtube";
 
 class App {
 	evalConsole: EvalConsole;
@@ -46,7 +46,7 @@ class App {
 
 
 		this.output = new Output(this.context);
-		this.output1 = document.getElementById('output1') as HTMLDivElement;
+		this.output1 = document.getElementById("output1") as HTMLDivElement;
 		this.output1.innerHTML = "";
 	}
 
@@ -57,7 +57,7 @@ class App {
 	}
 
 	initConsole() {
-		var consoleElt = document.getElementById('console1') as HTMLElement;
+		var consoleElt = document.getElementById("console1") as HTMLElement;
 		if (consoleElt) {
 			consoleElt.remove();
 		}

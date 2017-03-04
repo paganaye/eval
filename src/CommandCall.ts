@@ -1,6 +1,6 @@
-import { Command, CommandParameter } from './Command';
-import { Context } from './Context';
-import { ExpressionNode } from './Parser';
+import { Command, CommandParameter } from "./Command";
+import { Context } from "./Context";
+import { ExpressionNode } from "./Parser";
 
 export class CommandCall {
    private command: Command<any>;

@@ -1,4 +1,4 @@
-import { Context } from './Context';
+import { Context } from "./Context";
 
 export abstract class EvalFunction<TParameters> {
    abstract createParameters(): TParameters;

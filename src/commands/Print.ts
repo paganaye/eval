@@ -1,6 +1,6 @@
-import { Command, CommandParameter } from '../Command';
-import { Type } from '../Types';
-import { Context } from '../Context';
+import { Command, CommandParameter } from "../Command";
+import { Type } from "../Types";
+import { Context } from "../Context";
 
 class PrintParameters {
    model = new CommandParameter<any>();

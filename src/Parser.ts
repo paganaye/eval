@@ -1,7 +1,7 @@
 import { Tokenizer, Token, TokenType } from './Tokenizer';
-import { CommandCall } from './CommandCall';
-import { Context } from './Context';
-import { EvalFunction, FunctionParameter } from './EvalFunction';
+import { CommandCall } from "./CommandCall";
+import { Context } from "./Context";
+import { EvalFunction, FunctionParameter } from "./EvalFunction";
 
 // we keep the same priorities than javascript but with less operators.
 // pure function only (no assignment)
@@ -47,21 +47,27 @@ export class Parser {
 			case TokenType.Operator:
 				var op = this.token.stringValue;
 				switch (this.token.stringValue) {
-					case '+':
-					case '-':
+					case "+":
+					case "-":
 						this.nextToken();
 						result = new UnaryOp(this.parseLeft(Priority.UnaryPlusMinus), op);
 						return result;
-					case '(':
+					case "(":
 						this.nextToken();
 						result = this.parseExpression(Priority.None);
 						if (this.token.type == TokenType.Operator
-							&& this.token.stringValue as string == ')') {
+							&& this.token.stringValue as string == ")") {
 							this.nextToken();
 							return result;
 						}
 						this.unexpectedToken("Expecting closing parenthesis.");
 						break;
+					case "{":
+						result = this.parseJSONObject();
+						return result;
+					case "[":
+						result = this.parseJSONArray();
+						return result;
 					default:
 						this.unexpectedToken("Only + and - operator are tolerated.");
 						break;
@@ -94,26 +100,26 @@ export class Parser {
 			switch (this.token.type) {
 				case TokenType.Operator:
 					var op = this.token.stringValue;
-					if (op == '=') op = '==';
+					if (op == "=") op = "==";
 					switch (op) {
-						case '+':
-						case '-':
+						case "+":
+						case "-":
 							if (priority >= Priority.Addition) return result;
 							this.nextToken();
 							result = new BinaryOp(op, result, this.parseExpression(Priority.Addition));
 							break;
-						case '*':
-						case '/':
+						case "*":
+						case "/":
 							if (priority >= Priority.Multiplication) return result;
 							this.nextToken();
 							result = new BinaryOp(op, result, this.parseExpression(Priority.Multiplication));
 							break;
-						case '<':
-						case '<=':
-						case '==':
-						case '>=':
-						case '>':
-						case '!=':
+						case "<":
+						case "<=":
+						case "==":
+						case ">=":
+						case ">":
+						case "!=":
 							if (priority >= Priority.Comparison) return result;
 							this.nextToken();
 							result = new BinaryOp(op, result, this.parseExpression(Priority.Comparison));
@@ -160,11 +166,11 @@ export class Parser {
 		}
 		var commandName = this.token.stringValue;
 		this.nextToken();
-		if (this.token.type === TokenType.Operator && this.token.stringValue == '=') {
+		if (this.token.type === TokenType.Operator && this.token.stringValue == "=") {
 			// variable assignment
 			this.nextToken();
 			parameters[0] = new Const(commandName);
-			commandName = 'assign'
+			commandName = "assign"
 		}
 		this.parseParameters(parameters, false);
 		return new CommandCall(this.context, expression, commandName, parameters);
@@ -175,7 +181,7 @@ export class Parser {
 		while (this.token.type != TokenType.EOF) {
 			if (requireClosingParenthesis
 				&& this.token.type == TokenType.Operator
-				&& this.token.stringValue == ')') {
+				&& this.token.stringValue == ")") {
 				this.nextToken();
 				return;
 			}
@@ -183,7 +189,7 @@ export class Parser {
 			var value = this.parseExpression(Priority.None);
 			//.parseValue(this.allDelimiters);
 			if ((this.token.type == TokenType.Operator
-				&& this.token.stringValue == ':')
+				&& this.token.stringValue == ":")
 				&& value instanceof (GetVariable)) {
 				useNamedParameters = true;
 				var parameterName = (value as GetVariable).getVariableName();
@@ -206,17 +212,17 @@ export class Parser {
 	// 	var tags = [];
 	// 	var result = "";
 	// 	while (this.curChar) {
-	// 		if (this.curChar == '<') {
+	// 		if (this.curChar == "<") {
 	// 			this.nextChar();
 	// 		} else throw "Tags start with the character <."
 
-	// 		var closing = (this.curChar as string == '/');
+	// 		var closing = (this.curChar as string == "/");
 	// 		if (closing) this.nextChar();
 	// 		var tagName = this.parseNonQuotedString(this.allDelimiters);
 
 	// 		if (closing) {
 	// 			this.skipSpaces();
-	// 			if (this.curChar as string == '>') this.nextChar();
+	// 			if (this.curChar as string == ">") this.nextChar();
 	// 			else throw "Invalid character " + this.curChar + " at position " + this.pos + ". Expected: >.";
 
 	// 			if (tags.length == 0) throw "Invalid HTML tag at position " + this.pos;
@@ -235,20 +241,20 @@ export class Parser {
 	// 		var empty = false;
 	// 		while (this.curChar && !inText) {
 	// 			switch (this.curChar as string) {
-	// 				case ' ':
-	// 				case '\t':
+	// 				case " ":
+	// 				case "\t":
 	// 					this.nextChar();
 	// 					break;
 
-	// 				case '>':
+	// 				case ">":
 	// 					this.nextChar();
 	// 					result += ">";
 	// 					inText = true;
 	// 					break;
 
-	// 				case '/':
+	// 				case "/":
 	// 					this.nextChar();
-	// 					if (this.curChar as string == '>') {
+	// 					if (this.curChar as string == ">") {
 	// 						this.nextChar();
 	// 						empty = true;
 	// 						inText = true;
@@ -259,7 +265,7 @@ export class Parser {
 	// 				default:
 	// 					var attributeName = this.parseNonQuotedString(this.allDelimiters);
 	// 					this.skipSpaces();
-	// 					if (this.curChar as string == '=') {
+	// 					if (this.curChar as string == "=") {
 	// 						this.nextChar();
 	// 						this.skipSpaces();
 	// 						var attributeValue = this.parseQuotedString();
@@ -268,7 +274,7 @@ export class Parser {
 	// 			}
 	// 		}
 	// 		// in text
-	// 		while (this.curChar && this.curChar != '<') {
+	// 		while (this.curChar && this.curChar != "<") {
 	// 			result += this.curChar;
 	// 			this.nextChar();
 
@@ -277,62 +283,74 @@ export class Parser {
 	// 	throw "Unexpected character " + this.curChar + " at position " + this.pos;
 	// }
 
-	// parseJSONObject(): any {
-	// 	this.nextChar();
-	// 	var result = {};
-	// 	if (this.curChar == '}') {
-	// 		this.nextChar();
-	// 		return result;
-	// 	}
-	// 	while (this.curChar) {
-	// 		var propertyName = this.parseString(this.allDelimiters);
-	// 		if (propertyName in result) {
-	// 			throw "Propery " + propertyName + " is already defined at position " + this.pos;
-	// 		}
-	// 		if (this.curChar != ':') {
-	// 			throw "Missing character : at position " + this.pos;
-	// 		}
-	// 		this.nextChar();
-	// 		var value = this.parseValue(this.allDelimiters);
-	// 		result[propertyName] = value;
-	// 		switch (this.curChar as string) {
-	// 			case ',':
-	// 				this.nextChar();
-	// 				break;
-	// 			case '}':
-	// 				this.nextChar();
-	// 				return result;
-	// 			default:
-	// 				throw "Unexpected character " + this.curChar + " at position " + this.pos;
-	// 		}
-	// 	}
-	// 	throw "Unexpected end of line at postion " + this.pos;
-	// }
 
-	// parseJSONArray(): any {
-	// 	this.nextChar();
-	// 	var result = [];
-	// 	if (this.curChar == ']') {
-	// 		this.nextChar();
-	// 		return result;
-	// 	}
-	// 	while (this.curChar) {
-	// 		var value = this.parseValue(this.allDelimiters);
-	// 		result.push(value);
-	// 		switch (this.curChar as string) {
-	// 			case ',':
-	// 				this.nextChar();
-	// 				break;
-	// 			case ']':
-	// 				this.nextChar();
-	// 				return result;
-	// 			default:
-	// 				throw "Unexpected character " + this.curChar + " at position " + this.pos;
-	// 		}
-	// 	}
-	// 	throw "Unexpected end of line at postion " + this.pos;
-	// }
 
+	parseJSONObject(): ExpressionNode {
+		this.nextToken();
+		var result = new JsonObject();
+		if (this.token.type as TokenType === TokenType.Operator && this.token.stringValue == "}") {
+			this.nextToken();
+			return result;
+		}
+		while (this.token.type !== TokenType.EOF) {
+			switch (this.token.type) {
+				case TokenType.String:
+				case TokenType.Keyword:
+					var propertyName = this.token.stringValue;
+					this.nextToken();
+					if (this.token.type as TokenType == TokenType.Operator && this.token.stringValue == ":") {
+						this.nextToken();
+						var value = this.parseExpression(Priority.None);
+						result.addMember(propertyName, value)
+					} else {
+						this.unexpectedToken("Missing colon character ':'.");
+					}
+					break;
+				case TokenType.Operator:
+					var op = this.token.stringValue;
+
+					switch (op) {
+						case ',':
+							this.nextToken();
+							break;
+						case '}':
+							this.nextToken();
+							return result;
+					}
+					break;
+				default:
+					this.unexpectedToken("Invalid JSON object");
+			}
+		}
+		this.unexpectedToken("Missing character '}'.");
+	}
+
+	parseJSONArray(): any {
+		this.nextToken();
+		var result = new JsonArray();
+		if (this.token.type as TokenType === TokenType.Operator && this.token.stringValue == "}") {
+			this.nextToken();
+			return result;
+		}
+		while (this.token.type != TokenType.EOF) {
+			var value = this.parseExpression(Priority.None);
+			result.addEntry(value);
+			switch (this.token.type) {
+				case TokenType.Operator:
+					var op = this.token.stringValue;
+					switch (op) {
+						case ',':
+							this.nextToken();
+							break;
+						case ']':
+							this.nextToken();
+							return result;
+					}
+					break;
+			}
+		}
+		this.unexpectedToken("Missing character ']'.");
+	}
 }
 
 export abstract class ExpressionNode {
@@ -365,9 +383,9 @@ class UnaryOp extends ExpressionNode {
 	}
 	getValue(context: Context): any {
 		switch (this.operator) {
-			case '+':
+			case "+":
 				return + this.op1.getValue(context);
-			case '-':
+			case "-":
 				return - this.op1.getValue(context);
 		}
 	}
@@ -378,25 +396,25 @@ class BinaryOp extends ExpressionNode {
 	}
 	getValue(context: Context): any {
 		switch (this.operator) {
-			case '+':
+			case "+":
 				return this.op1.getValue(context) + this.op2.getValue(context);
-			case '-':
+			case "-":
 				return this.op1.getValue(context) - this.op2.getValue(context);
-			case '*':
+			case "*":
 				return this.op1.getValue(context) * this.op2.getValue(context);
-			case '/':
+			case "/":
 				return this.op1.getValue(context) / this.op2.getValue(context);
-			case '<':
+			case "<":
 				return this.op1.getValue(context) < this.op2.getValue(context);
-			case '<=':
+			case "<=":
 				return this.op1.getValue(context) <= this.op2.getValue(context);
-			case '==':
+			case "==":
 				return this.op1.getValue(context) == this.op2.getValue(context);
-			case '>=':
+			case ">=":
 				return this.op1.getValue(context) >= this.op2.getValue(context);
-			case '>':
+			case ">":
 				return this.op1.getValue(context) > this.op2.getValue(context);
-			case '!=':
+			case "!=":
 				return this.op1.getValue(context) != this.op2.getValue(context);
 		}
 	}
@@ -433,6 +451,48 @@ export class FunctionCall extends ExpressionNode {
 
 	getValue(context: Context): any {
 		var result = this.evalFunction.eval(this.context, this.getParamValues(context))
+		return result;
+	}
+}
+
+export class JsonObject extends ExpressionNode {
+	private members: { [key: string]: ExpressionNode } = {};
+
+	constructor() {
+		super();
+	}
+
+	addMember(key: string, value: ExpressionNode) {
+		this.members[key] = value;
+	}
+
+	getValue(context: Context): any {
+		var result = {};
+		for (var m in this.members) {
+			var value = this.members[m].getValue(context);
+			result[m] = value;
+		}
+		return result;
+	}
+}
+
+export class JsonArray extends ExpressionNode {
+	private items: ExpressionNode[] = [];
+
+	constructor() {
+		super();
+	}
+
+	addEntry(value: ExpressionNode) {
+		this.items.push(value);
+	}
+
+	getValue(context: Context): any {
+		var result = {};
+		for (var m in this.items) {
+			var value = this.items[m].getValue(context);
+			result[m] = value;
+		}
 		return result;
 	}
 }

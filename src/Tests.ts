@@ -1,7 +1,7 @@
-import { EvalConsole } from './EvalConsole';
-import { Tokenizer, TokenType } from './Tokenizer';
-import { Parser, Priority } from './Parser';
-import { Context } from './Context';
+import { EvalConsole } from "./EvalConsole";
+import { Tokenizer, TokenType } from "./Tokenizer";
+import { Parser, Priority } from "./Parser";
+import { Context } from "./Context";
 
 export class Tests {
 	constructor(private console: EvalConsole) { }
@@ -97,12 +97,12 @@ export class Tests {
 			this.assert(3, () => 1 + 2, "1 + 2");
 
 			// var commandParser = this.console.commandParser;
-			// var commandCall = commandParser.parse("myCommand 1 true 'A' n1:\"C D\" \"n2\":{}");
+			// var commandCall = commandParser.parse("myCommand 1 true "A" n1:\"C D\" \"n2\":{}");
 			// this.console.echo(commandCall.getSource());
 			// this.assert("myCommand", commandCall.getCommand().getName())
 
 			// this.assertCommandParser("cmd1", { 0: 1, 1: true, 2: "A", 3: "B" },
-			// 	"cmd1 1 true 'A' \"B\"");
+			// 	"cmd1 1 true "A" \"B\"");
 			// this.assertCommandParser("cmd2", { "n1": "C D", "n2": {} },
 			// 	"cmd2 n1:\"C D\" \"n2\":{}");
 			// this.assertCommandParser("cmd3", { 0: "<p>Hello World</p>" },
@@ -117,7 +117,7 @@ export class Tests {
 	public assert(expected, actual, message?: string) {
 		if (!message) message = "";
 		var expectedJSON = JSON.stringify(expected);
-		if (typeof actual == 'function') {
+		if (typeof actual == "function") {
 			try {
 				actual = actual(message);
 			} catch (e) {

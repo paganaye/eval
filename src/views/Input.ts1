@@ -12,7 +12,7 @@ class InputView extends Docs.View<IInput> {
     };
 
     renderButton(container: HTMLElement, label: string, callback: () => void): HTMLButtonElement {
-        var btn = document.createElement('button');
+        var btn = document.createElement("button");
         btn.innerText = label;
         btn.onclick = callback;
         container.appendChild(btn);
@@ -51,7 +51,7 @@ class InputView extends Docs.View<IInput> {
                     nextSibling = nextSibling.nextSibling;
                     $(li).slideUp("fast", () => {
                         ol.insertBefore(li, nextSibling);
-                        $(li).slideDown('fast');
+                        $(li).slideDown("fast");
                     });
                 }
             });
@@ -81,7 +81,7 @@ class InputView extends Docs.View<IInput> {
     }
 
     renderField(appendChild: (Node) => void, label: string | undefined, type: TypeDefinition | undefined, value: any): HTMLElement {
-        var container: HTMLDivElement = document.createElement('div');
+        var container: HTMLDivElement = document.createElement("div");
         container.classList.add("doc-input");
         appendChild(container);
 
@@ -93,24 +93,24 @@ class InputView extends Docs.View<IInput> {
         }
         if (type == null) {
             switch (typeof value) {
-                case 'string':
-                    var stringDefinition: StringDefinition = { type: 'string', mandatory: false };
+                case "string":
+                    var stringDefinition: StringDefinition = { type: "string", mandatory: false };
                     type = stringDefinition;
                     break;
-                case 'number':
-                    var numberDefinition: NumberDefinition = { type: 'number', mandatory: false };
+                case "number":
+                    var numberDefinition: NumberDefinition = { type: "number", mandatory: false };
                     type = numberDefinition;
                     break;
-                case 'boolean':
-                    var booleanDefinition: BooleanDefinition = { type: 'boolean', mandatory: false };
+                case "boolean":
+                    var booleanDefinition: BooleanDefinition = { type: "boolean", mandatory: false };
                     type = booleanDefinition;
                     break;
                 default:
                     if (Array.isArray(value)) {
-                        var arrayDefinition: ArrayDefinition = { type: 'array', entryType: { type: 'object' } };
+                        var arrayDefinition: ArrayDefinition = { type: "array", entryType: { type: "object" } };
               renderField          type = arrayDefinition;
                     } else {
-                        var objectDefinition: ObjectDefinition = { type: 'object', properties: [] };
+                        var objectDefinition: ObjectDefinition = { type: "object", properties: [] };
                         type = objectDefinition;
                     }
                     break;
@@ -153,7 +153,7 @@ class InputView extends Docs.View<IInput> {
                         arr = [value];
                     }
                 }
-                var ol = document.createElement('ol');
+                var ol = document.createElement("ol");
                 container.appendChild(ol);
 
                 for (var i = 0; i < arr.length; i++) {
@@ -169,7 +169,7 @@ class InputView extends Docs.View<IInput> {
                         var newInstance = undefined;
                         arr.push(newInstance);
                         var li = this.renderArrayEntry(ol, null, arr, arr.length - 1, type);
-                        $(li).hide().slideDown('fast');
+                        $(li).hide().slideDown("fast");
                     });
                 }
                 break;
@@ -212,12 +212,12 @@ class InputView extends Docs.View<IInput> {
     }
 
     renderSelect(container: HTMLElement, value: string, type: EnumDefinition) {
-        console.log('renderSelect', type);
-        var select = document.createElement('select');
+        console.log("renderSelect", type);
+        var select = document.createElement("select");
         container.appendChild(select);
         var found = false;
         for (var entry of type.entries) {
-            var option = document.createElement('option');
+            var option = document.createElement("option");
             option.value = entry.key;
             option.innerText = entry.label || entry.key;
             if (!found && entry.key === value) {
@@ -227,14 +227,14 @@ class InputView extends Docs.View<IInput> {
             select.appendChild(option);
         }
         if (!found) {
-            var option = document.createElement('option');
+            var option = document.createElement("option");
             option.value = value;
             option.innerText = value;
             option.selected = true;
             select.insertBefore(option, select.firstChild);
         }
         if (!type.mandatory && value !== "") {
-            var option = document.createElement('option');
+            var option = document.createElement("option");
             option.value = "";
             option.innerText = "";
             select.insertBefore(option, select.firstChild);
@@ -270,7 +270,7 @@ class InputView extends Docs.View<IInput> {
         input.type = inputType;
         container.classList.add("doc-type-" + inputType);
 
-        if (inputType === 'checkbox') {
+        if (inputType === "checkbox") {
             input.checked = !!value;
         } else {
             if (value !== undefined) input.defaultValue = value.toString();

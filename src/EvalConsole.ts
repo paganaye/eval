@@ -1,8 +1,8 @@
-import { Parser } from './Parser';
-import { Tests } from './Tests';
-import { Context } from './Context';
-import { CommandParameter } from './Command';
-import { app } from './App';
+import { Parser } from "./Parser";
+import { Tests } from "./Tests";
+import { Context } from "./Context";
+import { CommandParameter } from "./Command";
+import { app } from "./App";
 
 export class EvalConsole {
    parser: Parser;
@@ -28,14 +28,14 @@ export class EvalConsole {
    }
 
    public initialize(): HTMLElement {
-      var elt = document.createElement('div');
+      var elt = document.createElement("div");
       this.terminal = ($(elt) as any).terminal(
          (cmd) => this.processCommand(cmd),
          {
-            greetings: 'Eval v1.0',
-            name: 'eval',
-            prompt: '$ ',
-            height: '180px'
+            greetings: "Eval v1.0",
+            name: "eval",
+            prompt: "$ ",
+            height: "180px"
          });
       this.parser = new Parser(this.context);
       this.originalConsole = (window as any).console;

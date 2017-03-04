@@ -1,10 +1,10 @@
-import { app } from './App';
-import { YoutubeView } from './views/Youtube';
-import { ObjectView } from './views/Object';
-import { JSONView } from './views/JSONView';
-import { TypeDefinition, Type } from './Types';
-import { View } from './View';
-import { Context } from './Context';
+import { app } from "./App";
+import { YoutubeView } from "./views/Youtube";
+import { ObjectView } from "./views/Object";
+import { JSONView } from "./views/JSONView";
+import { TypeDefinition, Type } from "./Types";
+import { View } from "./View";
+import { Context } from "./Context";
 
 
 export class Output {
@@ -34,14 +34,14 @@ export class Output {
 	printTag(tag: string, attributes: any, content?: string) {
 		this.html.push("<" + tag);
 		for (var key in attributes) {
-			this.html.push(' ' + key + '="' + Output.escapeAttribute(attributes[key]) + '"');
+			this.html.push(" " + key + "=\"" + Output.escapeAttribute(attributes[key]) + "\"");
 		}
 		if (content || !Output.selfClosing[tag.toLowerCase()]) {
-			this.html.push('>');
+			this.html.push(">");
 			this.html.push(Output.escapeHtml(content));
-			this.html.push('</' + tag + '>');
+			this.html.push("</" + tag + ">");
 		} else {
-			this.html.push(' />');
+			this.html.push(" />");
 		}
 	}
 
@@ -66,29 +66,29 @@ export class Output {
 	}
 
 	static selfClosing = {
-		'area': true,
-		'base': true,
-		'br': true,
-		'col': true,
-		'command': true,
-		'embed': true,
-		'hr': true,
-		'img': true,
-		'input': true,
-		'keygen': true,
-		'link': true,
-		'meta': true,
-		'param': true,
-		'source': true,
-		'track': true,
-		'wbr': true
+		"area": true,
+		"base": true,
+		"br": true,
+		"col": true,
+		"command": true,
+		"embed": true,
+		"hr": true,
+		"img": true,
+		"input": true,
+		"keygen": true,
+		"link": true,
+		"meta": true,
+		"param": true,
+		"source": true,
+		"track": true,
+		"wbr": true
 	}
 
 	static entityMap = {
-		'&': '&amp;',
-		'<': '&lt;',
-		'>': '&gt;',
-		'"': '&quot;'
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		"\"": "&quot;"
 	};
 
 	static escapeHtml(string) {
