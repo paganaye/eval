@@ -2,21 +2,6 @@ import { EvalFunction, ParameterDefinition } from '../EvalFunction';
 // import { Type } from "../Types";
 import { Eval } from "../Eval";
 
-// class SingleNumberParameter {
-//    arg1 = new FunctionParameter<number>();
-// }
-
-// export class AbsFunction extends EvalFunction<SingleNumberParameter> {
-//    createParameters() {
-//       return new SingleNumberParameter();
-//    }
-
-//    evalContext(evalContext: Eval, parameters: SingleNumberParameter) {
-//       var result = parameters.arg1.getValue(evalContext);
-//       return Math.abs(result);
-//    }
-// }
-
 export class AbsFunction extends EvalFunction<Number> {
    private arg1: number;
 
@@ -29,29 +14,27 @@ export class AbsFunction extends EvalFunction<Number> {
    }
 }
 
-// export class RoundFunction extends EvalFunction<SingleNumberParameter> {
-//    createParameters() {
-//       return new SingleNumberParameter();
-//    }
+export class RoundFunction extends EvalFunction<Number> {
+   private arg1: number;
 
-//    evalContext(evalContext: Eval, parameters: SingleNumberParameter) {
-//       var result = parameters.arg1.getValue(evalContext);
-//       return Math.round(result);
-//    }
-// }
+   getParameters(): ParameterDefinition[] {
+      return [{ name: "arg1", type: "number" }];
+   }
 
-// class RandomParameters {
-//    value: Number = Math.random();
-// }
+   calcValue(evalContext: Eval): number {
+      return Math.round(this.arg1)
+   }
+}
 
-// export class RandomFunction extends EvalFunction<RandomParameters> {
+export class RandomFunction extends EvalFunction<Number> {
+   value: Number = Math.random();
 
-//    createParameters() {
-//       return new RandomParameters();
-//    }
+   getParameters(): ParameterDefinition[] {
+      return [];
+   }
 
-//    evalContext(evalContext: Eval, parameters: RandomParameters) {
-//       return parameters.value;
-//    }
-// }
+   calcValue(evalContext: Eval) {
+      return this.value;
+   }
+}
 

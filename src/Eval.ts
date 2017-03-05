@@ -7,9 +7,8 @@ import { Print } from "./commands/Print";
 import { Hello } from "./commands/Hello";
 import { Assign } from "./commands/Assign";
 import { EvalFunction } from "./EvalFunction";
-//import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
-import { AbsFunction } from './functions/Math';
-//import { NowFunction } from "./functions/Time";
+import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
+import { NowFunction } from './functions/Time';
 import { Alert } from "./commands/Alert";
 import { Expression } from './Expression';
 import { Output } from './Output';
@@ -48,9 +47,9 @@ export class Eval {
       this.registerCommand("alert", () => new Alert());
 
       this.registerFunctions("abs", () => new AbsFunction());
-      // this.registerFunctions("round", () => new RoundFunction());
-      // this.registerFunctions("random", () => new RandomFunction());
-      // this.registerFunctions("now", () => new NowFunction());
+      this.registerFunctions("round", () => new RoundFunction());
+      this.registerFunctions("random", () => new RandomFunction());
+      this.registerFunctions("now", () => new NowFunction());
 
    }
 

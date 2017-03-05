@@ -3,17 +3,14 @@ import { Type } from "../Types";
 import { Eval } from "../Eval";
 
 
-class EmptyParameters {
+export class NowFunction extends EvalFunction<number> {
+
+   getParameters(): ParameterDefinition[] {
+      return [];
+   }
+
+   calcValue(evalContext: Eval): number {
+      return new Date().getTime();
+   }
 }
-
-// export class NowFunction extends EvalFunction<EmptyParameters> {
-   
-//    createParameters() {
-//       return new EmptyParameters();
-//    }
-
-//    evalContext(evalContext: Eval, parameters: EmptyParameters) {
-//       return new Date().getTime();
-//    }
-// }
 
