@@ -3,8 +3,8 @@ import { Output } from "../Output";
 import { TypeDefinition } from "../Types";
 
 export class JSONView extends View<any> {
-   render(model: any, type: TypeDefinition, output: Output): void {
-      var text = JSON.stringify(model);
+   render(expr: any, type: TypeDefinition, output: Output): void {
+      var text = JSON.stringify(expr);
       output.printText(text);
    }
 }

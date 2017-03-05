@@ -1,22 +1,18 @@
-import { Command, CommandParameter } from "../Command";
+import { Command } from "../Command";
 import { Type } from "../Types";
 import { Context } from "../Context";
+import { ParameterDefinition } from '../EvalFunction';
 
-class AlertParameters {
-   model = new CommandParameter<any>();
-   type = new CommandParameter<Type>();
-}
+export class Alert extends Command {
+   private data: string;
+   private type: Type;
 
-export class Alert extends Command<AlertParameters> {
-
-   createParameters() {
-      return new AlertParameters();
+   getParameters(): ParameterDefinition[] {
+      return [{ name: "data", type: "string" }];
    }
 
-   run(context: Context, parameters: AlertParameters) {
-      var model = parameters.model.getValue(context);
-      var type = parameters.type.getValue(context);
-      alert(context.stringify(model, type));
+   run(context: Context) {
+      alert(this.data);
    }
 }
 

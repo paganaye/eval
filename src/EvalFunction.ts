@@ -1,21 +1,13 @@
 import { Context } from "./Context";
+import { Subscriber, Expression } from './Expression';
+import { Type } from './Types';
 
-export abstract class EvalFunction<TParameters> {
-   abstract createParameters(): TParameters;
-   abstract eval(context: Context, parameters: TParameters): any;
+export abstract class EvalFunction<T> {
+   abstract getParameters(): ParameterDefinition[];
+   abstract calcValue(context: Context): T;
 }
 
-export class FunctionParameter<T> {
-   value: T;
-
-   public constructor(private options?: any) {
-   }
-
-   getValue(context: Context): T {
-      return this.value;
-   }
-
-   setValue(newValue: T) {
-      this.value = newValue;
+export class ParameterDefinition {
+   constructor(readonly name: string, readonly type: Type, readonly description?: string) {
    }
 }

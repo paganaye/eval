@@ -1,24 +1,26 @@
 import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition } from "./Types";
 import { app } from "./App";
 import { View } from "./View";
-import { Command, CommandParameter } from "./Command";
+import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
 import { ObjectView } from "./views/Object";
 import { Print } from "./commands/Print";
 import { Hello } from "./commands/Hello";
 import { Assign } from "./commands/Assign";
 import { EvalFunction } from "./EvalFunction";
-import { AbsFunction, RoundFunction, RandomFunction } from "./functions/Math";
-import { NowFunction } from "./functions/Time";
+//import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
+import { AbsFunction } from './functions/Math';
+//import { NowFunction } from "./functions/Time";
 import { Alert } from "./commands/Alert";
+import { Expression } from './Expression';
 
 export class Context {
    jsonView: JSONView
    objectView: JSONView
 
    types: { [key: string]: TypeDefinition } = {};
-   commands: { [key: string]: Command<any> } = {};
-   functions: { [key: string]: EvalFunction<any> } = {};
+   commands: { [key: string]: (Context) => Command } = {};
+   functions: { [key: string]: (Context) => EvalFunction<any> } = {};
    variables: { [key: string]: any } = {};
 
    booleanType: BooleanDefinition;
@@ -36,25 +38,25 @@ export class Context {
       this.registerNativeType(this.numberType = { type: "number", view: this.jsonView });
       this.registerNativeType(this.objectType = { type: "object", view: this.objectView });
 
-      this.registerCommand("print", new Print());
-      this.registerCommand("hello", new Hello());
-      this.registerCommand("hi", new Hello());
-      this.registerCommand("assign", new Assign());
-      this.registerCommand("alert", new Alert());
+      this.registerCommand("print", () => new Print());
+      this.registerCommand("hello", () => new Hello());
+      this.registerCommand("hi", () => new Hello());
+      this.registerCommand("assign", () => new Assign());
+      this.registerCommand("alert", () => new Alert());
 
-      this.registerFunctions("abs", new AbsFunction());
-      this.registerFunctions("round", new RoundFunction());
-      this.registerFunctions("random", new RandomFunction());
-      this.registerFunctions("now", new NowFunction());
+      this.registerFunctions("abs", () => new AbsFunction());
+      // this.registerFunctions("round", () => new RoundFunction());
+      // this.registerFunctions("random", () => new RandomFunction());
+      // this.registerFunctions("now", () => new NowFunction());
    }
 
 
-   registerCommand(name: string, command: Command<any>) {
-      this.commands[name] = command;
+   registerCommand(name: string, getNew: () => Command) {
+      this.commands[name] = getNew;
    }
 
-   registerFunctions(name: string, evalFunction: EvalFunction<any>) {
-      this.functions[name] = evalFunction;
+   registerFunctions(name: string, getNew: () => EvalFunction<any>) {
+      this.functions[name] = getNew;
    }
 
    registerNativeType(typeDefinition: TypeDefinition) {
@@ -63,10 +65,6 @@ export class Context {
 
    registerType<T>(name: string, typeDefinition: TypeDefinition) {
       this.types[name] = typeDefinition;
-   }
-
-   getParameter<T>(parameter: CommandParameter<T>): T {
-      return null;
    }
 
    getVariable(variableName: string): any {
@@ -81,11 +79,11 @@ export class Context {
       this.variables[variableName] = value;
    }
 
-   print(model: any, type?: Type) {
-      app.print(model, type);
+   print(expr: Expression<any>, type?: Type) {
+      app.printE(expr, type);
    }
 
-   stringify(model: any, type?: Type): string {
-      return app.stringify(model, type);
+   stringify(expr: Expression<any>, type?: Type): string {
+      return app.stringify(expr, type);
    }
 }

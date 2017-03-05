@@ -24,7 +24,7 @@ export class Database {
 
     test() {
 
-        app.print("hi");
+        //app.printE("hi");
     }
 
 }

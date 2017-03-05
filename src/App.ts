@@ -8,6 +8,7 @@ import { Tests } from "./Tests";
 import { Context } from "./Context";
 import { RomanView } from "./views/Roman";
 import { YoutubeView } from "./views/Youtube";
+import { Expression } from './Expression';
 
 class App {
 	evalConsole: EvalConsole;
@@ -90,20 +91,20 @@ class App {
 	}
 
 	testOutput() {
-		this.output.print({
-			x: "ABC",
-			y2: { video: "YBJFirHSS5Q", width: 100, height: 100, type: "youtube" },
-			y: "7Iweue-OcMo", z: 1111
-		},
-			{ type: "object", properties: { y: "youtube", z: "roman" } });
+		// this.output.print({
+		// 	x: "ABC",
+		// 	y2: { video: "YBJFirHSS5Q", width: 100, height: 100, type: "youtube" },
+		// 	y: "7Iweue-OcMo", z: 1111
+		// },
+		// 	{ type: "object", properties: { y: "youtube", z: "roman" } });
 	}
 
-	print(model: any, type?: Type) {
-		this.output.print(model, type);
+	printE(expr: Expression<any>, type?: Type) {
+		this.output.printE(expr, type);
 	}
 
-	stringify(model: any, type?: Type) {
-		return JSON.stringify(model);
+	stringify(expr: any, type?: Type) {
+		return JSON.stringify(expr);
 	}
 	
 }

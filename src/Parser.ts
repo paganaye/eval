@@ -1,7 +1,7 @@
 import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from "./CommandCall";
 import { Context } from "./Context";
-import { EvalFunction, FunctionParameter } from "./EvalFunction";
+import { EvalFunction, ParameterDefinition } from "./EvalFunction";
 import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject } from './Expression';
 
 // we keep the same priorities than javascript but with less operators.
@@ -42,8 +42,8 @@ export class Parser {
 		return this.parseExpression(Priority.None);
 	}
 
-	parseLeft(priority: Priority): Expression {
-		var result: Expression;
+	parseLeft(priority: Priority): Expression<any> {
+		var result: Expression<any>;
 		switch (this.token.type) {
 			case TokenType.Operator:
 				var op = this.token.stringValue;
@@ -95,7 +95,7 @@ export class Parser {
 		this.unexpectedToken();
 	}
 
-	parseExpression(priority: Priority): Expression {
+	parseExpression(priority: Priority): Expression<any> {
 		var result = this.parseLeft(priority);
 		while (this.token.type != TokenType.EOF) {
 			switch (this.token.type) {
@@ -146,7 +146,7 @@ export class Parser {
 		+ " at position " + this.token.position + "." + detail || "";
 	}
 
-	parseFunctionCall(functionName: string): Expression {
+	parseFunctionCall(functionName: string): Expression<any> {
 		if (this.token.type !== TokenType.Operator || this.token.stringValue !== "(") {
 			this.unexpectedToken("Expected parenthesis in function call.");
 		}
@@ -291,7 +291,7 @@ export class Parser {
 
 
 
-	parseJSONObject(): Expression {
+	parseJSONObject(): Expression<any> {
 		this.nextToken();
 		var result = new JsonObject();
 		if (this.token.type as TokenType === TokenType.Operator && this.token.stringValue == "}") {

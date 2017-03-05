@@ -1,22 +1,20 @@
-import { Command, CommandParameter } from "../Command";
+import { Command } from "../Command";
 import { Type } from "../Types";
 import { Context } from "../Context";
 
-class AssignParameters {
-   variableName = new CommandParameter<string>();
-   variableValue = new CommandParameter<any>();
-}
+export class Assign extends Command {
+   variableName: string;
+   variableValue: any;
 
-export class Assign extends Command<AssignParameters> {
-
-   createParameters() {
-      return new AssignParameters();
+   getParameters() {
+      return [
+         { name: "variableName", type: "string" },
+         { name: "variableValue", type: "any" }];
    }
 
-   run(context: Context, parameters: AssignParameters) {
-      var name = parameters.variableName.getValue(context);
-      var value = parameters.variableValue.getValue(context);
-      context.setVariable(name, value);
+
+   run(context: Context) {
+      context.setVariable(this.variableName, this.variableValue);
    }
 }
 

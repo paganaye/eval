@@ -6,7 +6,6 @@ import { app } from "./App";
 
 export class EvalConsole {
    parser: Parser;
-   originalConsole: Console;
    terminal: any;
 
    constructor(private context: Context) { }
@@ -19,7 +18,6 @@ export class EvalConsole {
       if (typeof msg !== "string") {
          if (msg instanceof Error) {
             msg = (msg as Error).name + " " + (msg as Error).message;
-            this.originalConsole.error(msg)
             return;
          }
          msg = JSON.stringify(msg);
@@ -38,17 +36,16 @@ export class EvalConsole {
             height: "180px"
          });
       this.parser = new Parser(this.context);
-      this.originalConsole = (window as any).console;
-      (window as any).console = this;
       return elt;
 
    }
 
    log(): void {
+      var result = ">";
       for (var arg in arguments) {
-         this.echo(arg + "> " + arguments[arg]);
+         result += " " + arguments[arg]
       }
-      this.originalConsole.log(arguments);
+      this.echo(result);
    }
 
    public processCommand(commandString: string) {
@@ -58,6 +55,6 @@ export class EvalConsole {
       } catch (error) {
          this.error(error);
       }
-      app.renderOutput();      
+      app.renderOutput();
    }
 }

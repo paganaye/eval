@@ -1,22 +1,22 @@
-import { Command, CommandParameter } from "../Command";
+import { Command } from "../Command";
 import { Type } from "../Types";
 import { Context } from "../Context";
+import { ParameterDefinition } from '../EvalFunction';
 
-class PrintParameters {
-   model = new CommandParameter<any>();
-   type = new CommandParameter<Type>();
-}
+export class Print extends Command {
+   private data: any;
+   private type: Type;
 
-export class Print extends Command<PrintParameters> {
-
-   createParameters() {
-      return new PrintParameters();
+   getParameters(): ParameterDefinition[] {
+      return [
+         { name: "data", type: "any" },
+         { name: "type", type: "Type" }];
    }
 
-   run(context: Context, parameters: PrintParameters) {
-      var model = parameters.model.getValue(context);
-      var type = parameters.type.getValue(context);
-      context.print(model, type);
+   run(context: Context) {
+      //var expr = parameters.expr.getValue(context);
+      //var type = this.type || expr.getType(context);
+      context.print(this.data, this.type);
    }
 }
 

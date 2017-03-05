@@ -5,6 +5,7 @@ import { JSONView } from "./views/JSONView";
 import { TypeDefinition, Type } from "./Types";
 import { View } from "./View";
 import { Context } from "./Context";
+import { Expression } from './Expression';
 
 
 export class Output {
@@ -45,20 +46,20 @@ export class Output {
 		}
 	}
 
-	printProperty(key: string, model: any, typeDefinition: TypeDefinition) {
+	printProperty(key: string, expr: Expression<any>, typeDefinition: TypeDefinition) {
 		this.printHTML("<div>");
 		this.printTag("label", { for: key }, key);
-		this.print(model, typeDefinition);
+		this.printE(expr, typeDefinition);
 		this.printHTML("</div>");
 	}
 
-	print(model: any, type: Type) {
-		if (!type && model.type) type = model.type;
+	printE(expr: Expression<any>, type: Type) {
+		if (!type && expr.getType) type = expr.getType(this.context);
 		if (typeof type == "string") type = this.context.types[type];
-		if (!type) type = this.context.types[typeof model] || this.context.objectType;
+		if (!type) type = this.context.types[typeof expr] || this.context.objectType;
 
 		var view: View<any> = type.view || this.defaultViews[type.type] || this.context.jsonView;
-		view.render(model, type as TypeDefinition, this);
+		view.render(expr, type as TypeDefinition, this);
 	}
 
 	toString(): string {

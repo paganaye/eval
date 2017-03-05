@@ -22,7 +22,6 @@ export class Tests {
 
 	public testParser() {
 		this.console.echo("Parser...");
-		debugger;
 		this.assertParse(17, "1+2*3+10")
 		this.assertParse(1, "6/2/3")
 		this.assertParse("AB", "\"A\" + \"B\"")
@@ -34,7 +33,7 @@ export class Tests {
 
 		var command = parser.parseCommand("print 1+2");
 		this.assert("print", command.getName());
-		this.assert({ model: { value: 3 }, type: {} }, command.getParamValues(context));
+		//this.assert({ expr: { value: 3 }, type: {} }, command.getParamsObject(context));
 
 		var command = parser.parseCommand("a=1+1");
 		command.run(context);

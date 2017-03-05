@@ -1,26 +1,17 @@
-import { Command, CommandParameter } from "../Command";
+import { Command } from "../Command";
 import { Type } from "../Types";
 import { Context } from "../Context";
+import { Expression } from '../Expression';
 
-class HelloParameters {
-   who = new CommandParameter<string>();
-}
 
-export class Hello extends Command<HelloParameters> {
+export class Hello extends Command {
+   who: Expression<string>;
 
-   //    model = new CommandParameter<any>(this);
-   //    type = new CommandParameter<Type>(this, { optional: true });
-
-   createParameters() {
-      return new HelloParameters();
+   getParameters() {
+      return [{ name: "who", type: "Expression" }];
    }
 
-   run(context: Context, parameters: HelloParameters) {
-      var model = parameters.who.getValue(context);
-      context.print(model);
+   run(context: Context) {
+      context.print(this.who);
    }
-}
-
-class ParametersBuilder {
-
 }
