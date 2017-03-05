@@ -17,9 +17,8 @@ export class EvalConsole {
       if (typeof msg !== "string") {
          if (msg instanceof Error) {
             msg = (msg as Error).name + " " + (msg as Error).message;
-            return;
          }
-         msg = JSON.stringify(msg);
+         else msg = JSON.stringify(msg);
       }
       this.terminal.error(msg);
    }
@@ -31,7 +30,7 @@ export class EvalConsole {
          {
             greetings: "Eval v1.0",
             name: "evalContext",
-            prompt: "$ ",
+            prompt: "> ",
             height: "180px"
          });
       this.parser = new Parser(this.evalContext);

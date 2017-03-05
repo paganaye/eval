@@ -23,3 +23,7 @@ span.print {
     padding: 2px 8px;
     margin: 5px 3px;
 }
+h1#logo {
+    font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif;
+    font-size: 3em;
+}

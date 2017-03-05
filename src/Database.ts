@@ -22,10 +22,5 @@ export class Database {
         });
     }
 
-    test() {
-
-        //app.printE("hi");
-    }
-
 }
 

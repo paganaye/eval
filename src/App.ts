@@ -103,5 +103,6 @@ export var app: App;
 
 $(function () {
 	app = new App();
+	(window as any).app = app;
 	app.initialize();
 });

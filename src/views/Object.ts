@@ -5,7 +5,7 @@ import { TypeDefinition, ObjectDefinition } from "../Types";
 export class ObjectView extends View<any> {
     render(data: any, type: TypeDefinition, output: Output): void {
         if (!type && data.type) {
-            output.printProperty
+            type = data.type;
         }
         output.printHTML("<pre>");
         var properties = (type && (type as ObjectDefinition).properties) || {};

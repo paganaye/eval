@@ -3,6 +3,7 @@ import { View } from "./View";
 
 export interface BaseTypeDefinition<T> {
    validate?: (value: T) => ValidationResult;
+   inputView?: View<T>;
    view?: View<T>;
    mandatory?: boolean;
 }

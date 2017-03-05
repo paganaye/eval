@@ -17,11 +17,11 @@ export class YoutubeView extends View<any> {
         attributes.width = (data as IYoutubeSource).width || 560;
         attributes.height = (data as IYoutubeSource).height || 315;
 
-        attributes.src = "https://www.youtube.com/embed/" + ((typeof data == "string") 
+        attributes.src = "https://www.youtube.com/embed/" + ((typeof data == "string")
             ? attributes.src = data
-            :  (data as IYoutubeSource).video);
+            : (data as IYoutubeSource).video);
 
-        output.printTag("iframe", attributes);            
+        output.printTag("iframe", attributes);
     }
 }
 

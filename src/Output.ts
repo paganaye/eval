@@ -10,12 +10,17 @@ import { Expression } from './Expression';
 
 export class Output {
 	public html: String[] = [];
+	counter: number = 0;
 
 	defaultViews: { [key: string]: View<any> } = {};
+	defaultInputViews: { [key: string]: View<any> } = {};
 
 	constructor(private evalContext: Eval) {
 	}
 
+	nextId(): number {
+		return this.counter++;
+	}
 
 	clear() {
 		this.html = [];
@@ -31,6 +36,7 @@ export class Output {
 	printHTML(html: string) {
 		this.html.push(html);
 	}
+
 
 	printTag(tag: string, attributes: any, content?: string) {
 		this.html.push("<" + tag);
@@ -49,17 +55,27 @@ export class Output {
 	printProperty(key: string, expr: Expression<any>, typeDefinition: TypeDefinition) {
 		this.printHTML("<div>");
 		this.printTag("label", { for: key }, key);
-		this.printE(expr, typeDefinition);
+		this.print(expr, typeDefinition);
 		this.printHTML("</div>");
 	}
 
-	printE(expr: Expression<any>, type: Type) {
+	input(variableName: string, type: Type) {
+		var actualValue = this.evalContext.getVariable(variableName);
+		if (typeof type == "string") type = this.evalContext.types[type];
+		if (!type) type = this.evalContext.types[typeof actualValue] || this.evalContext.objectType;
+
+		var view: View<any> = type.inputView || this.defaultInputViews[type.type] || this.evalContext.inputView;
+		view.render(actualValue, type as TypeDefinition, this);
+	}
+
+	print(expr: Expression<any>, type: Type) {
 		if (!type && expr.getType) type = expr.getType(this.evalContext);
 		if (typeof type == "string") type = this.evalContext.types[type];
 		if (!type) type = this.evalContext.types[typeof expr] || this.evalContext.objectType;
 
 		var view: View<any> = type.view || this.defaultViews[type.type] || this.evalContext.jsonView;
-		view.render(expr, type as TypeDefinition, this);
+		var actualValue = expr.getValue(this.evalContext);
+		view.render(actualValue, type as TypeDefinition, this);
 	}
 
 	toString(): string {

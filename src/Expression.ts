@@ -152,7 +152,9 @@ export class FunctionCall extends Expression<any> {
          if (!parameterDefinition) {
             throw "Parameter " + (isNumber ? (parseInt(idx) + 1).toString() : idx) + " does not exist in " + targetName + ".";
          }
-         var actualValue = paramExpression.getValue(evalContext);
+         var actualValue = (parameterDefinition.type=="Expression") 
+            ? paramExpression
+            : paramExpression.getValue(evalContext);
          target[parameterDefinition.name] = actualValue;
       }
    }

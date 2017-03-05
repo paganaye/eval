@@ -12,10 +12,13 @@ import { NowFunction } from './functions/Time';
 import { Alert } from "./commands/Alert";
 import { Expression } from './Expression';
 import { Output } from './Output';
+import { InputView } from './views/Input';
+import { Input } from './commands/Input';
 
 export class Eval {
-   jsonView: JSONView
-   objectView: JSONView
+   jsonView: JSONView;
+   inputView: InputView;
+   objectView: ObjectView;
 
    types: { [key: string]: TypeDefinition } = {};
    commands: { [key: string]: (Eval) => Command } = {};
@@ -34,6 +37,7 @@ export class Eval {
 
       this.jsonView = new JSONView();
       this.objectView = new ObjectView();
+      this.inputView = new InputView();
 
       this.registerNativeType(this.booleanType = { type: "boolean", view: this.jsonView });
       this.registerNativeType(this.stringType = { type: "string", view: this.jsonView });
@@ -45,6 +49,7 @@ export class Eval {
       this.registerCommand("hi", () => new Hello());
       this.registerCommand("assign", () => new Assign());
       this.registerCommand("alert", () => new Alert());
+      this.registerCommand("input", () => new Input());
 
       this.registerFunctions("abs", () => new AbsFunction());
       this.registerFunctions("round", () => new RoundFunction());
@@ -94,11 +99,15 @@ export class Eval {
    }
 
    print(expr: Expression<any>, type?: Type) {
-      this.output.printE(expr, type);
+      this.output.print(expr, type);
    }
 
    stringify(expr: Expression<any>, type?: Type): string {
       return JSON.stringify(expr);
+   }
+
+   input(variableName: string, type?: Type) {
+      this.output.input(variableName, type);
    }
 
 }
