@@ -1,22 +1,18 @@
 import { Command } from "../Command";
-import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { ParameterDefinition } from '../EvalFunction';
+import { Expression } from '../Expression';
 
 export class Print extends Command {
-   private data: any;
-   private type: Type;
+   private data: Expression<any>[];
 
    getParameters(): ParameterDefinition[] {
       return [
-         { name: "data", type: "Expression" },
-         { name: "type", type: "Type" }];
+         { name: "data", type: "Expression", multiple: true }];
    }
 
    run(evalContext: Eval) {
-      //var expr = parameters.expr.getValue(evalContext);
-      //var type = this.type || expr.getType(evalContext);
-      evalContext.print(this.data, this.type);
+      evalContext.output.print(this.data);
    }
 }
 

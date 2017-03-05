@@ -10,7 +10,10 @@ export class ObjectView extends View<any> {
         output.printHTML("<pre>");
         var properties = (type && (type as ObjectDefinition).properties) || {};
         for (var key in data) {
-            output.printProperty(key, data[key], properties[key] as TypeDefinition);
+            var value = data[key];
+            //properties[key] as TypeDefinition
+            
+            output.printProperty(key, value);
         }
         output.printHTML("</pre>");
     }

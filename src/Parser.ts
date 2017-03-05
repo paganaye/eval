@@ -203,6 +203,11 @@ export class Parser {
 				}
 				parameters[parameterNumber++] = value;
 			}
+			if (this.token.type == TokenType.Operator
+				&& this.token.stringValue == ",") {
+				// we don't care much about commas
+				this.nextToken();
+			}
 		}
 		if (requireClosingParenthesis) {
 			this.unexpectedToken("Expected closing parenthesis.");
@@ -212,7 +217,7 @@ export class Parser {
 	// print a < p
 	// print a <p x="A">
 	// print a <br />	
-	
+
 	parseHTMLTag(): string {
 		return null;
 		// 	var tags = [];

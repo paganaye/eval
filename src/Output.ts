@@ -5,7 +5,7 @@ import { JSONView } from "./views/JSONView";
 import { TypeDefinition, Type } from "./Types";
 import { View } from "./View";
 import { Eval } from "./Eval";
-import { Expression } from './Expression';
+import { Expression, GetVariable } from './Expression';
 
 
 export class Output {
@@ -52,30 +52,38 @@ export class Output {
 		}
 	}
 
-	printProperty(key: string, expr: Expression<any>, typeDefinition: TypeDefinition) {
+	printProperty(key: string, expr: Expression<any>) {
 		this.printHTML("<div>");
 		this.printTag("label", { for: key }, key);
-		this.print(expr, typeDefinition);
+		this.print([expr]);
 		this.printHTML("</div>");
 	}
 
-	input(variableName: string, type: Type) {
-		var actualValue = this.evalContext.getVariable(variableName);
-		if (typeof type == "string") type = this.evalContext.types[type];
-		if (!type) type = this.evalContext.types[typeof actualValue] || this.evalContext.objectType;
+	input(inputs: Expression<any>[]) {
+		for (var input of inputs) {
+			var variableName = input as any as string;
+			if (input instanceof GetVariable) {
+				variableName = (input as GetVariable).getVariableName();
+			}
+			var actualValue = this.evalContext.getVariable(variableName);
+			var type = this.evalContext.types[type];
+			if (!type) type = this.evalContext.types[typeof actualValue] || this.evalContext.objectType;
 
-		var view: View<any> = type.inputView || this.defaultInputViews[type.type] || this.evalContext.inputView;
-		view.render(actualValue, type as TypeDefinition, this);
+			var view: View<any> = type.inputView || this.defaultInputViews[type.type] || this.evalContext.inputView;
+			view.render(actualValue, type as TypeDefinition, this);
+		}
 	}
 
-	print(expr: Expression<any>, type: Type) {
-		if (!type && expr.getType) type = expr.getType(this.evalContext);
-		if (typeof type == "string") type = this.evalContext.types[type];
-		if (!type) type = this.evalContext.types[typeof expr] || this.evalContext.objectType;
+	print(list: Expression<any>[]) {
+		for (var expr of list) {
+			var type: any = expr.getType(this.evalContext);
+			if (typeof type == "string") type = this.evalContext.types[type];
+			if (!type) type = this.evalContext.types[typeof expr] || this.evalContext.objectType;
 
-		var view: View<any> = type.view || this.defaultViews[type.type] || this.evalContext.jsonView;
-		var actualValue = expr.getValue(this.evalContext);
-		view.render(actualValue, type as TypeDefinition, this);
+			var view: View<any> = type.view || this.defaultViews[type.type] || this.evalContext.jsonView;
+			var actualValue = expr.getValue(this.evalContext);
+			view.render(actualValue, type as TypeDefinition, this);
+		}
 	}
 
 	toString(): string {

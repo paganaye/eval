@@ -98,16 +98,8 @@ export class Eval {
       this.variables[variableName] = value;
    }
 
-   print(expr: Expression<any>, type?: Type) {
-      this.output.print(expr, type);
-   }
-
    stringify(expr: Expression<any>, type?: Type): string {
       return JSON.stringify(expr);
-   }
-
-   input(variableName: string, type?: Type) {
-      this.output.input(variableName, type);
    }
 
 }

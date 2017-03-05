@@ -16,7 +16,7 @@ export class EvalConsole {
    error(msg: string): void {
       if (typeof msg !== "string") {
          if (msg instanceof Error) {
-            msg = (msg as Error).name + " " + (msg as Error).message;
+            msg = (msg as Error).stack;
          }
          else msg = JSON.stringify(msg);
       }

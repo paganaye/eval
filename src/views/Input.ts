@@ -4,6 +4,7 @@ import { Output } from '../Output';
 
 export class InputView extends View<any> {
     render(data: any, type: TypeDefinition, output: Output): void {
+        if (data === undefined) data = "";
         if (typeof data !== 'string') data = JSON.stringify(data);
         output.printTag("input", { type: "text", value: data }, null);
     }
