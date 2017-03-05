@@ -4,7 +4,7 @@ import { ObjectView } from "./views/Object";
 import { JSONView } from "./views/JSONView";
 import { TypeDefinition, Type } from "./Types";
 import { View } from "./View";
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 import { Expression } from './Expression';
 
 
@@ -13,7 +13,7 @@ export class Output {
 
 	defaultViews: { [key: string]: View<any> } = {};
 
-	constructor(private context: Context) {
+	constructor(private evalContext: Eval) {
 	}
 
 
@@ -54,11 +54,11 @@ export class Output {
 	}
 
 	printE(expr: Expression<any>, type: Type) {
-		if (!type && expr.getType) type = expr.getType(this.context);
-		if (typeof type == "string") type = this.context.types[type];
-		if (!type) type = this.context.types[typeof expr] || this.context.objectType;
+		if (!type && expr.getType) type = expr.getType(this.evalContext);
+		if (typeof type == "string") type = this.evalContext.types[type];
+		if (!type) type = this.evalContext.types[typeof expr] || this.evalContext.objectType;
 
-		var view: View<any> = type.view || this.defaultViews[type.type] || this.context.jsonView;
+		var view: View<any> = type.view || this.defaultViews[type.type] || this.evalContext.jsonView;
 		view.render(expr, type as TypeDefinition, this);
 	}
 

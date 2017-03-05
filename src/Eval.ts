@@ -1,5 +1,4 @@
 import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition } from "./Types";
-import { app } from "./App";
 import { View } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -13,23 +12,27 @@ import { AbsFunction } from './functions/Math';
 //import { NowFunction } from "./functions/Time";
 import { Alert } from "./commands/Alert";
 import { Expression } from './Expression';
+import { Output } from './Output';
 
-export class Context {
+export class Eval {
    jsonView: JSONView
    objectView: JSONView
 
    types: { [key: string]: TypeDefinition } = {};
-   commands: { [key: string]: (Context) => Command } = {};
-   functions: { [key: string]: (Context) => EvalFunction<any> } = {};
+   commands: { [key: string]: (Eval) => Command } = {};
+   functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
    variables: { [key: string]: any } = {};
 
    booleanType: BooleanDefinition;
    stringType: StringDefinition;
    numberType: NumberDefinition;
    objectType: ObjectDefinition;
-
+   output: Output;
+   outputElt: HTMLElement;
 
    constructor() {
+      this.output = new Output(this);
+
       this.jsonView = new JSONView();
       this.objectView = new ObjectView();
 
@@ -48,8 +51,16 @@ export class Context {
       // this.registerFunctions("round", () => new RoundFunction());
       // this.registerFunctions("random", () => new RandomFunction());
       // this.registerFunctions("now", () => new NowFunction());
+
    }
 
+   renderOutput() {
+      if (this.outputElt) {
+         var html = this.output.toString();
+         this.outputElt.innerHTML = html;
+         this.output.clear();
+      }
+   }
 
    registerCommand(name: string, getNew: () => Command) {
       this.commands[name] = getNew;
@@ -67,6 +78,10 @@ export class Context {
       this.types[name] = typeDefinition;
    }
 
+   registerOutput(output: HTMLElement) {
+      this.outputElt = output;
+   }
+
    getVariable(variableName: string): any {
       var result = this.variables[variableName];
       if (result == null) {
@@ -80,10 +95,11 @@ export class Context {
    }
 
    print(expr: Expression<any>, type?: Type) {
-      app.printE(expr, type);
+      this.output.printE(expr, type);
    }
 
    stringify(expr: Expression<any>, type?: Type): string {
-      return app.stringify(expr, type);
+      return JSON.stringify(expr);
    }
+
 }

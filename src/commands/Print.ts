@@ -1,6 +1,6 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
-import { Context } from "../Context";
+import { Eval } from "../Eval";
 import { ParameterDefinition } from '../EvalFunction';
 
 export class Print extends Command {
@@ -13,10 +13,10 @@ export class Print extends Command {
          { name: "type", type: "Type" }];
    }
 
-   run(context: Context) {
-      //var expr = parameters.expr.getValue(context);
-      //var type = this.type || expr.getType(context);
-      context.print(this.data, this.type);
+   run(evalContext: Eval) {
+      //var expr = parameters.expr.getValue(evalContext);
+      //var type = this.type || expr.getType(evalContext);
+      evalContext.print(this.data, this.type);
    }
 }
 

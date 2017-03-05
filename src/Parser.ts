@@ -1,6 +1,6 @@
 import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from "./CommandCall";
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 import { EvalFunction, ParameterDefinition } from "./EvalFunction";
 import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject } from './Expression';
 
@@ -24,7 +24,7 @@ export class Parser {
 	token: Token;
 	expression: string;
 
-	constructor(private context: Context) {
+	constructor(private evalContext: Eval) {
 	}
 
 	private init(expression: string) {
@@ -154,7 +154,7 @@ export class Parser {
 		var parameters = {};
 		var useNamedParameters = false;
 		this.parseParameters(parameters, true);
-		return new FunctionCall(this.context, functionName, parameters);
+		return new FunctionCall(this.evalContext, functionName, parameters);
 	}
 
 	parseCommand(expression: string): CommandCall {
@@ -174,7 +174,7 @@ export class Parser {
 			commandName = "assign"
 		}
 		this.parseParameters(parameters, false);
-		return new CommandCall(this.context, expression, commandName, parameters);
+		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}
 
 	parseParameters(parameters: any, requireClosingParenthesis: boolean) {

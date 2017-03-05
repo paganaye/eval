@@ -5,7 +5,7 @@ import { View } from "./View";
 import { Output } from "./Output";
 import { TypeDefinition, Type } from "./Types";
 import { Tests } from "./Tests";
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 import { RomanView } from "./views/Roman";
 import { YoutubeView } from "./views/Youtube";
 import { Expression } from './Expression';
@@ -13,48 +13,46 @@ import { Expression } from './Expression';
 class App {
 	evalConsole: EvalConsole;
 	database: Database;
-	output: Output;
 	output1: HTMLDivElement;
 	reload: number;
-	context: Context;
+	evalContext: Eval;
 
 
 	initialize() {
-		this.incrementReload();
+		this.detectIncrementReload();
 		this.initEval();
-		this.initConsole();
-		//this.initDatabase();
 
-		this.tests();
-		this.renderOutput();
+		this.initConsole();
+		// 		//this.initDatabase();
+
+		// 		this.tests();
+		// 		this.renderOutput();
 	}
 
-	incrementReload() {
+	public renderOutput() {
+		this.evalContext.renderOutput();
+	}
+
+	detectIncrementReload() {
 		var reloadString = document.body.getAttribute("data-reload");
 		this.reload = (typeof reloadString === "string") ? parseInt(reloadString) + 1 : 0;
 		document.body.setAttribute("data-reload", this.reload.toString());
 	}
 
-	initDatabase() {
-		this.database = new Database(this.reload);
-	}
+	// 	initDatabase() {
+	// 		this.database = new Database(this.reload);
+	// 	}
 
 	initEval() {
-		this.context = new Context();
+		this.evalContext = new Eval();
 
-		this.context.registerType("roman", { type: "object", view: new RomanView() });
-		this.context.registerType("youtube", { type: "object", view: new YoutubeView() });
+		this.evalContext.registerType("roman", { type: "object", view: new RomanView() });
+		this.evalContext.registerType("youtube", { type: "object", view: new YoutubeView() });
 
-
-		this.output = new Output(this.context);
 		this.output1 = document.getElementById("output1") as HTMLDivElement;
-		this.output1.innerHTML = "";
-	}
+		this.evalContext.registerOutput(this.output1);
 
-	renderOutput() {
-		var html = this.output.toString();
-		this.output1.innerHTML = html;
-		this.output.clear();
+		this.output1.innerHTML = "";
 	}
 
 	initConsole() {
@@ -63,7 +61,7 @@ class App {
 			consoleElt.remove();
 		}
 		// console is first to display the rest of the initializations
-		this.evalConsole = new EvalConsole(this.context);
+		this.evalConsole = new EvalConsole(this.evalContext);
 		consoleElt = this.evalConsole.initialize();
 		consoleElt.id = "console1";
 		consoleElt.style.display = "block";
@@ -77,36 +75,28 @@ class App {
 		});
 	}
 
-	tests() {
-		var tests = new Tests(this.evalConsole);
+	// 	tests() {
+	// 		var tests = new Tests(this.evalConsole);
 
-		//this.testOutput();
-		//this.database.test();
-		try {
-			tests.selfTests();
-		} catch (e) {
-			this.evalConsole.error(e.toString());
-		}
+	// 		//this.testOutput();
+	// 		//this.database.test();
+	// 		try {
+	// 			tests.selfTests();
+	// 		} catch (e) {
+	// 			this.evalConsole.error(e.toString());
+	// 		}
 
-	}
+	// 	}
 
-	testOutput() {
-		// this.output.print({
-		// 	x: "ABC",
-		// 	y2: { video: "YBJFirHSS5Q", width: 100, height: 100, type: "youtube" },
-		// 	y: "7Iweue-OcMo", z: 1111
-		// },
-		// 	{ type: "object", properties: { y: "youtube", z: "roman" } });
-	}
+	// 	testOutput() {
+	// 		// this.output.print({
+	// 		// 	x: "ABC",
+	// 		// 	y2: { video: "YBJFirHSS5Q", width: 100, height: 100, type: "youtube" },
+	// 		// 	y: "7Iweue-OcMo", z: 1111
+	// 		// },
+	// 		// 	{ type: "object", properties: { y: "youtube", z: "roman" } });
+	// 	}
 
-	printE(expr: Expression<any>, type?: Type) {
-		this.output.printE(expr, type);
-	}
-
-	stringify(expr: any, type?: Type) {
-		return JSON.stringify(expr);
-	}
-	
 }
 
 export var app: App;

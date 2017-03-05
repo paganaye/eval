@@ -1,6 +1,6 @@
-import { Command, CommandParameter } from "../Command";
+import { Command } from "../Command";
 import { Type } from "../Types";
-import { Context } from "../Context";
+import { Eval } from "../Eval";
 
 
 export class Test {

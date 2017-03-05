@@ -1,8 +1,8 @@
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 import { Expression } from './Expression';
 import { ParameterDefinition } from './EvalFunction';
 
 export abstract class Command {
    abstract getParameters(): ParameterDefinition[];
-   abstract run(context: Context): void;
+   abstract run(evalContext: Eval): void;
 }

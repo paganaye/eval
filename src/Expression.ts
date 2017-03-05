@@ -1,4 +1,4 @@
-import { Context } from './Context';
+import { Eval } from './Eval';
 import { EvalFunction, ParameterDefinition } from './EvalFunction';
 import { TypeDefinition } from './Types';
 
@@ -16,22 +16,22 @@ export abstract class Expression<T> implements Publisher, Subscriber {
    private modified: boolean = true;
    private calculatedValue: any;
 
-   abstract calcValue(context: Context): T;
+   abstract calcValue(evalContext: Eval): T;
 
-   getType(context: Context): TypeDefinition {
+   getType(evalContext: Eval): TypeDefinition {
       var result: TypeDefinition;
-      var value = this.getValue(context);
+      var value = this.getValue(evalContext);
       if ((value as any).type) result = (value as any).type;
-      if (typeof result == "string") result = context.types[result as string];
+      if (typeof result == "string") result = evalContext.types[result as string];
       if (!result) {
-         result = context.types[typeof value] || context.objectType;
+         result = evalContext.types[typeof value] || evalContext.objectType;
       }
       return result;
    }
 
-   getValue(context: Context): T {
+   getValue(evalContext: Eval): T {
       if (this.modified) {
-         this.calculatedValue = this.calcValue(context);
+         this.calculatedValue = this.calcValue(evalContext);
          this.modified = false;
       }
       return this.calculatedValue;
@@ -66,7 +66,7 @@ export class Const<T> extends Expression<T> {
    constructor(private value: T) {
       super();
    }
-   calcValue(context: Context): any {
+   calcValue(evalContext: Eval): any {
       return this.value;
    }
 }
@@ -77,8 +77,8 @@ export class GetVariable extends Expression<any> {
    }
 
    getVariableName(): string { return this.variableName; }
-   calcValue(context: Context): any {
-      return context.getVariable(this.variableName);
+   calcValue(evalContext: Eval): any {
+      return evalContext.getVariable(this.variableName);
    }
 }
 
@@ -86,12 +86,12 @@ export class UnaryOp extends Expression<any> {
    constructor(private op1: Expression<any>, private operator: string) {
       super();
    }
-   calcValue(context: Context): any {
+   calcValue(evalContext: Eval): any {
       switch (this.operator) {
          case "+":
-            return + this.op1.getValue(context);
+            return + this.op1.getValue(evalContext);
          case "-":
-            return - this.op1.getValue(context);
+            return - this.op1.getValue(evalContext);
       }
    }
 }
@@ -100,28 +100,28 @@ export class BinaryOp extends Expression<any> {
    constructor(private operator: string, private op1: Expression<any>, private op2: Expression<any>) {
       super();
    }
-   calcValue(context: Context): any {
+   calcValue(evalContext: Eval): any {
       switch (this.operator) {
          case "+":
-            return this.op1.getValue(context) + this.op2.getValue(context);
+            return this.op1.getValue(evalContext) + this.op2.getValue(evalContext);
          case "-":
-            return this.op1.getValue(context) - this.op2.getValue(context);
+            return this.op1.getValue(evalContext) - this.op2.getValue(evalContext);
          case "*":
-            return this.op1.getValue(context) * this.op2.getValue(context);
+            return this.op1.getValue(evalContext) * this.op2.getValue(evalContext);
          case "/":
-            return this.op1.getValue(context) / this.op2.getValue(context);
+            return this.op1.getValue(evalContext) / this.op2.getValue(evalContext);
          case "<":
-            return this.op1.getValue(context) < this.op2.getValue(context);
+            return this.op1.getValue(evalContext) < this.op2.getValue(evalContext);
          case "<=":
-            return this.op1.getValue(context) <= this.op2.getValue(context);
+            return this.op1.getValue(evalContext) <= this.op2.getValue(evalContext);
          case "==":
-            return this.op1.getValue(context) == this.op2.getValue(context);
+            return this.op1.getValue(evalContext) == this.op2.getValue(evalContext);
          case ">=":
-            return this.op1.getValue(context) >= this.op2.getValue(context);
+            return this.op1.getValue(evalContext) >= this.op2.getValue(evalContext);
          case ">":
-            return this.op1.getValue(context) > this.op2.getValue(context);
+            return this.op1.getValue(evalContext) > this.op2.getValue(evalContext);
          case "!=":
-            return this.op1.getValue(context) != this.op2.getValue(context);
+            return this.op1.getValue(evalContext) != this.op2.getValue(evalContext);
       }
    }
 }
@@ -129,16 +129,16 @@ export class BinaryOp extends Expression<any> {
 export class FunctionCall extends Expression<any> {
    private functionInstance: EvalFunction<any>;
 
-   constructor(private context: Context, private functionName, private expressions: { [key: string]: Expression<any> }) {
+   constructor(private evalContext: Eval, private functionName, private expressions: { [key: string]: Expression<any> }) {
       super();
-      var getNew = this.context.functions[functionName.toLowerCase()];
-      if (getNew) this.functionInstance = getNew(context);
+      var getNew = this.evalContext.functions[functionName.toLowerCase()];
+      if (getNew) this.functionInstance = getNew(evalContext);
       if (!this.functionInstance) {
          throw "Unknown function " + functionName;
       }
    }
 
-   static applyParameters(context: Context, parameterDefinitions: ParameterDefinition[],
+   static applyParameters(evalContext: Eval, parameterDefinitions: ParameterDefinition[],
       expressions: any, target: any, targetName) {
       for (var idx in expressions) {
          var paramExpression = expressions[idx];
@@ -152,14 +152,14 @@ export class FunctionCall extends Expression<any> {
          if (!parameterDefinition) {
             throw "Parameter " + (isNumber ? (parseInt(idx) + 1).toString() : idx) + " does not exist in " + targetName + ".";
          }
-         var actualValue = paramExpression.getValue(context);
+         var actualValue = paramExpression.getValue(evalContext);
          target[parameterDefinition.name] = actualValue;
       }
    }
 
-   calcValue(context: Context): any {
-      FunctionCall.applyParameters(context, this.functionInstance.getParameters(), this.expressions, this.functionInstance, "function " + this.functionName);
-      var result = this.functionInstance.calcValue(context);
+   calcValue(evalContext: Eval): any {
+      FunctionCall.applyParameters(evalContext, this.functionInstance.getParameters(), this.expressions, this.functionInstance, "function " + this.functionName);
+      var result = this.functionInstance.calcValue(evalContext);
       return result;
    }
 }
@@ -175,10 +175,10 @@ export class JsonObject extends Expression<object> {
       this.members[key] = value;
    }
 
-   calcValue(context: Context): any {
+   calcValue(evalContext: Eval): any {
       var result = {};
       for (var m in this.members) {
-         var value = this.members[m].getValue(context);
+         var value = this.members[m].getValue(evalContext);
          result[m] = value;
       }
       return result;
@@ -196,10 +196,10 @@ export class JsonArray extends Expression<any[]> {
       this.items.push(value);
    }
 
-   calcValue(context: Context): any {
+   calcValue(evalContext: Eval): any {
       var result = {};
       for (var m in this.items) {
-         var value = this.items[m].getValue(context);
+         var value = this.items[m].getValue(evalContext);
          result[m] = value;
       }
       return result;

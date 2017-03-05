@@ -1,16 +1,16 @@
 import { Command } from "./Command";
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 import { Expression, FunctionCall } from './Expression';
 
 export class CommandCall {
    private command: Command;
 
-   constructor(private context: Context, private source: string, private commandName, private expressions: { [key: string]: Expression<any> }) {
-      var getNew = this.context.commands[commandName.toLowerCase()];
+   constructor(private evalContext: Eval, private source: string, private commandName, private expressions: { [key: string]: Expression<any> }) {
+      var getNew = this.evalContext.commands[commandName.toLowerCase()];
       if (!getNew) {
          throw "Unknown command " + commandName;
       }
-      this.command = getNew(context);
+      this.command = getNew(evalContext);
    }
 
    getName() {
@@ -29,7 +29,7 @@ export class CommandCall {
       return this.expressions;
    }
 
-   // getParamsObject(context: Context): any {
+   // getParamsObject(evalContext: Eval): any {
    //    // TODO: we could be doing some of this in the constructor
    //    var keys = Object.keys(paramsObject);
    //    for (var idx in this.parameters) {
@@ -45,8 +45,8 @@ export class CommandCall {
    //    return paramsObject;
    // }
 
-   run(context: Context) {
-      FunctionCall.applyParameters(context, this.command.getParameters(), this.expressions, this.command, "command " + this.commandName);
-      this.command.run(this.context)
+   run(evalContext: Eval) {
+      FunctionCall.applyParameters(evalContext, this.command.getParameters(), this.expressions, this.command, "command " + this.commandName);
+      this.command.run(this.evalContext)
    }
 }

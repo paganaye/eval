@@ -1,7 +1,7 @@
 import { EvalConsole } from "./EvalConsole";
 import { Tokenizer, TokenType } from "./Tokenizer";
 import { Parser, Priority } from "./Parser";
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 
 export class Tests {
 	constructor(private console: EvalConsole) { }
@@ -28,18 +28,18 @@ export class Tests {
 	}
 
 	public testCommands() {
-		var context = new Context();
-		var parser = new Parser(context);
+		var evalContext = new Eval();
+		var parser = new Parser(evalContext);
 
 		var command = parser.parseCommand("print 1+2");
 		this.assert("print", command.getName());
-		//this.assert({ expr: { value: 3 }, type: {} }, command.getParamsObject(context));
+		//this.assert({ expr: { value: 3 }, type: {} }, command.getParamsObject(evalContext));
 
 		var command = parser.parseCommand("a=1+1");
-		command.run(context);
-		this.assert(2, context.getVariable("a"));
+		command.run(evalContext);
+		this.assert(2, evalContext.getVariable("a"));
 		var command = parser.parseCommand("print abs(-1)");
-		command.run(context);
+		command.run(evalContext);
 	}
 
 	public assertCommandParser(expectedName: string, expectedParameters: any, line: string) {
@@ -51,10 +51,10 @@ export class Tests {
 	}
 
 	public assertParse(expectedValue: any, expression: string) {
-		var context = new Context();
-		var parser = new Parser(context);
+		var evalContext = new Eval();
+		var parser = new Parser(evalContext);
 		var node = parser.parse(expression);
-		var result = node.getValue(context)
+		var result = node.getValue(evalContext)
 		this.assert(expectedValue, result, expression);
 	}
 

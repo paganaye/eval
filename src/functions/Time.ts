@@ -1,6 +1,6 @@
 import { EvalFunction, ParameterDefinition } from "../EvalFunction";
 import { Type } from "../Types";
-import { Context } from "../Context";
+import { Eval } from "../Eval";
 
 
 class EmptyParameters {
@@ -12,7 +12,7 @@ class EmptyParameters {
 //       return new EmptyParameters();
 //    }
 
-//    eval(context: Context, parameters: EmptyParameters) {
+//    evalContext(evalContext: Eval, parameters: EmptyParameters) {
 //       return new Date().getTime();
 //    }
 // }

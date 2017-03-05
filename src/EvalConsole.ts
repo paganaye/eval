@@ -1,14 +1,13 @@
 import { Parser } from "./Parser";
 import { Tests } from "./Tests";
-import { Context } from "./Context";
-import { CommandParameter } from "./Command";
+import { Eval } from "./Eval";
 import { app } from "./App";
 
 export class EvalConsole {
    parser: Parser;
    terminal: any;
 
-   constructor(private context: Context) { }
+   constructor(private evalContext: Eval) { }
 
    echo(msg: string): void {
       if (typeof msg !== "string") msg = JSON.stringify(msg);
@@ -31,11 +30,11 @@ export class EvalConsole {
          (cmd) => this.processCommand(cmd),
          {
             greetings: "Eval v1.0",
-            name: "eval",
+            name: "evalContext",
             prompt: "$ ",
             height: "180px"
          });
-      this.parser = new Parser(this.context);
+      this.parser = new Parser(this.evalContext);
       return elt;
 
    }
@@ -51,7 +50,7 @@ export class EvalConsole {
    public processCommand(commandString: string) {
       try {
          var res = this.parser.parseCommand(commandString)
-         res.run(this.context);
+         res.run(this.evalContext);
       } catch (error) {
          this.error(error);
       }

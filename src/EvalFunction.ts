@@ -1,10 +1,10 @@
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 import { Subscriber, Expression } from './Expression';
 import { Type } from './Types';
 
 export abstract class EvalFunction<T> {
    abstract getParameters(): ParameterDefinition[];
-   abstract calcValue(context: Context): T;
+   abstract calcValue(evalContext: Eval): T;
 }
 
 export class ParameterDefinition {

@@ -1,6 +1,6 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
-import { Context } from "../Context";
+import { Eval } from "../Eval";
 import { ParameterDefinition } from '../EvalFunction';
 
 export class Alert extends Command {
@@ -11,7 +11,7 @@ export class Alert extends Command {
       return [{ name: "data", type: "string" }];
    }
 
-   run(context: Context) {
+   run(evalContext: Eval) {
       alert(this.data);
    }
 }

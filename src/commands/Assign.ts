@@ -1,6 +1,6 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
-import { Context } from "../Context";
+import { Eval } from "../Eval";
 
 export class Assign extends Command {
    variableName: string;
@@ -13,8 +13,8 @@ export class Assign extends Command {
    }
 
 
-   run(context: Context) {
-      context.setVariable(this.variableName, this.variableValue);
+   run(evalContext: Eval) {
+      evalContext.setVariable(this.variableName, this.variableValue);
    }
 }
 

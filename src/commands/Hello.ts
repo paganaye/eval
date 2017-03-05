@@ -1,6 +1,6 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
-import { Context } from "../Context";
+import { Eval } from "../Eval";
 import { Expression } from '../Expression';
 
 
@@ -11,7 +11,7 @@ export class Hello extends Command {
       return [{ name: "who", type: "Expression" }];
    }
 
-   run(context: Context) {
-      context.print(this.who);
+   run(evalContext: Eval) {
+      evalContext.print(this.who);
    }
 }

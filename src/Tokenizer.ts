@@ -1,4 +1,4 @@
-import { Context } from "./Context";
+import { Eval } from "./Eval";
 
 export enum TokenType {
    Number,
@@ -9,7 +9,7 @@ export enum TokenType {
 }
 
 interface IHasValue<T> {
-   getValue(context: Context): T;
+   getValue(evalContext: Eval): T;
    addObserver(IObserver): void;
    removeObserver(IObserver): void;
 }

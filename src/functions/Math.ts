@@ -1,6 +1,6 @@
 import { EvalFunction, ParameterDefinition } from '../EvalFunction';
 // import { Type } from "../Types";
-import { Context } from "../Context";
+import { Eval } from "../Eval";
 
 // class SingleNumberParameter {
 //    arg1 = new FunctionParameter<number>();
@@ -11,8 +11,8 @@ import { Context } from "../Context";
 //       return new SingleNumberParameter();
 //    }
 
-//    eval(context: Context, parameters: SingleNumberParameter) {
-//       var result = parameters.arg1.getValue(context);
+//    evalContext(evalContext: Eval, parameters: SingleNumberParameter) {
+//       var result = parameters.arg1.getValue(evalContext);
 //       return Math.abs(result);
 //    }
 // }
@@ -24,7 +24,7 @@ export class AbsFunction extends EvalFunction<Number> {
       return [{ name: "arg1", type: "number" }];
    }
 
-   calcValue(context: Context): number {
+   calcValue(evalContext: Eval): number {
       return Math.abs(this.arg1)
    }
 }
@@ -34,8 +34,8 @@ export class AbsFunction extends EvalFunction<Number> {
 //       return new SingleNumberParameter();
 //    }
 
-//    eval(context: Context, parameters: SingleNumberParameter) {
-//       var result = parameters.arg1.getValue(context);
+//    evalContext(evalContext: Eval, parameters: SingleNumberParameter) {
+//       var result = parameters.arg1.getValue(evalContext);
 //       return Math.round(result);
 //    }
 // }
@@ -50,7 +50,7 @@ export class AbsFunction extends EvalFunction<Number> {
 //       return new RandomParameters();
 //    }
 
-//    eval(context: Context, parameters: RandomParameters) {
+//    evalContext(evalContext: Eval, parameters: RandomParameters) {
 //       return parameters.value;
 //    }
 // }
