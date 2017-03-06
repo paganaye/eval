@@ -74,9 +74,11 @@ export class Output {
 		}
 	}
 
-	print(list: Expression<any>[]) {
+	print(list: Expression<any>[] | Expression<any>) {
+		if (!Array.isArray(list)) list = [list];
 		for (var expr of list) {
-			var type: any = expr.getType(this.evalContext);
+			
+			var type: any = expr.getType &&  expr.getType(this.evalContext);
 			if (typeof type == "string") type = this.evalContext.types[type];
 			if (!type) type = this.evalContext.types[typeof expr] || this.evalContext.objectType;
 

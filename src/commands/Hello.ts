@@ -12,6 +12,6 @@ export class Hello extends Command {
    }
 
    run(evalContext: Eval) {
-      evalContext.print(this.who);
+      evalContext.output.print(this.who);
    }
 }

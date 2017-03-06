@@ -21,7 +21,7 @@ export abstract class Expression<T> implements Publisher, Subscriber {
 	getType(evalContext: Eval): TypeDefinition {
 		var result: TypeDefinition;
 		var value = this.getValue(evalContext);
-		if ((value as any).type) result = (value as any).type;
+		if (value && (value as any).type) result = (value as any).type;
 		if (typeof result == "string") result = evalContext.types[result as string];
 		if (!result) {
 			result = evalContext.types[typeof value] || evalContext.objectType;
