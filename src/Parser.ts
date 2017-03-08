@@ -2,7 +2,7 @@ import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from "./CommandCall";
 import { Eval } from "./Eval";
 import { EvalFunction, ParameterDefinition } from "./EvalFunction";
-import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject } from './Expression';
+import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject, GetMember } from './Expression';
 
 // we keep the same priorities than javascript but with less operators.
 // pure function only (no assignment)
@@ -167,8 +167,30 @@ export class Parser {
 		}
 		var commandName = this.token.stringValue;
 		this.nextToken();
+		// if (this.token.type === TokenType.Operator && this.token.stringValue == ".") {
+		// 	// we have a : XX.TYPE = 1
+		// 	var var1: Expression<any> = new GetVariable(commandName);
+		// while (this.token.type === TokenType.Operator && this.token.stringValue == ".") {
+		// 	this.nextToken();
+		// 	if (this.token.type as TokenType === TokenType.Keyword) {
+		// 		var memberName: string = this.token.stringValue;
+		// 		this.nextToken();
+		// 		if (this.token.type === TokenType.Operator && this.token.stringValue as string == "=") {
+		// 			// variable assignment
+		// 			this.nextToken();
+		// 			parameters[0] = var1;
+		// 			parameters[1] = memberName;
+		// 			commandName = "setmember"
+		// 			break;
+		// 		}
+		// 		else var1 = new GetMember(this.evalContext, var1, memberName);
+		// 	} else this.unexpectedToken("Member name expected after dot.");
+		// }
+		// }		else 
+		
 		if (this.token.type === TokenType.Operator && this.token.stringValue == "=") {
 			// variable assignment
+			// XX = 1
 			this.nextToken();
 			parameters[0] = new Const(commandName);
 			commandName = "assign"
@@ -363,4 +385,6 @@ export class Parser {
 		this.unexpectedToken("Missing character ']'.");
 	}
 }
+
+
 

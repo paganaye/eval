@@ -10,6 +10,9 @@ export class NowFunction extends EvalFunction<number> {
    }
 
    calcValue(evalContext: Eval): number {
+      setTimeout(() => { 
+         this.valueChanged();
+      }, 1000);
       return new Date().getTime();
    }
 }

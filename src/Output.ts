@@ -18,8 +18,8 @@ export class Output {
 	constructor(private evalContext: Eval) {
 	}
 
-	nextId(): number {
-		return this.counter++;
+	nextId(): string {
+		return "elt" + this.counter++;
 	}
 
 	clear() {
@@ -52,6 +52,19 @@ export class Output {
 		}
 	}
 
+	startTag(tag: string, attributes: any) {
+		this.html.push("<" + tag);
+		for (var key in attributes) {
+			this.html.push(" " + key + "=\"" + Output.escapeAttribute(attributes[key]) + "\"");
+		}
+		this.html.push(" />");
+	}
+
+	endTag(tag: string) {
+		this.html.push("</" + tag + ">");
+	}
+
+
 	printProperty(key: string, expr: Expression<any>) {
 		this.printHTML("<div>");
 		this.printTag("label", { for: key }, key);
@@ -77,13 +90,13 @@ export class Output {
 	print(list: Expression<any>[] | Expression<any>) {
 		if (!Array.isArray(list)) list = [list];
 		for (var expr of list) {
-			
-			var type: any = expr.getType &&  expr.getType(this.evalContext);
+
+			var type: any = expr.getType && expr.getType(this.evalContext);
 			if (typeof type == "string") type = this.evalContext.types[type];
 			if (!type) type = this.evalContext.types[typeof expr] || this.evalContext.objectType;
 
 			var view: View<any> = type.view || this.defaultViews[type.type] || this.evalContext.jsonView;
-			var actualValue = expr.getValue(this.evalContext);
+			var actualValue = expr.getValue ? expr.getValue(this.evalContext) : expr;
 			view.render(actualValue, type as TypeDefinition, this);
 		}
 	}

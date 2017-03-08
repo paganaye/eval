@@ -21,10 +21,7 @@ class App {
 	initialize() {
 		this.detectIncrementReload();
 		this.initEval();
-
 		this.initConsole();
-		// 		//this.initDatabase();
-
 		// 		this.tests();
 		// 		this.renderOutput();
 	}
@@ -38,10 +35,6 @@ class App {
 		this.reload = (typeof reloadString === "string") ? parseInt(reloadString) + 1 : 0;
 		document.body.setAttribute("data-reload", this.reload.toString());
 	}
-
-	// 	initDatabase() {
-	// 		this.database = new Database(this.reload);
-	// 	}
 
 	initEval() {
 		this.evalContext = new Eval();

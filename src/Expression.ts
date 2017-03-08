@@ -11,19 +11,38 @@ export interface Publisher {
 	removeSubscriber(subscriber: Subscriber): void;
 }
 
-export abstract class Expression<T> implements Publisher, Subscriber {
+export interface HasValue extends Publisher {
+	getValue(context: Eval): any;
+	getType(context: Eval): TypeDefinition;
+	getLabel(context: Eval): string;
+	getUnit(context: Eval): string;
+}
+
+export abstract class Expression<T> implements HasValue, Publisher, Subscriber {
 	private subscribers: Subscriber[] = [];
 	private modified: boolean = true;
 	private calculatedValue: any;
-
+	private label: string;
+	private unit: string;
+	private type: TypeDefinition;
 	abstract calcValue(evalContext: Eval): T;
 
+	getLabel(): string {
+		return this.label;
+	}
+
+	getUnit(): string {
+		return this.unit;
+	}
+
 	getType(evalContext: Eval): TypeDefinition {
-		var result: TypeDefinition;
-		var value = this.getValue(evalContext);
-		if (value && (value as any).type) result = (value as any).type;
+		var result: TypeDefinition = this.type;
+		if (!result) {
+			if (value && (value as any).type) result = (value as any).type;
+		}
 		if (typeof result == "string") result = evalContext.types[result as string];
 		if (!result) {
+			var value = this.getValue(evalContext);
 			result = evalContext.types[typeof value] || evalContext.objectType;
 		}
 		return result;
@@ -124,6 +143,22 @@ export class BinaryOp extends Expression<any> {
 				return this.op1.getValue(evalContext) != this.op2.getValue(evalContext);
 		}
 	}
+}
+
+export class GetMember extends Expression<any> {
+
+	constructor(private evalContext: Eval, private base: Expression<any>, private memberName: string) {
+		super();
+	}
+
+	calcValue(evalContext: Eval): any {
+		var value = this.base.getValue(evalContext);
+		if (value != null && value[this.memberName]) {
+			value = value[this.memberName];
+		}
+		return value;
+	}
+
 }
 
 export class FunctionCall extends Expression<any> {

@@ -14,6 +14,8 @@ import { Expression } from './Expression';
 import { Output } from './Output';
 import { InputView } from './views/Input';
 import { Input } from './commands/Input';
+import { Load } from './commands/Load';
+import { Database } from './Database';
 
 export class Eval {
    jsonView: JSONView;
@@ -24,6 +26,9 @@ export class Eval {
    commands: { [key: string]: (Eval) => Command } = {};
    functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
    variables: { [key: string]: any } = {};
+   afterClearList: (() => void)[] = []
+   afterRenderList: (() => void)[] = []
+
 
    booleanType: BooleanDefinition;
    stringType: StringDefinition;
@@ -31,6 +36,7 @@ export class Eval {
    objectType: ObjectDefinition;
    output: Output;
    outputElt: HTMLElement;
+   database: Database;
 
    constructor() {
       this.output = new Output(this);
@@ -50,27 +56,43 @@ export class Eval {
       this.registerCommand("assign", () => new Assign());
       this.registerCommand("alert", () => new Alert());
       this.registerCommand("input", () => new Input());
+      this.registerCommand("load", () => new Load());
 
-      this.registerFunctions("abs", () => new AbsFunction());
-      this.registerFunctions("round", () => new RoundFunction());
-      this.registerFunctions("random", () => new RandomFunction());
-      this.registerFunctions("now", () => new NowFunction());
+      this.registerFunctions("abs", (parent) => new AbsFunction(parent));
+      this.registerFunctions("round", (parent) => new RoundFunction(parent));
+      this.registerFunctions("random", (parent) => new RandomFunction(parent));
+      this.registerFunctions("now", (parent) => new NowFunction(parent));
+
+      this.database = new Database(this);
 
    }
 
    renderOutput() {
       if (this.outputElt) {
+         this.raise(this.afterClearList)
          var html = this.output.toString();
          this.outputElt.innerHTML = html;
+         this.raise(this.afterRenderList)
          this.output.clear();
       }
+   }
+
+   raise(actions: (() => void)[]): void {
+      for (var action of actions) {
+         try {
+            action();
+         } catch (e) {
+            console.log(e);
+         }
+      }
+      actions.length = 0;
    }
 
    registerCommand(name: string, getNew: () => Command) {
       this.commands[name] = getNew;
    }
 
-   registerFunctions(name: string, getNew: () => EvalFunction<any>) {
+   registerFunctions(name: string, getNew: (parent: Expression<any>) => EvalFunction<any>) {
       this.functions[name] = getNew;
    }
 
@@ -102,4 +124,11 @@ export class Eval {
       return JSON.stringify(expr);
    }
 
+   afterRender(action: () => void): void {
+      this.afterRenderList.push(action);
+   }
+
+   afterClear(action: () => void): void {
+      this.afterClearList.push(action);
+   }
 }

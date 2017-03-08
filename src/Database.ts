@@ -1,4 +1,5 @@
 import { app } from "./App";
+import { Eval } from './Eval';
 var firebase: any;
 
 export class Database {
@@ -11,16 +12,27 @@ export class Database {
     };
 
 
-    constructor(reload: number) {
-        if (!firebase) firebase = window["firebase"];
-        if (!reload) {
+    constructor(private evalContext: Eval) {
+        if (!firebase) {
+            debugger;
+            firebase = window["firebase"];
             firebase.initializeApp(this.config)
         }
-        var db = firebase.database().ref();
-        db.on("value", function (snap) {
-            console.log("database content:", JSON.stringify(snap.val()));
-        });
     }
 
+
+    on(path: string, callback: (data: any, error: string) => void) {
+        var db = firebase.database().ref(path);
+        var func = (snap, err) => {
+            console.log("database content:", JSON.stringify(snap.val()));
+            callback(snap.val(), err)
+        };
+        db.on("value", func);
+        return {
+            off: () => {
+                db.off("value", func);
+            }
+        };
+    }
 }
 

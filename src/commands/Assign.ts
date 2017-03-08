@@ -12,7 +12,6 @@ export class Assign extends Command {
          { name: "variableValue", type: "any" }];
    }
 
-
    run(evalContext: Eval) {
       evalContext.setVariable(this.variableName, this.variableValue);
    }
