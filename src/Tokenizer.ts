@@ -193,6 +193,11 @@ export class Tokenizer {
                         }
                   }
                   this.unexpectedCharacter("End of quote for quote starting at position " + firstPosition + " was not found.");
+            } else if (this.curChar === null) {
+                  return { 
+                        position: startPos,
+                        type: TokenType.EOF
+                  };
             } else {
                   this.unexpectedCharacter();
             }

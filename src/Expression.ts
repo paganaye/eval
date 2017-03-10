@@ -195,9 +195,21 @@ export class FunctionCall extends Expression<any> {
 			if (!parameterDefinition) {
 				throw "Parameter " + (isNumber ? (parseInt(idx) + 1).toString() : idx) + " does not exist in " + targetName + ".";
 			}
-			var actualValue = (parameterDefinition.type == "Expression")
-				? paramExpression
-				: paramExpression.getValue(evalContext);
+			var actualValue;
+
+			switch (parameterDefinition.type) {
+				case "Expression":
+					actualValue = paramExpression;
+					break;
+				case "stringOrVariableName":
+					actualValue = (paramExpression instanceof GetVariable)
+						? paramExpression.getVariableName()
+						: (paramExpression.getValue(evalContext) || "").toString();
+					break;
+				default:
+					actualValue = paramExpression.getValue(evalContext);
+					break;
+			}
 			if (lastParameterIsMultiple && parameterDefinition == lastParameter) {
 				lastParameterValue.push(actualValue);
 				target[parameterDefinition.name] = lastParameterValue;

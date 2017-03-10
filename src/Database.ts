@@ -14,7 +14,6 @@ export class Database {
 
     constructor(private evalContext: Eval) {
         if (!firebase) {
-            debugger;
             firebase = window["firebase"];
             firebase.initializeApp(this.config)
         }

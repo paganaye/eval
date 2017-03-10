@@ -16,6 +16,7 @@ import { InputView } from './views/Input';
 import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Database } from './Database';
+import { Crud } from './commands/Crud';
 
 export class Eval {
    jsonView: JSONView;
@@ -56,7 +57,10 @@ export class Eval {
       this.registerCommand("assign", () => new Assign());
       this.registerCommand("alert", () => new Alert());
       this.registerCommand("input", () => new Input());
-      this.registerCommand("load", () => new Load());
+      this.registerCommand("create", () => new Crud("create"));
+      this.registerCommand("read", () => new Crud("read"));
+      this.registerCommand("update", () => new Crud("update"));
+      this.registerCommand("delete", () => new Crud("delete"));
 
       this.registerFunctions("abs", (parent) => new AbsFunction(parent));
       this.registerFunctions("round", (parent) => new RoundFunction(parent));
