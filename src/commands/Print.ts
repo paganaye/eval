@@ -12,7 +12,9 @@ export class Print extends Command {
    }
 
    run(evalContext: Eval) {
-      evalContext.output.print(this.data);
+      for (var item of this.data) {
+         evalContext.output.print(item.getValue(evalContext), item.getType(evalContext));
+      }
    }
 }
 

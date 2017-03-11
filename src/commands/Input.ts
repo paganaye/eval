@@ -12,7 +12,9 @@ export class Input extends Command {
       }
 
       run(evalContext: Eval) {
-            evalContext.output.input(this.inputs);
+            for (var input of this.inputs) {
+                  evalContext.output.input(input);
+            }
       }
 }
 

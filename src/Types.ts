@@ -3,8 +3,8 @@ import { View } from "./View";
 
 export interface BaseTypeDefinition<T> {
    validate?: (value: T) => ValidationResult;
-   inputView?: View<T>;
-   view?: View<T>;
+   view?: string;
+   inputView?: string;
    mandatory?: boolean;
 }
 
@@ -29,6 +29,8 @@ export interface StringDefinition extends BaseTypeDefinition<string> {
    maximalLength?: number;
    regexp?: string;
    regexpMessage?: string;
+   cols?: number;
+   rows?: number;
 }
 
 export interface BooleanDefinition extends BaseTypeDefinition<boolean> {

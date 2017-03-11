@@ -7,13 +7,19 @@ export class ObjectView extends View<any> {
         if (!type && data.type) {
             type = data.type;
         }
+        debugger;
         output.printHTML("<pre>");
+        output.printHTML("He\n");
         var properties = (type && (type as ObjectDefinition).properties) || {};
+        for (var key in properties) {
+            var value = data[key];
+            output.printProperty(key, value, properties[key]);
+        }
+        // print orphans
         for (var key in data) {
             var value = data[key];
-            //properties[key] as TypeDefinition
-            
-            output.printProperty(key, value);
+            if (properties[key]) continue;
+            output.printProperty(key, value, null);
         }
         output.printHTML("</pre>");
     }

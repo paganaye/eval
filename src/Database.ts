@@ -20,11 +20,11 @@ export class Database {
     }
 
 
-    on(path: string, callback: (data: any, error: string) => void) {
+    on(evalContext: Eval, path: string, callback: (evalContext: Eval, data: any, error: string) => void) {
         var db = firebase.database().ref(path);
         var func = (snap, err) => {
             console.log("database content:", JSON.stringify(snap.val()));
-            callback(snap.val(), err)
+            callback(evalContext, snap.val(), err)
         };
         db.on("value", func);
         return {

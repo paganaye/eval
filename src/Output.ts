@@ -2,7 +2,7 @@ import { app } from "./App";
 import { YoutubeView } from "./views/Youtube";
 import { ObjectView } from "./views/Object";
 import { JSONView } from "./views/JSONView";
-import { TypeDefinition, Type } from "./Types";
+import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
@@ -10,16 +10,8 @@ import { Expression, GetVariable } from './Expression';
 
 export class Output {
 	public html: String[] = [];
-	counter: number = 0;
-
-	defaultViews: { [key: string]: View<any> } = {};
-	defaultInputViews: { [key: string]: View<any> } = {};
 
 	constructor(private evalContext: Eval) {
-	}
-
-	nextId(): string {
-		return "elt" + this.counter++;
 	}
 
 	clear() {
@@ -65,44 +57,42 @@ export class Output {
 	}
 
 
-	printProperty(key: string, expr: Expression<any>) {
+	printProperty(key: string, data: any, type: Type) {
 		this.printHTML("<div>");
 		this.printTag("label", { for: key }, key);
-		this.print([expr]);
+		this.print(data, type);
 		this.printHTML("</div>");
 	}
 
-	input(inputs: Expression<any>[]) {
-		for (var input of inputs) {
-			var variableName = input as any as string;
-			if (input instanceof GetVariable) {
-				variableName = (input as GetVariable).getVariableName();
-			}
-			var actualValue = this.evalContext.getVariable(variableName);
-			var type = this.evalContext.types[type];
-			if (!type) type = this.evalContext.types[typeof actualValue] || this.evalContext.objectType;
-
-			var view: View<any> = type.inputView || this.defaultInputViews[type.type] || this.evalContext.inputView;
-			view.render(actualValue, type as TypeDefinition, this);
+	input(input: Expression<any>) {
+		var variableName = input as any as string;
+		if (input instanceof GetVariable) {
+			variableName = (input as GetVariable).getVariableName();
 		}
+		var actualValue = this.evalContext.getVariable(variableName);
+		var type = this.evalContext.types[type];
+		if (!type) type = this.evalContext.types[typeof actualValue] || this.evalContext.objectType;
+
+		//var view: View<any> = type.inputView || this.defaultInputViews[type.type] || this.evalContext.inputView;
+		//view.render(actualValue, type as TypeDefinition, this);
+
 	}
 
-	print(list: Expression<any>[] | Expression<any>) {
-		if (!Array.isArray(list)) list = [list];
-		for (var expr of list) {
-
-			var type: any = expr.getType && expr.getType(this.evalContext);
-			if (typeof type == "string") type = this.evalContext.types[type];
-			if (!type) type = this.evalContext.types[typeof expr] || this.evalContext.objectType;
-
-			var view: View<any> = type.view || this.defaultViews[type.type] || this.evalContext.jsonView;
-			var actualValue = expr.getValue ? expr.getValue(this.evalContext) : expr;
-			view.render(actualValue, type as TypeDefinition, this);
-		}
+	print(expr: any, type: Type) {
+		var typeDef = this.evalContext.getTypeDef(expr, type)
+		var view: View<any> = this.evalContext.getView(typeDef)
+		var actualValue = (expr && expr.getValue)
+			? expr.getValue(this)
+			: expr;
+		view.render(actualValue, type as TypeDefinition, this);
 	}
 
 	toString(): string {
 		return this.html.join("");
+	}
+
+	finishPrinting(): void {
+		this.html = null;
 	}
 
 	static selfClosing = {
