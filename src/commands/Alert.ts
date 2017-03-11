@@ -2,6 +2,7 @@ import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { ParameterDefinition } from '../EvalFunction';
+import { Output } from "src/Output";
 
 export class Alert extends Command {
    private data: string;
@@ -11,7 +12,7 @@ export class Alert extends Command {
       return [{ name: "data", type: "string" }];
    }
 
-   run(evalContext: Eval) {
+   run(output: Output) {
       alert(this.data);
    }
 }

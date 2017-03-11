@@ -1,12 +1,13 @@
 import { Command } from "./Command";
 import { Eval } from "./Eval";
 import { Expression, FunctionCall } from './Expression';
+import { Output } from "src/Output";
 
 export class CommandCall {
    private command: Command;
 
    constructor(private evalContext: Eval, private source: string, private commandName, private expressions: { [key: string]: Expression<any> }) {
-      var getNew = this.evalContext.commands[commandName.toLowerCase()];
+      var getNew = evalContext.commands[commandName.toLowerCase()];
       if (!getNew) {
          throw "Unknown command " + commandName;
       }
@@ -29,8 +30,8 @@ export class CommandCall {
       return this.expressions;
    }
 
-   run(evalContext: Eval) {
-      FunctionCall.applyParameters(evalContext, this.command.getParameters(), this.expressions, this.command, "command " + this.commandName);
-      this.command.run(this.evalContext)
+   run(output: Output) {
+      FunctionCall.applyParameters(this.evalContext, this.command.getParameters(), this.expressions, this.command, "command " + this.commandName);
+      this.command.run(output)
    }
 }

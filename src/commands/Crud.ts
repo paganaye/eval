@@ -3,46 +3,47 @@ import { Eval } from "../Eval";
 import { ParameterDefinition } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
+import { Output } from "src/Output";
 
 export class Crud extends Command {
-   private tableName: string;
-   private recordId: string;
+      private tableName: string;
+      private recordId: string;
 
-   constructor(private commandName: string) {
-      super();
-   }
+      constructor(evalContext: Eval, private commandName: string) {
+            super(evalContext);
+      }
 
-   getParameters(): ParameterDefinition[] {
-      return [
-         { name: "tableName", type: "stringOrVariableName" },
-         { name: "recordId", type: "stringOrVariableName" }];
-   }
+      getParameters(): ParameterDefinition[] {
+            return [
+                  { name: "tableName", type: "stringOrVariableName" },
+                  { name: "recordId", type: "stringOrVariableName" }];
+      }
 
-   run(evalContext: Eval) {
-      evalContext.getType(evalContext, this.tableName, (type) => {
-         switch (this.commandName.toLowerCase()) {
-            case "create":
-               evalContext.output.print({}, type);
-               break;
-            case "read":
-            case "update":
-            case "delete":
-               var id = evalContext.nextId();
-               evalContext.output.printTag("div", { id: id }, "Loading " + this.tableName + " " + JSON.stringify(this.recordId) + "...");
-               evalContext.afterRender(() => {
-                  var res = evalContext.database.on(evalContext, this.tableName + "/" + this.recordId, (evalContext, data, error) => {
-                     var elt = document.getElementById(id);
-                     elt.innerText += "Result:" + JSON.stringify(data);
+      run(output: Output) {
+            output.printDynamic("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (output, callback) => {
+                  this.evalContext.getType(this.tableName, (type) => {
+                        switch (this.commandName.toLowerCase()) {
+                              case "create":
+                                    output.print({}, type);
+                                    break;
+                              case "read":
+                              case "update":
+                              case "delete":
+                                    // output.printDynamic("div", {}, "Loading " + this.tableName + " " + JSON.stringify(this.recordId) + "...", (output) => {
+                                    //       var res = this.evalContext.database.on(this.tableName + "/" + this.recordId, (data, error) => {
+                                    //             output.printText("Result:" + JSON.stringify(data));
+                                    //       });
+                                    //       this.evalContext.afterClear(() => {
+                                    //             res.off();
+                                    //       })
+                                    // });
+                                    break;
+                              default:
+                                    throw "unknown command " + this.commandName;
+                        }
+                        callback();
                   });
-                  evalContext.afterClear(() => {
-                     res.off();
-                  })
-               });
-               break;
-            default:
-               throw "unknown command " + this.commandName;
-         }
-      });
+            });
 
-   }
+      }
 }

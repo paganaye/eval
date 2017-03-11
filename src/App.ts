@@ -11,9 +11,9 @@ import { YoutubeView } from "./views/Youtube";
 import { Expression } from './Expression';
 
 class App {
+	output: Output;
 	evalConsole: EvalConsole;
 	database: Database;
-	output1: HTMLDivElement;
 	reload: number;
 	evalContext: Eval;
 
@@ -26,9 +26,9 @@ class App {
 		// 		this.renderOutput();
 	}
 
-	public renderOutput() {
-		this.evalContext.renderOutput();
-	}
+	// public renderOutput() {
+	// 	this.evalContext.renderOutput();
+	// }
 
 	detectIncrementReload() {
 		var reloadString = document.body.getAttribute("data-reload");
@@ -38,14 +38,14 @@ class App {
 
 	initEval() {
 		this.evalContext = new Eval();
+		this.evalContext.registerView("roman", () => new RomanView());
+		this.evalContext.registerView("youtube", () => new YoutubeView());
 
-		this.evalContext.registerType("roman", { type: "object", view: new RomanView() });
-		this.evalContext.registerType("youtube", { type: "object", view: new YoutubeView() });
+		this.evalContext.registerType("roman", { type: "object", view: "roman" });
+		this.evalContext.registerType("youtube", { type: "object", view: "youtube" });
 
-		this.output1 = document.getElementById("output1") as HTMLDivElement;
-		this.evalContext.registerOutput(this.output1);
-
-		this.output1.innerHTML = "";
+		var outputElt = document.getElementById("output1") as HTMLDivElement;
+		this.output = new Output(this.evalContext, outputElt);
 	}
 
 	initConsole() {
@@ -54,12 +54,12 @@ class App {
 			consoleElt.remove();
 		}
 		// console is first to display the rest of the initializations
-		this.evalConsole = new EvalConsole(this.evalContext);
+
+		this.evalConsole = new EvalConsole(this.evalContext, this.output);
 		consoleElt = this.evalConsole.initialize();
 		consoleElt.id = "console1";
 		consoleElt.style.display = "block";
 		document.body.appendChild(consoleElt);
-
 
 		$(document).keyup(function (e) {
 			if (e.keyCode == 27) { // escape key maps to keycode `27`

@@ -2,17 +2,19 @@ import { Parser } from "./Parser";
 import { Tests } from "./Tests";
 import { Eval } from "./Eval";
 import { app } from "./App";
+import { Output } from "src/Output";
 
 export class EvalConsole {
    parser: Parser;
    terminal: any;
 
-   constructor(private evalContext: Eval) { }
+   constructor(private evalContext: Eval, private readonly output: Output) { }
 
    echo(msg: string): void {
       if (typeof msg !== "string") msg = JSON.stringify(msg);
       this.terminal.echo(msg);
    }
+
    error(msg: string): void {
       if (typeof msg !== "string") {
          if (msg instanceof Error) {
@@ -49,10 +51,10 @@ export class EvalConsole {
    public processCommand(commandString: string) {
       try {
          var res = this.parser.parseCommand(commandString)
-         res.run(this.evalContext);
+         res.run(this.output);
+         this.output.render();
       } catch (error) {
          this.error(error);
       }
-      app.renderOutput();
    }
 }

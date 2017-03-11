@@ -2,6 +2,7 @@ import { EvalConsole } from "./EvalConsole";
 import { Tokenizer, TokenType } from "./Tokenizer";
 import { Parser, Priority } from "./Parser";
 import { Eval } from "./Eval";
+import { Output } from "src/Output";
 
 export class Tests {
 	constructor(private console: EvalConsole) { }
@@ -34,12 +35,12 @@ export class Tests {
 		var command = parser.parseCommand("print 1+2");
 		this.assert("print", command.getName());
 		//this.assert({ expr: { value: 3 }, type: {} }, command.getParamsObject(evalContext));
-
+		var output = new Output(evalContext, document.createElement("div"));
 		var command = parser.parseCommand("a=1+1");
-		command.run(evalContext);
+		command.run(output);
 		this.assert(2, evalContext.getVariable("a"));
 		var command = parser.parseCommand("print abs(-1)");
-		command.run(evalContext);
+		command.run(output);
 	}
 
 	public assertCommandParser(expectedName: string, expectedParameters: any, line: string) {

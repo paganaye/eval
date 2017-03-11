@@ -1,6 +1,7 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
+import { Output } from "src/Output";
 
 export class Load extends Command {
       path: string;
@@ -12,18 +13,15 @@ export class Load extends Command {
                   { name: "type", type: "string" }];
       }
 
-      run(evalContext: Eval) {
-            var id = evalContext.output.nextId();
-            evalContext.output.printTag("div", { id: id }, "Loading...");
-            evalContext.afterRender(() => {
-                  var res = evalContext.database.on(this.path, (data, error) => {
-                        var elt = document.getElementById(id);
-                        elt.innerText = JSON.stringify(data);
-                  });
-                  evalContext.afterClear(() => {
-                        res.off();
-                  })
-            });
+      run(output: Output) {
+            // output.printDynamic("div", {}, "Loading...", (output) => {
+            //       var res = this.evalContext.database.on(this.path, (data, error) => {
+            //             output.printText(error || data);
+            //       });
+            //       this.evalContext.afterClear(() => {
+            //             res.off();
+            //       })
+            // });
       }
 }
 

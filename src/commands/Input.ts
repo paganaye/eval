@@ -3,6 +3,7 @@ import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { ParameterDefinition } from '../EvalFunction';
 import { Expression } from '../Expression';
+import { Output } from "src/Output";
 
 export class Input extends Command {
       private inputs: Expression<any>[];
@@ -11,9 +12,9 @@ export class Input extends Command {
             return [{ name: "inputs", type: "Expression", multiple: true }];
       }
 
-      run(evalContext: Eval) {
+      run(output: Output) {
             for (var input of this.inputs) {
-                  evalContext.output.input(input);
+                  output.input(input);
             }
       }
 }

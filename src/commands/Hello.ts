@@ -2,6 +2,7 @@ import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { Expression } from '../Expression';
+import { Output } from "src/Output";
 
 
 export class Hello extends Command {
@@ -11,7 +12,7 @@ export class Hello extends Command {
       return [{ name: "who", type: "Expression" }];
    }
 
-   run(evalContext: Eval) {
-      evalContext.output.print(this.who, null);
+   run(output: Output) {
+      output.print(this.who, null);
    }
 }

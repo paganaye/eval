@@ -10,12 +10,10 @@ import { Expression, GetVariable } from './Expression';
 
 export class Output {
 	public html: String[] = [];
+	private rendered = false;
 
-	constructor(private evalContext: Eval) {
-	}
+	constructor(private evalContext: Eval, private outputElt: HTMLElement | string) {
 
-	clear() {
-		this.html = [];
 	}
 
 	printText(text: string) {
@@ -91,9 +89,18 @@ export class Output {
 		return this.html.join("");
 	}
 
-	finishPrinting(): void {
-		this.html = null;
+	render(): void {
+		var htmlText = this.html.join("")
+		var elt = (typeof this.outputElt) === "string" ? document.getElementById(this.outputElt as string) : this.outputElt as HTMLElement;
+		if (elt == null) {
+			debugger;
+		} else {
+			elt.innerHTML = htmlText;
+			this.rendered = true;
+			this.html = [];
+		}
 	}
+
 
 	static selfClosing = {
 		"area": true,
@@ -132,6 +139,21 @@ export class Output {
 			return Output.entityMap[s];
 		});
 	}
+
+
+	//afterRenderList: (() => void)[] = []
+
+	printDynamic(tag: string, attributes: any, text: string,
+		action: (output: Output, callback: () => void) => void): void {
+		var nextId = this.evalContext.nextId();
+		if (!attributes) attributes = {};
+		attributes.id = nextId;
+		this.printTag(tag, attributes, "...");
+
+		var newOutput = new Output(this.evalContext, nextId);
+		action(newOutput, () => newOutput.render());
+	}
+
 
 }
 

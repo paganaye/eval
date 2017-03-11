@@ -164,9 +164,9 @@ export class GetMember extends Expression<any> {
 export class FunctionCall extends Expression<any> {
 	private functionInstance: EvalFunction<any>;
 
-	constructor(private evalContext: Eval, private functionName, private expressions: { [key: string]: Expression<any> }) {
+	constructor(evalContext: Eval, private functionName, private expressions: { [key: string]: Expression<any> }) {
 		super();
-		var getNew = this.evalContext.functions[functionName.toLowerCase()];
+		var getNew = evalContext.functions[functionName.toLowerCase()];
 		if (getNew) this.functionInstance = getNew(evalContext);
 		if (!this.functionInstance) {
 			throw "Unknown function " + functionName;
