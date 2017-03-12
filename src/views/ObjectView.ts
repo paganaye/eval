@@ -13,18 +13,21 @@ export class ObjectView extends View<any> {
         var properties = (type && (type as ObjectDefinition).properties) || {};
 
         var keys: string[] = (type as ObjectDefinition).displayOrder || Object.keys(properties);
-        output.printSection({ name: "object-properties" }, () => {
-            for (var key of keys) {
-                var value = data[key];
-                output.printProperty(key, value, properties[key]);
-            }
-        })
-        output.printSection({ name: "object-orphans" }, () => {
-            for (var key in data) {
-                var value = data[key];
-                if (properties[key] !== undefined) continue;
-                output.printProperty(key, value, null);
-            }
+        output.printSection({ name: "object-properties", attributes: attributes }, () => {
+
+            output.printSection({ name: "object-known-properties" }, () => {
+                for (var key of keys) {
+                    var value = data[key];
+                    output.printProperty(key, {}, value, properties[key]);
+                }
+            })
+            output.printSection({ name: "object-orphans" }, () => {
+                for (var key in data) {
+                    var value = data[key];
+                    if (properties[key] !== undefined) continue;
+                    output.printProperty(key, {}, value, null);
+                }
+            });
         });
     }
 }

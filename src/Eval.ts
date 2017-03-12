@@ -21,35 +21,27 @@ import { Database } from './Database';
 import { Crud } from './commands/Crud';
 import { Theme } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
-import { StringView } from "./views/StringView";
 
 
 export class Eval {
 	jsonView: JSONView;
 	inputView: InputView;
 	objectView: ObjectView;
-	stringView: StringView;
 	mapView: MapView;
 	arrayView: ArrayView;
 	defaultViews: { [key: string]: View<any> };
-	defaultEditViews: { [key: string]: View<any> };
 	idCounter: number = 0;
 
 	types: { [key: string]: TypeDefinition } = {};
 	views: { [key: string]: View<any> } = {};
-	editViews: { [key: string]: View<any> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
-	afterClearList: (() => void)[] = []
-
 
 	booleanType: BooleanDefinition;
 	stringType: StringDefinition;
 	numberType: NumberDefinition;
 	objectType: ObjectDefinition;
-	//output: Output;
-	outputElt: HTMLElement;
 	database: Database;
 	theme: Theme;
 
@@ -60,9 +52,7 @@ export class Eval {
 		this.mapView = new MapView(this);
 		this.arrayView = new ArrayView(this);
 		this.inputView = new InputView(this);
-		this.stringView = new StringView(this);
-		this.defaultViews = { object: this.objectView, string: this.stringView, map: this.mapView, array: this.arrayView };
-		this.defaultEditViews = { object: this.objectView };
+		this.defaultViews = { object: this.objectView, map: this.mapView, array: this.arrayView };
 
 
 		this.registerView("json", () => new JSONView(this));
@@ -147,10 +137,6 @@ export class Eval {
 		return JSON.stringify(expr);
 	}
 
-	afterClear(action: () => void): void {
-		this.afterClearList.push(action);
-	}
-
 	getTypeDef(data: any, type: Type): TypeDefinition {
 		if (typeof type == "string") type = this.types[type];
 		if (!type) type = this.types[typeof data] || this.objectType;
@@ -159,9 +145,8 @@ export class Eval {
 
 
 	getView(type: TypeDefinition, editMode: boolean): View<any> {
-		var view: View<any> = editMode
-			? (this.editViews[type.view] || this.defaultEditViews[type.type] || this.inputView)
-			: (this.views[type.view] || this.defaultViews[type.type] || this.jsonView);
+		var view = (editMode ? this.views[type.inputView] : null)
+			|| this.views[type.view] || this.defaultViews[type.type] || this.inputView;
 		return view;
 	}
 
@@ -169,10 +154,10 @@ export class Eval {
 		typeName = (typeName || "object").toLowerCase();
 		this.database.on("tables/table/" + typeName, (data, error) => {
 			var type = data as Type;
-			//var x = { "client": { "type": "object", "properties": { "firstName": { "type": "string" }, "lastName": { "type": "string" }, "address": { "type": "string", "rows": 4 } } } };
+			//var y: Table;
 			switch (typeName) {
 				case "client":
-					debugger;
+					var x: ObjectDefinition = { "displayOrder": ["firstName", "lastName", "address"], "properties": { "address": { "rows": 4, "type": "string" }, "firstName": { "type": "string" }, "lastName": { "type": "string" } }, "type": "object" };
 					// type = {
 					// 	type: "object",
 					// 	properties: {
@@ -187,13 +172,11 @@ export class Eval {
 					type = {
 						type: "object",
 						properties: {
-							tableName: { type: "string", regexp: "[a-zA-Z][a-zA-Z0-9]*" },
-							columns: {
+							properties: {
 								type: "map",
 								key: { type: "string", regexp: "[a-zA-Z][a-zA-Z0-9]*" },
 								entryType: {
 									type: "object", properties: {
-										name: { type: "string", regexp: "[a-zA-Z][a-zA-Z0-9]*" },
 										type: { type: "string", regexp: "[a-zA-Z][a-zA-Z0-9]*" }
 									}
 								}

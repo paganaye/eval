@@ -14,7 +14,7 @@ export class Input extends Command {
 
       run(output: Output) {
             for (var input of this.inputs) {
-                  output.input(input);
+                  //output.input(input);
             }
       }
 }

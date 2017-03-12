@@ -6,7 +6,7 @@ import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions } from "src/Theme";
+import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions } from "src/Theme";
 
 
 export class Output {
@@ -18,20 +18,13 @@ export class Output {
 		this.editMode = (parent && parent.editMode) || false;
 	}
 
-	getEditMode(): boolean {
+	isEditMode(): boolean {
 		return this.editMode;
 	}
 
 	setEditMode(value: boolean) {
 		//todo: perhaps check that the html is empty
 		this.editMode = value;
-	}
-
-	printText(text: string) {
-		this.html.push(
-			"<span class=\"print\">"
-			+ Output.escapeHtml(text)
-			+ "</span>");
 	}
 
 	printHTML(html: string) {
@@ -64,32 +57,32 @@ export class Output {
 		this.startedTags.push(tag);
 	}
 
-
 	printEndTag() {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(key: string, data: any, type: Type): void {
-		this.evalContext.theme.printProperty(this, key, data, type)
+	printProperty(key: string, options: ContentOptions, data: any, type: Type): void {
+		this.evalContext.theme.printProperty(this, options, key, data, type)
 	}
-	printForm(options: FormOptions, printContent: () => void) {
+
+	printInput(options: InputOptions, data: any, type: Type) {
+		this.evalContext.theme.printInput(this, options, data, type)
+	}
+
+	printForm(options: FormOptions, printContent: (contentOptions: ContentOptions) => void) {
 		this.evalContext.theme.printForm(this, options, printContent)
 	}
-	printPage(options: PageOptions, printContent: () => void) {
+
+	printPage(options: PageOptions, printContent: (contentOptions: ContentOptions) => void) {
 		this.evalContext.theme.printPage(this, options, printContent)
 	}
-	printSection(options: SectionOptions, printContent: () => void) {
+
+	printSection(options: SectionOptions, printContent: (contentOptions: ContentOptions) => void) {
 		this.evalContext.theme.printSection(this, options, printContent)
 	}
 
-	input(input: Expression<any>) {
-		var variableName = input as any as string;
-		if (input instanceof GetVariable) {
-			variableName = (input as GetVariable).getVariableName();
-		}
-		var actualValue = this.evalContext.getVariable(variableName);
-		var type = this.evalContext.types[type];
-		if (!type) type = this.evalContext.types[typeof actualValue] || this.evalContext.objectType;
+	printText(text: string) {
+		this.printTag("span", {}, text);
 	}
 
 	print(expr: any, type: Type, attributes?: { [key: string]: string }) {

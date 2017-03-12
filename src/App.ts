@@ -64,7 +64,7 @@ class App {
 		});
 
 		//this.evalConsole.processCommand("update table client");
-		this.evalConsole.processCommand("create client client");
+		this.evalConsole.processCommand("update client 1");
 	}
 
 	// 	tests() {
