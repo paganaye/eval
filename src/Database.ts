@@ -1,6 +1,6 @@
 import { app } from "./App";
 import { Eval } from './Eval';
-import { Output } from "src/Output";
+import { Output } from "./Output";
 var firebase: any;
 
 export class Database {

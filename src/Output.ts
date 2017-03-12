@@ -6,14 +6,24 @@ import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
+import { Section } from "src/Theme";
 
 
 export class Output {
 	public html: String[] = [];
 	private rendered = false;
-
+	private editMode: boolean;
 	constructor(private evalContext: Eval, private outputElt: HTMLElement | string) {
 
+	}
+
+	getEditMode(): boolean {
+		return this.editMode;
+	}
+
+	setEditMode(value: boolean) {
+		//todo: perhaps check that the html is empty
+		this.editMode = value;
 	}
 
 	printText(text: string) {
@@ -42,24 +52,28 @@ export class Output {
 		}
 	}
 
-	startTag(tag: string, attributes: any) {
+	private startedTags: String[] = [];
+
+	printStartTag(tag: string, attributes: any) {
 		this.html.push("<" + tag);
 		for (var key in attributes) {
 			this.html.push(" " + key + "=\"" + Output.escapeAttribute(attributes[key]) + "\"");
 		}
-		this.html.push(" />");
-	}
-
-	endTag(tag: string) {
-		this.html.push("</" + tag + ">");
+		this.html.push(">");
+		this.startedTags.push(tag);
 	}
 
 
-	printProperty(key: string, data: any, type: Type) {
-		this.printHTML("<div>");
-		this.printTag("label", { for: key }, key);
-		this.print(data, type);
-		this.printHTML("</div>");
+	printEndTag() {
+		this.html.push("</" + this.startedTags.pop() + ">");
+	}
+
+	printSection(section: Section, printContent: () => void): void {
+		this.evalContext.theme.printSection(this, section, printContent);
+	}
+
+	printProperty(key: string, data: any, type: Type): void {
+		this.evalContext.theme.printProperty(this, key, data, type)
 	}
 
 	input(input: Expression<any>) {
@@ -70,19 +84,15 @@ export class Output {
 		var actualValue = this.evalContext.getVariable(variableName);
 		var type = this.evalContext.types[type];
 		if (!type) type = this.evalContext.types[typeof actualValue] || this.evalContext.objectType;
-
-		//var view: View<any> = type.inputView || this.defaultInputViews[type.type] || this.evalContext.inputView;
-		//view.render(actualValue, type as TypeDefinition, this);
-
 	}
 
-	print(expr: any, type: Type) {
+	print(expr: any, type: Type, attributes?: { [key: string]: string }) {
 		var typeDef = this.evalContext.getTypeDef(expr, type)
-		var view: View<any> = this.evalContext.getView(typeDef)
+		var view: View<any> = this.evalContext.getView(typeDef, this.editMode)
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
-		view.render(actualValue, type as TypeDefinition, this);
+		view.render(actualValue, typeDef, attributes, this);
 	}
 
 	toString(): string {
@@ -90,10 +100,10 @@ export class Output {
 	}
 
 	render(): void {
-		var htmlText = this.html.join("")
+		var htmlText = this.toString();
 		var elt = (typeof this.outputElt) === "string" ? document.getElementById(this.outputElt as string) : this.outputElt as HTMLElement;
 		if (elt == null) {
-			debugger;
+			setTimeout(() => this.render());
 		} else {
 			elt.innerHTML = htmlText;
 			this.rendered = true;
@@ -140,18 +150,14 @@ export class Output {
 		});
 	}
 
-
-	//afterRenderList: (() => void)[] = []
-
-	printDynamic(tag: string, attributes: any, text: string,
-		action: (output: Output, callback: () => void) => void): void {
+	printDynamic(tag: string, attributes: any, text: string): Output {
 		var nextId = this.evalContext.nextId();
 		if (!attributes) attributes = {};
 		attributes.id = nextId;
 		this.printTag(tag, attributes, "...");
 
 		var newOutput = new Output(this.evalContext, nextId);
-		action(newOutput, () => newOutput.render());
+		return newOutput;
 	}
 
 

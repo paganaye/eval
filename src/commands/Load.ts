@@ -1,7 +1,7 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
-import { Output } from "src/Output";
+import { Output } from "../Output";
 
 export class Load extends Command {
       path: string;

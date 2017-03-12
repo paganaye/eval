@@ -2,7 +2,7 @@ import { EvalConsole } from "./EvalConsole";
 import { Tokenizer, TokenType } from "./Tokenizer";
 import { Parser, Priority } from "./Parser";
 import { Eval } from "./Eval";
-import { Output } from "src/Output";
+import { Output } from "./Output";
 
 export class Tests {
 	constructor(private console: EvalConsole) { }

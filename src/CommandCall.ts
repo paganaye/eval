@@ -1,7 +1,7 @@
 import { Command } from "./Command";
 import { Eval } from "./Eval";
 import { Expression, FunctionCall } from './Expression';
-import { Output } from "src/Output";
+import { Output } from "./Output";
 
 export class CommandCall {
    private command: Command;

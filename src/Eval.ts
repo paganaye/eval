@@ -17,17 +17,21 @@ import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Database } from './Database';
 import { Crud } from './commands/Crud';
+import { Theme } from "./Theme";
+import { Bootstrap } from "./themes/Bootstrap";
+
 
 export class Eval {
       jsonView: JSONView;
       inputView: InputView;
       objectView: ObjectView;
-      defaultViews: { [key: string]: View<any> } = {};
-      defaultInputViews: { [key: string]: View<any> } = {};
+      defaultViews: { [key: string]: View<any> };
+      defaultEditViews: { [key: string]: View<any> };
       idCounter: number = 0;
 
       types: { [key: string]: TypeDefinition } = {};
       views: { [key: string]: View<any> } = {};
+      editViews: { [key: string]: View<any> } = {};
       commands: { [key: string]: (Eval) => Command } = {};
       functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
       variables: { [key: string]: any } = {};
@@ -41,20 +45,24 @@ export class Eval {
       //output: Output;
       outputElt: HTMLElement;
       database: Database;
+      theme: Theme;
 
       constructor() {
-            //this.output = new Output(this);
 
-            this.jsonView = new JSONView();
-            this.objectView = new ObjectView();
-            this.inputView = new InputView();
+            this.jsonView = new JSONView(this);
+            this.objectView = new ObjectView(this);
+            this.inputView = new InputView(this);
             this.defaultViews = {
                   object: this.objectView
             }
+            this.defaultEditViews = {
+                  object: this.objectView
+            }
 
-            this.registerView("json", () => new JSONView());
-            this.registerView("object", () => new ObjectView());
-            this.registerView("input", () => new InputView());
+
+            this.registerView("json", () => new JSONView(this));
+            this.registerView("object", () => new ObjectView(this));
+            this.registerView("input", () => new InputView(this));
 
             this.registerNativeType(this.booleanType = { type: "boolean", view: "json" });
             this.registerNativeType(this.stringType = { type: "string", view: "json" });
@@ -78,7 +86,7 @@ export class Eval {
             this.registerFunctions("now", (parent) => new NowFunction(parent));
 
             this.database = new Database(this);
-
+            this.setTheme(new Bootstrap(this));
       }
 
       nextId(): string {
@@ -145,9 +153,10 @@ export class Eval {
       }
 
 
-      getView(type: TypeDefinition): View<any> {
-            var view: View<any> = this.views[type.view]
-                  || this.defaultViews[type.type] || this.jsonView;
+      getView(type: TypeDefinition, editMode: boolean): View<any> {
+            var view: View<any> = editMode
+                  ? (this.editViews[type.view] || this.defaultEditViews[type.type] || this.inputView)
+                  : (this.views[type.view] || this.defaultViews[type.type] || this.jsonView);
             return view;
       }
 
@@ -179,5 +188,32 @@ export class Eval {
                   }
                   callback(type);
             });
+      }
+
+      public clearTheme() {
+            var nodes = document.head.childNodes;
+            var inThemeHeader = false;
+            for (var i = 0; i < nodes.length; i++) {
+                  var node = nodes.item(i);
+                  if (node.textContent == "Eval Theme Start") inThemeHeader = true;
+                  if (inThemeHeader) {
+                        node.parentNode.removeChild(node);
+                        i--;
+                  }
+                  if (node.textContent == "Eval Theme End") inThemeHeader = false;
+            }
+      }
+
+      public setTheme(newTheme: Theme) {
+            this.clearTheme();
+
+            const themeStart = "<!--Eval Theme Start-->\n";
+            const themeEnd = "<!--Eval Theme End-->";
+            this.theme = newTheme;
+            var themeoutput = new Output(this, null);
+            themeoutput.printHTML(themeStart);
+            this.theme.initialize(themeoutput);
+            themeoutput.printHTML(themeEnd);
+            $('head').append(themeoutput.toString());
       }
 }

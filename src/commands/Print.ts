@@ -2,7 +2,7 @@ import { Command } from "../Command";
 import { Eval } from "../Eval";
 import { ParameterDefinition } from '../EvalFunction';
 import { Expression } from '../Expression';
-import { Output } from "src/Output";
+import { Output } from "../Output";
 
 export class Print extends Command {
       private data: Expression<any>[];

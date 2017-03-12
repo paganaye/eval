@@ -1,17 +1,17 @@
 body {
     margin: 0px;
 }
+
 .terminal,
 .terminal .terminal-output div div,
 .cmd,
 .cmd .prompt {
     font-size: 18px;
     line-height: 20px;
-    font-family: ubuntu mono
 }
 
 .terminal {
-    position: absolute;
+    position: absolute !important;
     left: 0px;
     right: 0px;
     bottom: 0px;
@@ -25,5 +25,12 @@ span.print {
 }
 h1#logo {
     font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif;
-    font-size: 3em;
+    font-size: 200px;
+    color: def;
+    position: absolute;
+    z-index: -100;
+    right: 5px;
+    top: -75px;
+    user-select: none;
+    margin: 0;
 }

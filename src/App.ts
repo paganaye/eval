@@ -11,7 +11,7 @@ import { YoutubeView } from "./views/Youtube";
 import { Expression } from './Expression';
 
 class App {
-	output: Output;
+	//output: Output;
 	evalConsole: EvalConsole;
 	database: Database;
 	reload: number;
@@ -38,14 +38,13 @@ class App {
 
 	initEval() {
 		this.evalContext = new Eval();
-		this.evalContext.registerView("roman", () => new RomanView());
-		this.evalContext.registerView("youtube", () => new YoutubeView());
+		this.evalContext.registerView("roman", () => new RomanView(this.evalContext));
+		this.evalContext.registerView("youtube", () => new YoutubeView(this.evalContext));
 
 		this.evalContext.registerType("roman", { type: "object", view: "roman" });
 		this.evalContext.registerType("youtube", { type: "object", view: "youtube" });
 
-		var outputElt = document.getElementById("output1") as HTMLDivElement;
-		this.output = new Output(this.evalContext, outputElt);
+		//this.output = new Output(this.evalContext, outputElt);
 	}
 
 	initConsole() {
@@ -55,7 +54,8 @@ class App {
 		}
 		// console is first to display the rest of the initializations
 
-		this.evalConsole = new EvalConsole(this.evalContext, this.output);
+		var outputElt = document.getElementById("output1") as HTMLDivElement;
+		this.evalConsole = new EvalConsole(this.evalContext, outputElt);
 		consoleElt = this.evalConsole.initialize();
 		consoleElt.id = "console1";
 		consoleElt.style.display = "block";

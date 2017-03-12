@@ -3,7 +3,7 @@ import { Output } from "../Output";
 import { TypeDefinition } from "../Types";
 
 export class RomanView extends View<number> {
-    render(data: number, type: TypeDefinition, output: Output): void {
+    render(data: number, type: TypeDefinition, attributes: { [key: string]: string }, output: Output): void {
         var num = typeof data === "number" ? data : parseInt(<any>data, 10);
         var result: string;
         if (+num) {
