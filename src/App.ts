@@ -54,18 +54,10 @@ class App {
 		}
 		// console is first to display the rest of the initializations
 
-		var outputElt = document.getElementById("output1") as HTMLDivElement;
-		this.evalConsole = new EvalConsole(this.evalContext, outputElt);
-		consoleElt = this.evalConsole.initialize();
-		consoleElt.id = "console1";
-		consoleElt.style.display = "block";
-		document.body.appendChild(consoleElt);
+		this.evalConsole = new EvalConsole(this.evalContext);
 
-		$(document).keyup(function (e) {
-			if (e.keyCode == 27) { // escape key maps to keycode `27`
-				$(consoleElt).toggle();
-			}
-		});
+		var outputElt = document.getElementById("output1") as HTMLDivElement;
+		this.evalConsole.initialize(outputElt, false);
 	}
 
 	// 	tests() {

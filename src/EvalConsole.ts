@@ -7,8 +7,10 @@ import { Output } from "./Output";
 export class EvalConsole {
   parser: Parser;
   terminal: any;
+  outputElement: HTMLElement;
 
-  constructor(private evalContext: Eval, private readonly parentElement: HTMLElement) {
+  constructor(private evalContext: Eval) {
+    this.parser = new Parser(this.evalContext);
   }
 
   echo(msg: string): void {
@@ -26,8 +28,13 @@ export class EvalConsole {
     this.terminal.error(msg);
   }
 
-  public initialize(): HTMLElement {
+  public initialize(outputElement: HTMLElement, visible: boolean): void {
+    this.outputElement = outputElement;
+
     var elt = document.createElement("div");
+    elt.id = "console1";
+    document.body.appendChild(elt);
+
     this.terminal = ($(elt) as any).terminal(
       (cmd) => this.processCommand(cmd),
       {
@@ -36,8 +43,16 @@ export class EvalConsole {
         prompt: "ε ",
         height: "95px"
       });
-    this.parser = new Parser(this.evalContext);
-    return elt;
+
+    // the terminal do not like to be rendered in a hidden HTMLElement
+    // so we hide it after
+    elt.style.display = "none";
+
+    $(document).keyup(function (e) {
+      if (e.keyCode == 27) { // escape key maps to keycode `27`
+        $(elt).toggle();
+      }
+    });
 
   }
 
@@ -52,7 +67,7 @@ export class EvalConsole {
   public processCommand(commandString: string) {
     try {
       var res = this.parser.parseCommand(commandString)
-      var output = new Output(this.evalContext, this.parentElement)
+      var output = new Output(this.evalContext, this.outputElement)
       this.evalContext.theme.printSection(output, { type: "page" }, () => res.run(output));
       output.render();
     } catch (error) {
