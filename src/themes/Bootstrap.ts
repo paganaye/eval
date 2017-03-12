@@ -3,8 +3,13 @@
 import { Theme, Section } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
+import { Eval } from "src/Eval";
 
 export class Bootstrap extends Theme {
+
+    constructor(evalContext: Eval, private addScripts: boolean = true) {
+        super(evalContext);
+    }
 
     printProperty(output: Output, key: string, data: any, type: Type): void {
         var id = this.evalContext.nextId();
@@ -15,10 +20,12 @@ export class Bootstrap extends Theme {
     }
 
     initialize(output: Output) {
-        // remember to remove jquery if you update this. JQuery is in the main page
-        output.printHTML('<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" >');
-        output.printHTML('<script src="/libs/tether.min.js"></script>');
-        output.printHTML('<script src="/libs/bootstrap/js/bootstrap.min.js"></script>');
+        if (this.addScripts) {
+            // remember to remove jquery if you update this. JQuery is in the main page
+            output.printHTML('<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css" >');
+            output.printHTML('<script src="/libs/tether.min.js"></script>');
+            output.printHTML('<script src="/libs/bootstrap/js/bootstrap.min.js"></script>');
+        }
     }
 
 
