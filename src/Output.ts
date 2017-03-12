@@ -6,7 +6,7 @@ import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { Section } from "src/Theme";
+import { FormOptions, PageOptions, SectionOptions } from "src/Theme";
 
 
 export class Output {
@@ -68,12 +68,17 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printSection(section: Section, printContent: () => void): void {
-		this.evalContext.theme.printSection(this, section, printContent);
-	}
-
 	printProperty(key: string, data: any, type: Type): void {
 		this.evalContext.theme.printProperty(this, key, data, type)
+	}
+	printForm(options: FormOptions, printContent: () => void) {
+		this.evalContext.theme.printForm(this, options, printContent)
+	}
+	printPage(options: PageOptions, printContent: () => void) {
+		this.evalContext.theme.printPage(this, options, printContent)
+	}
+	printSection(options: SectionOptions, printContent: () => void) {
+		this.evalContext.theme.printSection(this, options, printContent)
 	}
 
 	input(input: Expression<any>) {

@@ -1,6 +1,6 @@
 
 
-import { Theme, Section } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "src/Eval";
@@ -28,31 +28,30 @@ export class Bootstrap extends Theme {
         }
     }
 
-
-    printSection(output: Output, section: Section, printContent: () => void): void {
-        switch (section.type) {
-            case "form":
-                output.printStartTag("form", {});
-                printContent();
-                // print buttons...
-                if (!section.buttons) section.buttons = ["Submit"];
-                output.printStartTag("div", {});
-                var className = "btn";
-                for (var button of section.buttons) {
-                    output.printTag("button", { type: "button", class: className }, button as string);
-                    className = "";
-                }
-                output.printEndTag(); // buttons
-                output.printEndTag(); // form                
-                break;
-            case "page":
-                output.printStartTag("div", { class: "container" });
-                printContent();
-                output.printEndTag();
-                break;
-            default:
-                this.defaultPrintSection(output, section, printContent);
-                break;
+    printForm(output: Output, options: FormOptions, printContent: () => void) {
+        output.printStartTag("form", {});
+        printContent();
+        // print buttons...
+        if (!options.buttons) options.buttons = ["Submit"];
+        
+        output.printStartTag("div", {});
+        var className = "btn";
+        for (var button of options.buttons) {
+            output.printTag("button", { type: "button", class: className }, button as string);
+            className = "";
         }
+        output.printEndTag(); // buttons
+        output.printEndTag(); // form                
     }
+
+    printPage(output: Output, options: PageOptions, printContent: () => void) {
+        output.printStartTag("div", { class: "container" });
+        printContent();
+        output.printEndTag();
+    }
+
+    printSection(output: Output, options: SectionOptions, printContent: () => void) {
+        printContent();
+    }
+
 }

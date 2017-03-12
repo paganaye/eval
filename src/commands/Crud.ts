@@ -4,7 +4,6 @@ import { ParameterDefinition } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
-import { FormSection } from "src/Theme";
 
 export class Crud extends Command {
       private tableName: string;
@@ -27,11 +26,13 @@ export class Crud extends Command {
                         case "create":
                               // this should
                               output2.setEditMode(true);
-                              output2.printSection({ type: "form", buttons: ["Save"] }, () => {
+                              output2.printForm({ buttons: ["Save"] }, () => {
                                     output2.print({}, type, {});
                               });
                               break;
                         case "read":
+                              output2.print({}, type, {});
+
                         case "update":
                         case "delete":
                               // output.printDynamic("div", {}, "Loading " + this.tableName + " " + JSON.stringify(this.recordId) + "...", (output) => {
