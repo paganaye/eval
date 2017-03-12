@@ -6,8 +6,8 @@ import { Output } from "./Output";
 import { TypeDefinition, Type } from "./Types";
 import { Tests } from "./Tests";
 import { Eval } from "./Eval";
-import { RomanView } from "./views/Roman";
-import { YoutubeView } from "./views/Youtube";
+import { RomanView } from "./views/RomanView";
+import { YoutubeView } from "./views/YoutubeView";
 import { Expression } from './Expression';
 
 class App {
@@ -58,6 +58,13 @@ class App {
 
 		var outputElt = document.getElementById("output1") as HTMLDivElement;
 		this.evalConsole.initialize(outputElt, false);
+
+		$(window).on('hashchange', () => {
+			this.evalConsole.processCommand(window.location.hash.substring(1));
+		});
+
+		//this.evalConsole.processCommand("update table client");
+		this.evalConsole.processCommand("create client client");
 	}
 
 	// 	tests() {

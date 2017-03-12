@@ -41,6 +41,7 @@ export interface BooleanDefinition extends BaseTypeDefinition<boolean> {
 export interface ObjectDefinition extends BaseTypeDefinition<any> {
    type: "object";
    properties?: { [key: string]: Type };
+   displayOrder: string[];
 }
 
 export interface ArrayDefinition extends BaseTypeDefinition<any[]> {
@@ -55,7 +56,7 @@ export interface ArrayDefinition extends BaseTypeDefinition<any[]> {
 export interface MapDefinition extends BaseTypeDefinition<any> {
    type: "map";
    entryType: TypeDefinition;
-   key: string;
+   key: StringDefinition;
 }
 
 export interface EnumDefinition extends BaseTypeDefinition<string> {

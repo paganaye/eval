@@ -21,7 +21,7 @@ export class Crud extends Command {
 
       run(output: Output) {
             var output2 = output.printDynamic("div", {}, this.commandName + " " + this.tableName + " " + this.recordId);
-            this.evalContext.getType(this.tableName, (type) => {
+            this.evalContext.getTableType(this.tableName, (type) => {
                   switch (this.commandName.toLowerCase()) {
                         case "create":
                               // this should
@@ -29,11 +29,24 @@ export class Crud extends Command {
                               output2.printForm({ buttons: ["Save"] }, () => {
                                     output2.print({}, type, {});
                               });
+                              output2.render();
+                              location.hash = ("create " + this.tableName);
                               break;
                         case "read":
-                              output2.print({}, type, {});
-
+                              this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
+                                    output2.print(data, type, {});
+                                    output2.render();
+                              })
+                              location.hash = ("read " + this.tableName + " " + this.recordId);
+                              break;
                         case "update":
+                              this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
+                                    output2.setEditMode(true);
+                                    output2.print(data, type, {});
+                                    output2.render();
+                              })
+                              location.hash = ("update " + this.tableName + " " + this.recordId);
+                              break;
                         case "delete":
                               // output.printDynamic("div", {}, "Loading " + this.tableName + " " + JSON.stringify(this.recordId) + "...", (output) => {
                               //       var res = this.evalContext.database.on(this.tableName + "/" + this.recordId, (data, error) => {
@@ -47,7 +60,6 @@ export class Crud extends Command {
                         default:
                               throw "unknown command " + this.commandName;
                   }
-                  output2.render();
             });
 
       }

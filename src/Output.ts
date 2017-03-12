@@ -1,6 +1,6 @@
 import { app } from "./App";
-import { YoutubeView } from "./views/Youtube";
-import { ObjectView } from "./views/Object";
+import { YoutubeView } from "./views/YoutubeView";
+import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
 import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
@@ -13,8 +13,9 @@ export class Output {
 	public html: String[] = [];
 	private rendered = false;
 	private editMode: boolean;
-	constructor(private evalContext: Eval, private outputElt: HTMLElement | string) {
 
+	constructor(private evalContext: Eval, private outputElt: HTMLElement | string, parent?: Output) {
+		this.editMode = (parent && parent.editMode) || false;
 	}
 
 	getEditMode(): boolean {
@@ -161,7 +162,7 @@ export class Output {
 		attributes.id = nextId;
 		this.printTag(tag, attributes, "...");
 
-		var newOutput = new Output(this.evalContext, nextId);
+		var newOutput = new Output(this.evalContext, nextId, this);
 		return newOutput;
 	}
 

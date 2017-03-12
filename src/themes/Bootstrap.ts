@@ -15,7 +15,7 @@ export class Bootstrap extends Theme {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row" });
         output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
-        output.print(data, type, { id: id, class: "form-control" });
+        output.print(data, type, { id: id, class: "col-sm-10 " + (output.getEditMode() ? "form-control" : "form-control-static") });
         output.printEndTag();
     }
 
@@ -33,7 +33,7 @@ export class Bootstrap extends Theme {
         printContent();
         // print buttons...
         if (!options.buttons) options.buttons = ["Submit"];
-        
+
         output.printStartTag("div", {});
         var className = "btn";
         for (var button of options.buttons) {
@@ -48,6 +48,7 @@ export class Bootstrap extends Theme {
         output.printStartTag("div", { class: "container" });
         printContent();
         output.printEndTag();
+        document.title = options.title;
     }
 
     printSection(output: Output, options: SectionOptions, printContent: () => void) {

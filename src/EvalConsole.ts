@@ -68,7 +68,7 @@ export class EvalConsole {
     try {
       var res = this.parser.parseCommand(commandString)
       var output = new Output(this.evalContext, this.outputElement)
-      this.evalContext.theme.printSection(output, { type: "page" }, () => res.run(output));
+      this.evalContext.theme.printPage(output, { title: commandString }, () => res.run(output));
       output.render();
     } catch (error) {
       this.error(error);
