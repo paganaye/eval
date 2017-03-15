@@ -1,4 +1,5 @@
-<html lang="en" manifest="eval.appcache"> 
+<html lang="en" manifest="eval.appcache">
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -6,10 +7,11 @@
     <!-- fonts -->
     <!--<link href="http://fonts.googleapis.com/css?family=Ubuntu|Ubuntu+Mono" rel="stylesheet">-->
     <link rel="icon" href="favicon.ico" />
-    <link href="libs/jquery.terminal/jquery.terminal.min.css" rel="stylesheet"/>
+    <link href="libs/jquery.terminal/jquery.terminal.min.css" rel="stylesheet" />
     <link href="app.css" rel="stylesheet" />
-  </head>
 </head>
+</head>
+
 <body>
     <h1 id="logo">ε</h1>
     <div id="output1">
@@ -18,11 +20,20 @@
     <script src="libs/jquery-3.1.1.min.js"></script>
     <!-- then the terminal emulator -->
     <script src="libs/jquery.terminal/jquery.terminal.min.js"></script>
+    <script src="libs/rubaxa.sortable.min.js"></script>
     <!-- firebase complete (might be refined later)-->
     <script src="libs/firebase.js"></script>
 
     <!-- and finally the app -->
     <script src="app.js"></script>
-    
+
+    <style type="text/css">
+        /* show the move cursor as the user moves the mouse over the panel header.*/
+        
+        #draggablePanelList .panel-heading {
+            cursor: move;
+        }
+    </style>
 </body>
+
 </html>

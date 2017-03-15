@@ -34,3 +34,7 @@ h1#logo {
     user-select: none;
     margin: 0;
 }
+.panel-heading {
+    background-color:orange;
+}
+.

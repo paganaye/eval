@@ -6,7 +6,7 @@ import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions } from "src/Theme";
+import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions } from "src/Theme";
 
 
 export class Output {
@@ -65,8 +65,16 @@ export class Output {
 		this.evalContext.theme.printProperty(this, options, key, data, type)
 	}
 
+	printArrayEntry(key: number, options: ContentOptions, data: any, type: Type): void {
+		this.evalContext.theme.printArrayEntry(this, options, key, data, type)
+	}
+
 	printInput(options: InputOptions, data: any, type: Type) {
 		this.evalContext.theme.printInput(this, options, data, type)
+	}
+
+	printButton(options: ButtonOptions, text: string, action: () => void): void {
+		this.evalContext.theme.printButton(this, options, text, action);
 	}
 
 	printForm(options: FormOptions, printContent: (contentOptions: ContentOptions) => void) {
@@ -79,6 +87,10 @@ export class Output {
 
 	printSection(options: SectionOptions, printContent: (contentOptions: ContentOptions) => void) {
 		this.evalContext.theme.printSection(this, options, printContent)
+	}
+
+	printDynamicSection(options: SectionOptions): Output {
+		return this.evalContext.theme.printDynamicSection(this, options);
 	}
 
 	printText(text: string) {
@@ -110,6 +122,17 @@ export class Output {
 		}
 	}
 
+	append(): void {
+		var htmlText = this.toString();
+		var elt = (typeof this.outputElt) === "string" ? document.getElementById(this.outputElt as string) : this.outputElt as HTMLElement;
+		if (elt == null) {
+			setTimeout(() => this.append());
+		} else {
+			elt.innerHTML += htmlText;
+			this.rendered = true;
+			this.html = [];
+		}
+	}
 
 	static selfClosing = {
 		"area": true,

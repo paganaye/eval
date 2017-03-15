@@ -7,10 +7,14 @@ export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
       abstract initialize(output: Output): void;
       abstract printProperty(output: Output, options: ContentOptions, key: string, data: any, type: Type): void;
+      abstract printArrayEntry(output: Output, options: ContentOptions, key: number, data: any, type: Type): void;
       abstract printForm(output: Output, options: FormOptions, printContent: (options: ContentOptions) => void);
       abstract printPage(output: Output, options: PageOptions, printContent: (options: ContentOptions) => void);
       abstract printSection(output: Output, options: SectionOptions, printContent: (options: ContentOptions) => void);
+      abstract printDynamicSection(output: Output, options: SectionOptions): Output;
+
       abstract printInput(output: Output, options: InputOptions, data: any, type: Type);
+      abstract printButton(output: Output, options: ButtonOptions, text: string, action: () => void);
 }
 
 export interface ContentOptions {
@@ -31,6 +35,9 @@ export interface SectionOptions extends ContentOptions {
 }
 
 export interface InputOptions extends ContentOptions {
+}
+
+export interface ButtonOptions extends ContentOptions {
 }
 
 export interface FormButton {
