@@ -5,7 +5,8 @@ import { Eval } from "./Eval";
 
 export abstract class View<T> {
    constructor(protected evalContext: Eval) { }
-   abstract render(expr: T, type: TypeDefinition, attributes: { [key: string]: string }, output: Output): void;
+   abstract build(expr: T, type: TypeDefinition, attributes: { [key: string]: string }): void;   
+   abstract render(output: Output): void;
 }
 
 

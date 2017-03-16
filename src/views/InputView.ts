@@ -4,10 +4,21 @@ import { Output } from '../Output';
 import { Type } from "typescript/lib/typescript";
 
 export class InputView extends View<any> {
-    render(data: any, type: TypeDefinition, attributes: { [key: string]: string }, output: Output): void {
+    attributes: any;
+    data: any;
+    type: TypeDefinition;
+    
+    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
         if (data === undefined) data = "";
-        if (typeof data !== 'string') data = JSON.stringify(data);        
+        if (typeof data !== 'string') data = JSON.stringify(data);
         if (!data) data = "";
-        output.printInput({ attributes: attributes }, data, type);
+
+        this.attributes = attributes;
+        this.data = data;
+        this.type = type;
+    }
+
+    render(output: Output): void {
+        output.printInput({ attributes: this.attributes }, this.data, this.type);
     }
 }

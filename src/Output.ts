@@ -103,7 +103,8 @@ export class Output {
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
-		view.render(actualValue, typeDef, attributes, this);
+		view.build(actualValue, typeDef, attributes);
+		view.render(this);
 	}
 
 	toString(): string {

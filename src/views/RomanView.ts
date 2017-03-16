@@ -3,9 +3,10 @@ import { Output } from "../Output";
 import { TypeDefinition } from "../Types";
 
 export class RomanView extends View<number> {
-    render(data: number, type: TypeDefinition, attributes: { [key: string]: string }, output: Output): void {
+    result: string;
+
+    build(data: number, type: TypeDefinition, attributes: { [key: string]: string }): void {
         var num = typeof data === "number" ? data : parseInt(<any>data, 10);
-        var result: string;
         if (+num) {
             var digits = String(+num).split(""), key = [
                 "", "C-", "C-C-", "C-C-C-", "C-D-", "D-", "D-C-", "D-C-C-", "D-C-C-C-", "C-M-",
@@ -18,8 +19,13 @@ export class RomanView extends View<number> {
             var i = 60;
             while ((i -= 10) >= 0)
                 roman = (key[+digits.pop() + i] || "") + roman;
-            result = Array(+digits.join("") + 1).join("M-") + roman;
-            output.printText(result.replace(/-/g, String.fromCharCode(773)));
+            this.result = (Array(+digits.join("") + 1).join("M-") + roman)
+                .replace(/-/g, String.fromCharCode(773));
+
         }
+    }
+
+    render(output: Output): void {
+        output.printText(this.result);
     }
 }

@@ -9,7 +9,9 @@ interface IYoutubeSource {
 }
 
 export class YoutubeView extends View<any> {
-    render(data: any, type: TypeDefinition, attributes: { [key: string]: string }, output: Output): void {
+    attributes: any;
+
+    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
         //var attributes: any = {
         attributes.frameBorder = "0";
         attributes.allowFullscreen = "true";
@@ -20,8 +22,11 @@ export class YoutubeView extends View<any> {
         attributes.src = "https://www.youtube.com/embed/" + ((typeof data == "string")
             ? attributes.src = data
             : (data as IYoutubeSource).video);
+        this.attributes = attributes;
+    }
 
-        output.printTag("iframe", attributes);
+    render(output: Output): void {
+        output.printTag("iframe", this.attributes);
     }
 }
 
