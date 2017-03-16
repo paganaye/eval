@@ -1,13 +1,14 @@
 import { Output } from "./Output";
 import { Type } from "./Types";
 import { Eval } from "./Eval";
+import { View } from "./View";
 
 
 export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
       abstract initialize(output: Output): void;
-      abstract printProperty(output: Output, options: ContentOptions, key: string, data: any, type: Type): void;
-      abstract printArrayEntry(output: Output, options: ContentOptions, key: number, data: any, type: Type): void;
+      abstract printProperty(output: Output, options: ContentOptions, key: string, data: any, type: Type): View<any>;
+      abstract printArrayEntry(output: Output, options: ContentOptions, key: number, data: any, type: Type): View<any>;
       abstract printForm(output: Output, options: FormOptions, printContent: (options: ContentOptions) => void);
       abstract printPage(output: Output, options: PageOptions, printContent: (options: ContentOptions) => void);
       abstract printSection(output: Output, options: SectionOptions, printContent: (options: ContentOptions) => void);

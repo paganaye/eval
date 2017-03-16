@@ -3,7 +3,7 @@ import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { Expression } from '../Expression';
 import { Output } from "../Output";
-import { View } from "src/View";
+import { View } from "../View";
 
 
 export class Hello extends Command {

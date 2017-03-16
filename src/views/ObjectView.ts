@@ -7,6 +7,7 @@ export class ObjectView extends View<any> {
     data: any;
     keys: string[];
     properties: any;
+    views: { [key: string]: View<any> } = {};
 
     build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
         this.attributes = attributes;
@@ -26,20 +27,27 @@ export class ObjectView extends View<any> {
             output.printSection({ name: "object-known-properties" }, () => {
                 for (var key of this.keys) {
                     var value = this.data[key];
-                    output.printProperty(key, {}, value, this.properties[key]);
+                    this.views[key] = output.printProperty(key, {}, value, this.properties[key]);
                 }
             })
             output.printSection({ name: "object-orphans" }, () => {
                 for (var key in this.data) {
                     var value = this.data[key];
                     if (this.properties[key] !== undefined) continue;
-                    output.printProperty(key, {}, value, null);
+                    this.views[key] = output.printProperty(key, {}, value, null);
                 }
             });
         });
     }
 
     getValue(): any {
-        return this.data;
+        var result = {};
+        for (var key of this.keys) {
+            var view = this.views[key];
+            if (view) {
+                result[key] = view.getValue();
+            } else result[key] = this.data[key];
+        }
+        return result;
     }
 }

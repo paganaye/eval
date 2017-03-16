@@ -2,8 +2,8 @@
 import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { Eval } from "src/Eval";
-import { View } from "src/View";
+import { Eval } from "../Eval";
+import { View } from "../View";
 
 
 export class Bootstrap extends Theme {
@@ -42,7 +42,7 @@ export class Bootstrap extends Theme {
         return innerView;
     }
 
-    printArrayEntry(output: Output, options: ContentOptions, key: number, data: any, type: Type): void {
+    printArrayEntry(output: Output, options: ContentOptions, key: number, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row", id: id });
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
@@ -51,6 +51,7 @@ export class Bootstrap extends Theme {
         innerView.render(output);
 
         output.printEndTag();
+        return innerView;
     }
 
     printForm(output: Output, options: FormOptions, printContent: (options: ContentOptions) => void) {

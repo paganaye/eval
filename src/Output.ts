@@ -6,7 +6,7 @@ import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions } from "src/Theme";
+import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions } from "./Theme";
 
 
 export class Output {
@@ -61,8 +61,8 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(key: string, options: ContentOptions, data: any, type: Type): void {
-		this.evalContext.theme.printProperty(this, options, key, data, type)
+	printProperty(key: string, options: ContentOptions, data: any, type: Type): View<any> {
+		return this.evalContext.theme.printProperty(this, options, key, data, type);
 	}
 
 	printArrayEntry(key: number, options: ContentOptions, data: any, type: Type): void {

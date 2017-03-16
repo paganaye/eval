@@ -4,7 +4,7 @@ import { ParameterDefinition } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
-import { View } from "src/View";
+import { View } from "../View";
 
 export class Crud extends Command {
       private tableName: string;
@@ -50,6 +50,7 @@ export class Crud extends Command {
                                     output2.printSection({ name: "" }, (options) => {
                                           output2.printButton({}, "Save", () => {
                                                 debugger;
+                                                var data = this.innerView.getValue();
                                                 alert("saving..." + JSON.stringify(data));
                                           });
                                     });

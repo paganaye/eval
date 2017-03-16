@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { TypeDefinition } from "../Types";
-import { ContentOptions } from "src/Theme";
+import { ContentOptions } from "../Theme";
 import { Map } from "typescript/lib/typescript";
 
 export class JSONView extends View<any> {

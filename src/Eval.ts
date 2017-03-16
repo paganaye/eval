@@ -24,16 +24,16 @@ import { Bootstrap } from "./themes/Bootstrap";
 
 
 export class Eval {
-	jsonView: JSONView;
-	inputView: InputView;
-	objectView: ObjectView;
-	mapView: MapView;
-	arrayView: ArrayView;
-	defaultViews: { [key: string]: View<any> };
+	jsonView: () => JSONView;
+	inputView: () => InputView;
+	objectView: () => ObjectView;
+	mapView: () => MapView;
+	arrayView: () => ArrayView;
+	defaultViews: { [key: string]: () => View<any> };
 	idCounter: number = 0;
 
 	types: { [key: string]: TypeDefinition } = {};
-	views: { [key: string]: View<any> } = {};
+	views: { [key: string]: () => View<any> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -47,11 +47,11 @@ export class Eval {
 
 	constructor() {
 
-		this.jsonView = new JSONView(this);
-		this.objectView = new ObjectView(this);
-		this.mapView = new MapView(this);
-		this.arrayView = new ArrayView(this);
-		this.inputView = new InputView(this);
+		this.jsonView = () => new JSONView(this);
+		this.objectView = () => new ObjectView(this);
+		this.mapView = () => new MapView(this);
+		this.arrayView = () => new ArrayView(this);
+		this.inputView = () => new InputView(this);
 		this.defaultViews = { object: this.objectView, map: this.mapView, array: this.arrayView };
 
 
@@ -106,7 +106,7 @@ export class Eval {
 	}
 
 	registerView(name: string, getNew: () => View<any>) {
-		this.views[name] = getNew();
+		this.views[name] = getNew;
 	}
 
 	registerFunctions(name: string, getNew: (parent: Expression<any>) => EvalFunction<any>) {
@@ -147,7 +147,7 @@ export class Eval {
 	getView(type: TypeDefinition, editMode: boolean): View<any> {
 		var view = (editMode ? this.views[type.inputView] : null)
 			|| this.views[type.view] || this.defaultViews[type.type] || this.inputView;
-		return view;
+		return view();
 	}
 
 	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any> {
