@@ -17,7 +17,7 @@ export class ArrayView extends View<any> {
          }
          
          output.printSection({ name: "array-buttons" }, () => {
-            output.printButton({}, "Add", () => {
+            output.printButton({}, "+", () => {
                var index = data.length;
                var entry = {};
                data.push(entry);

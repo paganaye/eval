@@ -43,6 +43,12 @@ export class Crud extends Command {
                               this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
                                     output2.setEditMode(true);
                                     output2.print(data, type, {});
+                                    output2.printSection({ name: "" }, (options) => {
+                                          output2.printButton({}, "Save", () => {
+                                                debugger;
+                                                alert("saving..." + JSON.stringify(data));
+                                          });
+                                    });
                                     output2.render();
                               })
                               location.hash = ("update " + this.tableName + " " + this.recordId);
