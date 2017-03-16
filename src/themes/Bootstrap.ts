@@ -3,6 +3,7 @@ import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputO
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "src/Eval";
+import { View } from "src/View";
 
 
 export class Bootstrap extends Theme {
@@ -28,19 +29,27 @@ export class Bootstrap extends Theme {
     }
 
 
-    printProperty(output: Output, contentOptions: ContentOptions, key: string, data: any, type: Type): void {
+    printProperty(output: Output, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row" });
         output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
-        output.print(data, type, { id: id, class: "col-sm-10 " });
+
+        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10 " });
+        innerView.render(output);
+
         output.printEndTag();
+
+        return innerView;
     }
 
     printArrayEntry(output: Output, options: ContentOptions, key: number, data: any, type: Type): void {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row", id: id });
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
-        output.print(data, type, { id: id, class: "col-sm-11 " });
+
+        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-11 " });
+        innerView.render(output);
+
         output.printEndTag();
     }
 
@@ -97,10 +106,12 @@ export class Bootstrap extends Theme {
 
                 setTimeout(() => {
                     var elt = document.getElementById(id);
-                    var Sortable = (window as any).Sortable;
-                    var sortable = Sortable.create(elt, {
-                        animation: 200
-                    });
+                    if (elt) {
+                        var Sortable = (window as any).Sortable;
+                        var sortable = Sortable.create(elt, {
+                            animation: 200
+                        });
+                    }
                 })
                 return output2;
 

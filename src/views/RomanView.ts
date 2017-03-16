@@ -4,8 +4,10 @@ import { TypeDefinition } from "../Types";
 
 export class RomanView extends View<number> {
     result: string;
-
+    data: any;
+    
     build(data: number, type: TypeDefinition, attributes: { [key: string]: string }): void {
+        this.data = data;
         var num = typeof data === "number" ? data : parseInt(<any>data, 10);
         if (+num) {
             var digits = String(+num).split(""), key = [
@@ -27,5 +29,9 @@ export class RomanView extends View<number> {
 
     render(output: Output): void {
         output.printText(this.result);
+    }
+
+    getValue(): any {
+        return this.data;
     }
 }

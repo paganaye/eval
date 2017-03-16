@@ -4,10 +4,12 @@ import { ParameterDefinition } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
+import { View } from "src/View";
 
 export class Crud extends Command {
       private tableName: string;
       private recordId: string;
+      private innerView: View<any>;
 
       constructor(evalContext: Eval, private commandName: string) {
             super(evalContext);
@@ -27,22 +29,24 @@ export class Crud extends Command {
                               // this should
                               output2.setEditMode(true);
                               output2.printForm({ buttons: ["Save"] }, () => {
-                                    output2.print({}, type, {});
+                                    this.innerView = this.evalContext.getViewForExpr({}, type, true);
+                                    this.innerView.render(output2);
                               });
                               output2.render();
                               location.hash = ("create " + this.tableName);
                               break;
                         case "read":
                               this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
-                                    output2.print(data, type, {});
-                                    output2.render();
+                                    this.innerView = this.evalContext.getViewForExpr(data, type, false);
+                                    this.innerView.render(output2);
                               })
                               location.hash = ("read " + this.tableName + " " + this.recordId);
                               break;
                         case "update":
                               this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
                                     output2.setEditMode(true);
-                                    output2.print(data, type, {});
+                                    this.innerView = this.evalContext.getViewForExpr(data, type, true);
+                                    this.innerView.render(output2);
                                     output2.printSection({ name: "" }, (options) => {
                                           output2.printButton({}, "Save", () => {
                                                 debugger;

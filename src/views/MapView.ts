@@ -5,7 +5,7 @@ import { TypeDefinition } from "../Types";
 export class MapView extends View<any> {
    attributes: { [key: string]: string };
    data: any;
-   
+
    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
       this.attributes = attributes;
       this.data = data;
@@ -19,7 +19,10 @@ export class MapView extends View<any> {
       } else {
          output.printText(this.data);
       }
+   }
 
+   getValue(): any {
+      return this.data;
    }
 }
 

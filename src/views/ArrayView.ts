@@ -40,5 +40,9 @@ export class ArrayView extends View<any>
          });
       });
    }
+
+   getValue(): any {
+      return this.data;
+   }
 }
 

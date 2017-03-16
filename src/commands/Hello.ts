@@ -3,16 +3,20 @@ import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { Expression } from '../Expression';
 import { Output } from "../Output";
+import { View } from "src/View";
 
 
 export class Hello extends Command {
    who: Expression<string>;
-
+   innerView: View<any>;
+   
    getParameters() {
       return [{ name: "who", type: "Expression" }];
    }
 
    run(output: Output) {
-      output.print(this.who, null);
+      this.innerView = this.evalContext.getViewForExpr(this.who, null, true);
+      this.innerView.render(output);
+
    }
 }

@@ -5,12 +5,14 @@ import { ContentOptions } from "src/Theme";
 import { Map } from "typescript/lib/typescript";
 
 export class JSONView extends View<any> {
+   data: any;
    text: string;
    attributes: { [key: string]: string };
-   
-   build(expr: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+
+   build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+      this.data = data;
       this.attributes = attributes;
-      this.text = JSON.stringify(expr);
+      this.text = JSON.stringify(data);
    }
 
    render(output: Output): void {
@@ -20,4 +22,7 @@ export class JSONView extends View<any> {
 
    }
 
+   getValue(): any {
+      return this.data;
+   }
 }

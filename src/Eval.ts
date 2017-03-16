@@ -150,6 +150,18 @@ export class Eval {
 		return view;
 	}
 
+	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any> {
+		var typeDef = this.getTypeDef(expr, type)
+		var view: View<any> = this.getView(typeDef, editMode)
+		var actualValue = (expr && expr.getValue)
+			? expr.getValue(this)
+			: expr;
+		view.build(actualValue, typeDef, attributes);
+		return view;
+	}
+
+
+
 	getTableType(typeName: string, callback: (type: Type) => void): void {
 		typeName = (typeName || "object").toLowerCase();
 		this.database.on("tables/table/" + typeName, (data, error) => {

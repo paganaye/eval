@@ -9,9 +9,11 @@ interface IYoutubeSource {
 }
 
 export class YoutubeView extends View<any> {
+    data: any;
     attributes: any;
 
     build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+        this.data = data;
         //var attributes: any = {
         attributes.frameBorder = "0";
         attributes.allowFullscreen = "true";
@@ -27,6 +29,10 @@ export class YoutubeView extends View<any> {
 
     render(output: Output): void {
         output.printTag("iframe", this.attributes);
+    }
+
+    getValue(): any {
+        return this.data;
     }
 }
 

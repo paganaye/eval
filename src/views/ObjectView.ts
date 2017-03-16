@@ -10,8 +10,8 @@ export class ObjectView extends View<any> {
 
     build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
         this.attributes = attributes;
-        this.data = data;
         if (data == null) data = {};
+        this.data = data;
 
         if (!type && data && data.type) {
             type = data.type;
@@ -39,6 +39,7 @@ export class ObjectView extends View<any> {
         });
     }
 
-
-
+    getValue(): any {
+        return this.data;
+    }
 }

@@ -97,16 +97,6 @@ export class Output {
 		this.printTag("span", {}, text);
 	}
 
-	print(expr: any, type: Type, attributes?: { [key: string]: string }) {
-		var typeDef = this.evalContext.getTypeDef(expr, type)
-		var view: View<any> = this.evalContext.getView(typeDef, this.editMode)
-		var actualValue = (expr && expr.getValue)
-			? expr.getValue(this)
-			: expr;
-		view.build(actualValue, typeDef, attributes);
-		view.render(this);
-	}
-
 	toString(): string {
 		return this.html.join("");
 	}
