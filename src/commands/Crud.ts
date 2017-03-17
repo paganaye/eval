@@ -23,7 +23,7 @@ export class Crud extends Command {
 
       run(output: Output) {
             var output2 = output.printDynamic("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt) => {
-                  alert("yes?");
+                  //alert("yes?");
             });
             this.evalContext.getTableType(this.tableName, (type) => {
                   switch (this.commandName.toLowerCase()) {

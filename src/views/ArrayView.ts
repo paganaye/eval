@@ -26,7 +26,6 @@ export class ArrayView extends View<any>
    render(output: Output): void {
       output.printSection({ name: "array", attributes: this.attributes }, (attributes) => {
          this.arrayEntriesOutput = output.printDynamicSection({ name: "array-entries", attributes: attributes });
-debugger;
          if (Array.isArray(this.data)) {
             for (var index = 0; index < this.data.length; index++) {
                var entry = this.data[index];
@@ -43,7 +42,7 @@ debugger;
                var index = this.data.length;
                var entry = {};
                this.data.push(entry);
-               this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
+               view = this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
                this.arrayEntriesOutput.append();
 
                this.indexById[view.getId()] = this.views.length;

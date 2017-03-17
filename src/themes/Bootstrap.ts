@@ -47,18 +47,21 @@ export class Bootstrap extends Theme {
     printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row", id: id });
+
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
 
-        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-11 " });
+        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10 col-xs-11" });
         innerView.render(output);
+        output.printStartTag("div", { class: "col-xs-1" });
         if (options.deletable) {
             output.printButton({}, "x", () => {
                 var elt = document.getElementById(id);
                 if (elt) elt.remove();
             });
         }
+        output.printEndTag(); // right column
 
-        output.printEndTag();
+        output.printEndTag(); // row
         return innerView;
     }
 
