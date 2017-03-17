@@ -7,8 +7,9 @@ export class ArrayView extends View<any>
    attributes: { [key: string]: string };
    data: any[];
    views: View<any>[];
-
    entryType: TypeDefinition;
+   indexById: { [key: string]: number };
+   arrayEntriesOutput: Output;
 
    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
       this.attributes = attributes;
@@ -18,28 +19,35 @@ export class ArrayView extends View<any>
          this.data = [data];
       }
       this.views = [];
+      this.indexById = {};
       this.entryType = type ? (type as ArrayDefinition).entryType : null
    }
 
    render(output: Output): void {
       output.printSection({ name: "array", attributes: this.attributes }, (attributes) => {
-         var output2 = output.printDynamicSection({ name: "array-entries", attributes: attributes });
+         this.arrayEntriesOutput = output.printDynamicSection({ name: "array-entries", attributes: attributes });
+debugger;
          if (Array.isArray(this.data)) {
             for (var index = 0; index < this.data.length; index++) {
                var entry = this.data[index];
-               output2.printArrayEntry(index, { class: "array-entry", deletable: true }, entry, this.entryType);
-
+               var view = this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
+               this.indexById[view.getId()] = this.views.length;
+               this.views.push(view);
             }
-            output2.render();
+            this.arrayEntriesOutput.render();
          }
 
          output.printSection({ name: "array-buttons" }, () => {
             output.printButton({}, "+", () => {
+               debugger;
                var index = this.data.length;
                var entry = {};
                this.data.push(entry);
-               output2.printArrayEntry(index, { class: "array-entry", deletable: true }, entry, this.entryType);
-               output2.append();
+               this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
+               this.arrayEntriesOutput.append();
+
+               this.indexById[view.getId()] = this.views.length;
+               this.views.push(view);
             });
          });
       });
@@ -47,11 +55,14 @@ export class ArrayView extends View<any>
 
    getValue(): any {
       var result = [];
-      for (var i = 0; i < this.views.length; i++) {
-         var view = this.views[i];
+      var container = this.arrayEntriesOutput.getOutputElt();
+      var entryKeys = this.evalContext.theme.getArrayEntriesIndex(container);
+      for (var key of entryKeys) {
+         var index = this.indexById[key];
+         var view = this.views[index];
          if (view) {
             result.push(view.getValue());
-         } else result.push(this.data[i]);
+         } else result.push(this.data[index]);
       }
       return result;
    }

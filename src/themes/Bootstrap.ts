@@ -4,6 +4,8 @@ import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { View } from "../View";
+import { ObjectView } from "../views/ObjectView";
+import { ArrayView } from "../views/ArrayView";
 
 
 export class Bootstrap extends Theme {
@@ -29,7 +31,7 @@ export class Bootstrap extends Theme {
     }
 
 
-    printProperty(output: Output, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
+    printProperty(output: Output, objectView: ObjectView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row" });
         output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
@@ -42,7 +44,7 @@ export class Bootstrap extends Theme {
         return innerView;
     }
 
-    printArrayEntry(output: Output, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any> {
+    printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row", id: id });
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
@@ -58,6 +60,17 @@ export class Bootstrap extends Theme {
 
         output.printEndTag();
         return innerView;
+    }
+
+    getArrayEntriesIndex(element: HTMLElement): string[] {
+        debugger;
+        var children = element.children;
+        var result = [];
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            result.push(child.children[1].id);
+        }
+        return result;
     }
 
     printForm(output: Output, options: FormOptions, printContent: (options: ContentOptions) => void) {
@@ -107,24 +120,20 @@ export class Bootstrap extends Theme {
     printDynamicSection(output: Output, options: SectionOptions): Output {
         switch (options.name) {
             case "array-entries":
-                var id = this.evalContext.nextId();
-
-                var output2 = output.printDynamic("div", { class: "array-entries", id: id }, "...");
-
-                setTimeout(() => {
-                    var elt = document.getElementById(id);
-                    if (elt) {
+                var output2 = output.printDynamic("div", { class: "array-entries" }, "...",
+                    (elt) => {
                         var Sortable = (window as any).Sortable;
                         var sortable = Sortable.create(elt, {
                             animation: 200
                         });
-                    }
-                })
+                    });
                 return output2;
 
             default:
                 console.error("Dynamic Section " + options.name + " not implemented in Bootstrap.");
-                var output2 = output.printDynamic("div", { class: options.name }, "...");
+                var output2 = output.printDynamic("div", { class: options.name }, "...", (elt) => {
+                    output2.render();
+                });
                 return output2;
         }
     }
@@ -143,8 +152,7 @@ export class Bootstrap extends Theme {
         var attributes = options.attributes || {};
         var id = this.evalContext.nextId();
         attributes.id = id;
-        output.printTag("button", attributes, text);
-        setTimeout(() => {
+        output.printDynamic("button", attributes, text, (elt) => {
             var elt = document.getElementById(id);
             if (elt) elt.onclick = () => action();
         });

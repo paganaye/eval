@@ -22,7 +22,9 @@ export class Crud extends Command {
       }
 
       run(output: Output) {
-            var output2 = output.printDynamic("div", {}, this.commandName + " " + this.tableName + " " + this.recordId);
+            var output2 = output.printDynamic("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt) => {
+                  alert("yes?");
+            });
             this.evalContext.getTableType(this.tableName, (type) => {
                   switch (this.commandName.toLowerCase()) {
                         case "create":
@@ -49,7 +51,6 @@ export class Crud extends Command {
                                     this.innerView.render(output2);
                                     output2.printSection({ name: "" }, (options) => {
                                           output2.printButton({}, "Save", () => {
-                                                debugger;
                                                 var data = this.innerView.getValue();
                                                 alert("saving..." + JSON.stringify(data));
                                           });

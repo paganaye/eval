@@ -2,16 +2,12 @@ import { View } from '../View';
 import { TypeDefinition } from '../Types';
 import { Output } from '../Output';
 import { Type } from "typescript/lib/typescript";
-import { Eval } from "src/Eval";
+import { Eval } from "../Eval";
 
 export class InputView extends View<any> {
     attributes: any;
     data: any;
     type: TypeDefinition;
-
-    constructor(evalContext: Eval) {
-        super(evalContext);
-    }
 
     build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
         if (data === undefined) data = "";

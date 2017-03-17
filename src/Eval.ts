@@ -156,7 +156,10 @@ export class Eval {
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
+		if (!attributes) attributes = {};
+		attributes.id = view.getId();
 		view.build(actualValue, typeDef, attributes);
+
 		return view;
 	}
 

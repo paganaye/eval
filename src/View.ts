@@ -4,10 +4,16 @@ import { Expression } from './Expression';
 import { Eval } from "./Eval";
 
 export abstract class View<T> {
-   constructor(protected evalContext: Eval) { }
-   abstract build(expr: T, type: TypeDefinition, attributes: { [key: string]: string }): void;   
+   private id: string;
+   constructor(protected evalContext: Eval) {
+      this.id = evalContext.nextId();
+   }
+   
+   abstract build(expr: T, type: TypeDefinition, attributes: { [key: string]: string }): void;
    abstract render(output: Output): void;
    abstract getValue(): any;
+   getId(): string { return this.id; }
+
 }
 
 

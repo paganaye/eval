@@ -7,16 +7,25 @@ import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions } from "./Theme";
+import { ArrayView } from "./views/ArrayView";
 
 
 export class Output {
 	public html: String[] = [];
 	private rendered = false;
 	private editMode: boolean;
+	private afterRender: ((elt: HTMLElement) => void)[] = [];
 
 	constructor(private evalContext: Eval, private outputElt: HTMLElement | string, parent?: Output) {
 		this.editMode = (parent && parent.editMode) || false;
 	}
+
+	getOutputElt(): HTMLElement {
+		return typeof this.outputElt === "string"
+			? document.getElementById(this.outputElt)
+			: this.outputElt;
+	}
+
 
 	isEditMode(): boolean {
 		return this.editMode;
@@ -61,12 +70,12 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(key: string, options: ContentOptions, data: any, type: Type): View<any> {
-		return this.evalContext.theme.printProperty(this, options, key, data, type);
+	printProperty(objectView: ObjectView, key: string, options: ContentOptions, data: any, type: Type): View<any> {
+		return this.evalContext.theme.printProperty(this, objectView, options, key, data, type);
 	}
 
-	printArrayEntry(key: number, options: ArrayEntryOptions, data: any, type: Type): View<any> {
-		return this.evalContext.theme.printArrayEntry(this, options, key, data, type)
+	printArrayEntry(arrayView: ArrayView, key: number, options: ArrayEntryOptions, data: any, type: Type): View<any> {
+		return this.evalContext.theme.printArrayEntry(this, arrayView, options, key, data, type)
 	}
 
 	printInput(options: InputOptions, data: any, type: Type) {
@@ -103,13 +112,15 @@ export class Output {
 
 	render(): void {
 		var htmlText = this.toString();
-		var elt = (typeof this.outputElt) === "string" ? document.getElementById(this.outputElt as string) : this.outputElt as HTMLElement;
+		var elt = this.getOutputElt();
+
 		if (elt == null) {
 			setTimeout(() => this.render());
 		} else {
 			elt.innerHTML = htmlText;
 			this.rendered = true;
 			this.html = [];
+			this.raiseAfterRender(elt);
 		}
 	}
 
@@ -119,9 +130,22 @@ export class Output {
 		if (elt == null) {
 			setTimeout(() => this.append());
 		} else {
-			elt.innerHTML += htmlText;
+			var tmpDiv = document.createElement('div');
+			tmpDiv.innerHTML = htmlText;
+
+			while (tmpDiv.firstChild) {
+				elt.appendChild(tmpDiv.firstChild);
+			}
 			this.rendered = true;
 			this.html = [];
+			this.raiseAfterRender(elt);
+		}
+	}
+
+	raiseAfterRender(elt: HTMLElement) {
+		for (var x in this.afterRender) {
+			var callback = this.afterRender[x];
+			callback(elt);
 		}
 	}
 
@@ -163,16 +187,26 @@ export class Output {
 		});
 	}
 
-	printDynamic(tag: string, attributes: any, text: string): Output {
-		var nextId = this.evalContext.nextId();
+	printDynamic(tag: string, attributes: any, text: string, callback: (elt: HTMLElement) => void): Output {
 		if (!attributes) attributes = {};
-		attributes.id = nextId;
-		this.printTag(tag, attributes, "...");
-
-		var newOutput = new Output(this.evalContext, nextId, this);
+		var id = attributes.id;
+		if (!id) {
+			id = this.evalContext.nextId();
+			attributes.id = id;
+		}
+		this.printTag(tag, attributes, text);
+		this.afterRender.push(() => {
+			var elt = document.getElementById(id);
+			if (elt) {
+				callback(elt);
+			} else {
+				console.error("Could not find element " + id);
+			}
+		})
+		var newOutput = new Output(this.evalContext, id, this);
 		return newOutput;
-	}
 
+	}
 
 }
 
