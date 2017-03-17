@@ -4,12 +4,13 @@ import { Eval } from "./Eval";
 import { View } from "./View";
 import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
+import { MapView } from "./views/MapView";
 
 
 export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
       abstract initialize(output: Output): void;
-      abstract printProperty(output: Output, objectView: ObjectView, options: ContentOptions, key: string, data: any, type: Type): View<any>;
+      abstract printProperty(output: Output, objectView: ObjectView|MapView, options: ContentOptions, key: string, data: any, type: Type): View<any>;
       abstract printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any>;
       abstract printForm(output: Output, options: FormOptions, printContent: (options: ContentOptions) => void);
       abstract printPage(output: Output, options: PageOptions, printContent: (options: ContentOptions) => void);

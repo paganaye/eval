@@ -6,6 +6,7 @@ import { Eval } from "../Eval";
 import { View } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
+import { MapView } from "../views/MapView";
 
 
 export class Bootstrap extends Theme {
@@ -31,7 +32,7 @@ export class Bootstrap extends Theme {
     }
 
 
-    printProperty(output: Output, objectView: ObjectView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
+    printProperty(output: Output, objectView: ObjectView|MapView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row" });
         output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);

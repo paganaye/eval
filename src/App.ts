@@ -38,8 +38,8 @@ class App {
 
 	initEval() {
 		this.evalContext = new Eval();
-		this.evalContext.registerView("roman", () => new RomanView(this.evalContext));
-		this.evalContext.registerView("youtube", () => new YoutubeView(this.evalContext));
+		this.evalContext.registerView("roman", (id:string) => new RomanView(this.evalContext,id));
+		this.evalContext.registerView("youtube", (id:string) => new YoutubeView(this.evalContext,id));
 
 		this.evalContext.registerType("roman", { type: "object", view: "roman" });
 		this.evalContext.registerType("youtube", { type: "object", view: "youtube" });

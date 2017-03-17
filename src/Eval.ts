@@ -24,16 +24,16 @@ import { Bootstrap } from "./themes/Bootstrap";
 
 
 export class Eval {
-	jsonView: () => JSONView;
-	inputView: () => InputView;
-	objectView: () => ObjectView;
-	mapView: () => MapView;
-	arrayView: () => ArrayView;
-	defaultViews: { [key: string]: () => View<any> };
+	jsonView: (id: string) => JSONView;
+	inputView: (id: string) => InputView;
+	objectView: (id: string) => ObjectView;
+	mapView: (id: string) => MapView;
+	arrayView: (id: string) => ArrayView;
+	defaultViews: { [key: string]: (id: string) => View<any> };
 	idCounter: number = 0;
 
 	types: { [key: string]: TypeDefinition } = {};
-	views: { [key: string]: () => View<any> } = {};
+	views: { [key: string]: (id: string) => View<any> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -47,17 +47,17 @@ export class Eval {
 
 	constructor() {
 
-		this.jsonView = () => new JSONView(this);
-		this.objectView = () => new ObjectView(this);
-		this.mapView = () => new MapView(this);
-		this.arrayView = () => new ArrayView(this);
-		this.inputView = () => new InputView(this);
+		this.jsonView = (id: string) => new JSONView(this, id);
+		this.objectView = (id: string) => new ObjectView(this, id);
+		this.mapView = (id: string) => new MapView(this, id);
+		this.arrayView = (id: string) => new ArrayView(this, id);
+		this.inputView = (id: string) => new InputView(this, id);
 		this.defaultViews = { object: this.objectView, map: this.mapView, array: this.arrayView };
 
 
-		this.registerView("json", () => new JSONView(this));
-		this.registerView("object", () => new ObjectView(this));
-		this.registerView("input", () => new InputView(this));
+		this.registerView("json", (id: string) => new JSONView(this, id));
+		this.registerView("object", (id: string) => new ObjectView(this, id));
+		this.registerView("input", (id: string) => new InputView(this, id));
 
 		this.registerNativeType(this.booleanType = { type: "boolean", view: "json" });
 		this.registerNativeType(this.stringType = { type: "string", view: "json" });
@@ -105,7 +105,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: () => View<any>) {
+	registerView(name: string, getNew: (id: string) => View<any>) {
 		this.views[name] = getNew;
 	}
 
@@ -144,22 +144,27 @@ export class Eval {
 	}
 
 
-	getView(type: TypeDefinition, editMode: boolean): View<any> {
+	getView(type: TypeDefinition, id: string, editMode: boolean): View<any> {
 		var view = (editMode ? this.views[type.inputView] : null)
 			|| this.views[type.view] || this.defaultViews[type.type] || this.inputView;
-		return view();
+		return view(id);
 	}
 
 	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any> {
 		var typeDef = this.getTypeDef(expr, type)
-		var view: View<any> = this.getView(typeDef, editMode)
+		if (!attributes) attributes = {};
+		var id = attributes.id;
+		if (!id) {
+			id = this.nextId();
+			attributes.id = id;
+		}
+		var view: View<any> = this.getView(typeDef, id, editMode)
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
 		if (!attributes) attributes = {};
 		attributes.id = view.getId();
 		view.build(actualValue, typeDef, attributes);
-
 		return view;
 	}
 

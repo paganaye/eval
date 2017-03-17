@@ -8,6 +8,7 @@ import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
+import { MapView } from "./views/MapView";
 
 
 export class Output {
@@ -70,7 +71,7 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(objectView: ObjectView, key: string, options: ContentOptions, data: any, type: Type): View<any> {
+	printProperty(objectView: ObjectView|MapView, key: string, options: ContentOptions, data: any, type: Type): View<any> {
 		return this.evalContext.theme.printProperty(this, objectView, options, key, data, type);
 	}
 

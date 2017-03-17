@@ -1,0 +1,24 @@
+{
+  "compileOnSave": true,
+  "typeAcquisition": {
+    "enable": true
+  },
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "es6",
+    "target": "es3",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "traceResolution": false,
+    "listFiles": false,
+    "listEmittedFiles": false,
+    "pretty": true,
+    "emitDecoratorMetadata": true,  
+    "experimentalDecorators": true,
+    "types": [      
+    ]
+  },
+  "include": [
+     "src/**/*.ts"
+  ]
+}

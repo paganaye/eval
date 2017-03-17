@@ -17,7 +17,6 @@ export class InputView extends View<any> {
         this.attributes = attributes || {};
         this.data = data;
         this.type = type;
-        if (!this.attributes.id) this.attributes.id = this.evalContext.nextId();
     }
 
     render(output: Output): void {
