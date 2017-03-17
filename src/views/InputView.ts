@@ -11,7 +11,6 @@ export class InputView extends View<any> {
 
     constructor(evalContext: Eval) {
         super(evalContext);
-        debugger;
     }
 
     build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {

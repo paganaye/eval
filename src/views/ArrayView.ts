@@ -6,6 +6,8 @@ export class ArrayView extends View<any>
 {
    attributes: { [key: string]: string };
    data: any[];
+   views: View<any>[];
+
    entryType: TypeDefinition;
 
    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
@@ -15,6 +17,7 @@ export class ArrayView extends View<any>
       } else {
          this.data = [data];
       }
+      this.views = [];
       this.entryType = type ? (type as ArrayDefinition).entryType : null
    }
 
@@ -24,7 +27,8 @@ export class ArrayView extends View<any>
          if (Array.isArray(this.data)) {
             for (var index = 0; index < this.data.length; index++) {
                var entry = this.data[index];
-               output2.printArrayEntry(index, { class: "array-entry" }, entry, this.entryType);
+               output2.printArrayEntry(index, { class: "array-entry", deletable: true }, entry, this.entryType);
+
             }
             output2.render();
          }
@@ -34,7 +38,7 @@ export class ArrayView extends View<any>
                var index = this.data.length;
                var entry = {};
                this.data.push(entry);
-               output2.printArrayEntry(index, { class: "array-entry" }, entry, this.entryType);
+               output2.printArrayEntry(index, { class: "array-entry", deletable: true }, entry, this.entryType);
                output2.append();
             });
          });
@@ -42,7 +46,14 @@ export class ArrayView extends View<any>
    }
 
    getValue(): any {
-      return this.data;
+      var result = [];
+      for (var i = 0; i < this.views.length; i++) {
+         var view = this.views[i];
+         if (view) {
+            result.push(view.getValue());
+         } else result.push(this.data[i]);
+      }
+      return result;
    }
 }
 

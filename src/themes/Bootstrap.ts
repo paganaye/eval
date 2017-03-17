@@ -1,5 +1,5 @@
 
-import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -42,13 +42,19 @@ export class Bootstrap extends Theme {
         return innerView;
     }
 
-    printArrayEntry(output: Output, options: ContentOptions, key: number, data: any, type: Type): View<any> {
+    printArrayEntry(output: Output, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row", id: id });
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
 
         var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-11 " });
         innerView.render(output);
+        if (options.deletable) {
+            output.printButton({}, "x", () => {
+                var elt = document.getElementById(id);
+                if (elt) elt.remove();
+            });
+        }
 
         output.printEndTag();
         return innerView;
@@ -102,7 +108,7 @@ export class Bootstrap extends Theme {
         switch (options.name) {
             case "array-entries":
                 var id = this.evalContext.nextId();
-                debugger;
+
                 var output2 = output.printDynamic("div", { class: "array-entries", id: id }, "...");
 
                 setTimeout(() => {
@@ -140,8 +146,8 @@ export class Bootstrap extends Theme {
         output.printTag("button", attributes, text);
         setTimeout(() => {
             var elt = document.getElementById(id);
-            elt.onclick = () => action();
-        })
+            if (elt) elt.onclick = () => action();
+        });
     }
 
 

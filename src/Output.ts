@@ -6,7 +6,7 @@ import { TypeDefinition, Type } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions } from "./Theme";
+import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions } from "./Theme";
 
 
 export class Output {
@@ -65,8 +65,8 @@ export class Output {
 		return this.evalContext.theme.printProperty(this, options, key, data, type);
 	}
 
-	printArrayEntry(key: number, options: ContentOptions, data: any, type: Type): void {
-		this.evalContext.theme.printArrayEntry(this, options, key, data, type)
+	printArrayEntry(key: number, options: ArrayEntryOptions, data: any, type: Type): View<any> {
+		return this.evalContext.theme.printArrayEntry(this, options, key, data, type)
 	}
 
 	printInput(options: InputOptions, data: any, type: Type) {
