@@ -56,7 +56,7 @@ export interface ArrayDefinition extends BaseTypeDefinition<any[]> {
 export interface MapDefinition extends BaseTypeDefinition<any> {
    type: "map";
    entryType: TypeDefinition;
-   key: StringDefinition;
+   key: StringDefinition | EnumDefinition;
 }
 
 export interface EnumDefinition extends BaseTypeDefinition<string> {
@@ -67,6 +67,7 @@ export interface EnumDefinition extends BaseTypeDefinition<string> {
 }
 
 export interface EnumEntry {
+   group?: string;
    key: string
    label?: string
 }

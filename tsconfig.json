@@ -8,9 +8,9 @@
     "module": "es6",
     "target": "es3",
     "moduleResolution": "Node",
-    "baseUrl": ".",
+    "baseUrl": "src",
     "traceResolution": false,
-    "listFiles": false,
+    "listFiles": true,
     "listEmittedFiles": false,
     "pretty": true,
     "emitDecoratorMetadata": true,  
@@ -19,6 +19,6 @@
     ]
   },
   "include": [
-     "src/**/*.ts"
+     "src/**/*"
   ]
 }

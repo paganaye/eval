@@ -1,5 +1,5 @@
 
-import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -10,6 +10,7 @@ import { MapView } from "../views/MapView";
 
 
 export class Bootstrap extends Theme {
+
 
     constructor(evalContext: Eval, private addScripts: boolean = true) {
         super(evalContext);
@@ -32,7 +33,7 @@ export class Bootstrap extends Theme {
     }
 
 
-    printProperty(output: Output, objectView: ObjectView|MapView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
+    printProperty(output: Output, objectView: ObjectView | MapView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row" });
         output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
@@ -150,6 +151,28 @@ export class Bootstrap extends Theme {
             attributes.readonly = "readonly";
         }
         output.printTag("input", attributes)
+    }
+
+    printSelect(output: Output, options: SelectOptions, data: string, type: Type) {
+        output.printStartTag("select", options.attributes);
+        var currentGroup = null;
+
+        for (var entry of options.entries) {
+            if (entry.group != currentGroup) {
+                if (currentGroup) output.printEndTag();
+                output.printStartTag("opt-group", {});
+            }
+            var optionAttributes = { key: entry.key };
+            if (data == entry.key) {
+                optionAttributes["selected"] = true;
+            }
+            output.printTag("option", optionAttributes, entry.label || entry.key);
+        }
+        if (currentGroup) {
+            output.printEndTag();
+            currentGroup = null;
+        }
+        output.printEndTag(); //select
     }
 
     printButton(output: Output, options: ButtonOptions, text: string, action: () => void) {

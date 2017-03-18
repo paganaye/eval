@@ -1,4 +1,4 @@
-import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition } from './Types';
+import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition, EnumDefinition } from './Types';
 import { View } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -21,48 +21,47 @@ import { Database } from './Database';
 import { Crud } from './commands/Crud';
 import { Theme } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
+import { SelectView } from "./views/SelectView";
 
 
 export class Eval {
-	jsonView: (id: string) => JSONView;
-	inputView: (id: string) => InputView;
-	objectView: (id: string) => ObjectView;
-	mapView: (id: string) => MapView;
-	arrayView: (id: string) => ArrayView;
-	defaultViews: { [key: string]: (id: string) => View<any> };
+	jsonViewFactory = (id: string) => new JSONView(this, id);
+	objectViewFactory = (id: string) => new ObjectView(this, id);
+	mapViewFactory = (id: string) => new MapView(this, id);
+	arrayViewFactory = (id: string) => new ArrayView(this, id);
+	inputViewFactory = (id: string) => new InputView(this, id);
+	selectViewFactory = (id: string) => new SelectView(this, id);
+
 	idCounter: number = 0;
 
 	types: { [key: string]: TypeDefinition } = {};
-	views: { [key: string]: (id: string) => View<any> } = {};
+	viewFactory: { [key: string]: (id: string) => View<any> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
 
-	booleanType: BooleanDefinition;
-	stringType: StringDefinition;
-	numberType: NumberDefinition;
-	objectType: ObjectDefinition;
+
 	database: Database;
 	theme: Theme;
 
 	constructor() {
 
-		this.jsonView = (id: string) => new JSONView(this, id);
-		this.objectView = (id: string) => new ObjectView(this, id);
-		this.mapView = (id: string) => new MapView(this, id);
-		this.arrayView = (id: string) => new ArrayView(this, id);
-		this.inputView = (id: string) => new InputView(this, id);
-		this.defaultViews = { object: this.objectView, map: this.mapView, array: this.arrayView };
+		this.viewFactory = {
+			json: this.jsonViewFactory,
+			object: this.objectViewFactory,
+			map: this.mapViewFactory,
+			array: this.arrayViewFactory,
+			input: this.inputViewFactory,
+			select: this.selectViewFactory,
+			enum: this.selectViewFactory
+		};
 
+		this.types = {
+			boolean: { type: "boolean", view: "json" },
+			string: { type: "string", view: "json" },
+			number: { type: "number", view: "json" }
+		}
 
-		this.registerView("json", (id: string) => new JSONView(this, id));
-		this.registerView("object", (id: string) => new ObjectView(this, id));
-		this.registerView("input", (id: string) => new InputView(this, id));
-
-		this.registerNativeType(this.booleanType = { type: "boolean", view: "json" });
-		this.registerNativeType(this.stringType = { type: "string", view: "json" });
-		this.registerNativeType(this.numberType = { type: "number", view: "json" });
-		this.registerNativeType(this.objectType = { type: "object", view: "object" });
 
 		this.registerCommand("print", () => new Print(this));
 		this.registerCommand("hello", () => new Hello(this));
@@ -106,15 +105,11 @@ export class Eval {
 	}
 
 	registerView(name: string, getNew: (id: string) => View<any>) {
-		this.views[name] = getNew;
+		this.viewFactory[name] = getNew;
 	}
 
 	registerFunctions(name: string, getNew: (parent: Expression<any>) => EvalFunction<any>) {
 		this.functions[name] = getNew;
-	}
-
-	registerNativeType(typeDefinition: TypeDefinition) {
-		this.types[typeDefinition.type] = typeDefinition;
 	}
 
 	registerType<T>(name: string, typeDefinition: TypeDefinition) {
@@ -139,14 +134,14 @@ export class Eval {
 
 	getTypeDef(data: any, type: Type): TypeDefinition {
 		if (typeof type == "string") type = this.types[type];
-		if (!type) type = this.types[typeof data] || this.objectType;
+		if (!type) type = this.types[typeof data] || { type: "object" };
 		return type;
 	}
 
 
 	getView(type: TypeDefinition, id: string, editMode: boolean): View<any> {
-		var view = (editMode ? this.views[type.inputView] : null)
-			|| this.views[type.view] || this.defaultViews[type.type] || this.inputView;
+		var viewName = type.view || type.type;
+		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return view(id);
 	}
 

@@ -2,11 +2,11 @@ import { app } from "./App";
 import { YoutubeView } from "./views/YoutubeView";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
-import { TypeDefinition, Type } from './Types';
+import { TypeDefinition, Type, EnumEntry } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions } from "./Theme";
+import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { MapView } from "./views/MapView";
 
@@ -71,7 +71,7 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(objectView: ObjectView|MapView, key: string, options: ContentOptions, data: any, type: Type): View<any> {
+	printProperty(objectView: ObjectView | MapView, key: string, options: ContentOptions, data: any, type: Type): View<any> {
 		return this.evalContext.theme.printProperty(this, objectView, options, key, data, type);
 	}
 
@@ -81,6 +81,10 @@ export class Output {
 
 	printInput(options: InputOptions, data: any, type: Type) {
 		this.evalContext.theme.printInput(this, options, data, type)
+	}
+
+	printSelect(options: SelectOptions, data: string, type: Type) {
+		this.evalContext.theme.printSelect(this, options, data, type)
 	}
 
 	printButton(options: ButtonOptions, text: string, action: () => void): void {
