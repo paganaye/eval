@@ -17,12 +17,13 @@ export class MapView extends View<any> {
         if (!type && data && data.type) {
             type = data.type;
         }
+        this.keys = Object.keys(this.data);
     }
 
     render(output: Output): void {
 
         output.printSection({ name: "map-properties", attributes: this.attributes }, () => {
-            for (var key in this.data) {
+            for (var key of this.keys) {
                 var value = this.data[key];
                 this.views[key] = output.printProperty(this, key, {}, value, this.type.entryType);
             }

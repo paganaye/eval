@@ -43,7 +43,7 @@ export abstract class Expression<T> implements HasValue, Publisher, Subscriber {
 		if (typeof result == "string") result = evalContext.types[result as string];
 		if (!result) {
 			var value = this.getValue(evalContext);
-			result = evalContext.types[typeof value] || evalContext.objectType;
+			result = evalContext.types[typeof value] || { type: "object" };
 		}
 		return result;
 	}
