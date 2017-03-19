@@ -13,7 +13,6 @@ export class DynamicView extends View<object, DynamicDefinition> {
     contentId: string;
 
     build(data: any, type: DynamicDefinition, attributes: { [key: string]: string }): void {
-        debugger;
         if (data === undefined) data = {};
         if (typeof data !== 'object') data = { value: data };
 

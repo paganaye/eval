@@ -67,9 +67,9 @@ export class Bootstrap extends Theme {
 
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
 
-        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10 col-xs-11" });
+        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10" });
         innerView.render(output);
-        output.printStartTag("div", { class: "col-xs-1" });
+        output.printStartTag("div", { class: "col-sm-1" });
         if (options.deletable) {
             output.printButton({}, "x", () => {
                 var elt = document.getElementById(id);
