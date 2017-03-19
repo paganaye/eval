@@ -158,7 +158,7 @@ export class Bootstrap extends Theme {
         var id = attributes.id;
         if (!id) {
             id = this.evalContext.nextId();
-            attributes.id = id;
+            attributes.id = id;            
         }
 
         output.printDynamic("select", attributes, () => {
@@ -179,8 +179,12 @@ export class Bootstrap extends Theme {
                 currentGroup = null;
             }
         }, (selectElement) => {
-            selectElement.onchange = ((a) => {
-                alert("he" + a)
+            selectElement.onchange = ((a: Event) => {
+                var select = a.target as HTMLSelectElement;
+                var option = select.selectedOptions[0] as HTMLOptionElement;
+                var key = option.attributes['key'];
+                var value = key ? key.value : option.value;
+                if (onChanged) onChanged(value);
             });
         });
     }

@@ -36,7 +36,8 @@ export class Eval {
 
 	idCounter: number = 0;
 
-	types: { [key: string]: TypeDefinition } = {};
+	private types: { [key: string]: TypeDefinition } = {};
+
 	viewFactory: { [key: string]: (id: string) => View<any, TypeDefinition> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
@@ -60,9 +61,10 @@ export class Eval {
 		};
 
 		this.types = {
-			boolean: { type: "boolean", view: "json" },
-			string: { type: "string", view: "json" },
-			number: { type: "number", view: "json" }
+			boolean: { type: "boolean", view: "json", inputView: "input" },
+			string: { type: "string", view: "json", inputView: "input" },
+			number: { type: "number", view: "json", inputView: "input" },
+			object: { type: "object", view: "object", inputView: "object" }
 		}
 
 
@@ -137,13 +139,18 @@ export class Eval {
 
 	getTypeDef(data: any, type: Type): TypeDefinition {
 		if (typeof type == "string") type = this.types[type];
-		if (!type) type = this.types[typeof data] || { type: "object" };
+		if (!type) type = this.types[typeof data] || this.types['object'];
+
+		// if (type.type == "dynamic") {
+		// 	type.type = data ? (data.type || "object") : "object";
+		// }
 		return type;
 	}
 
 
 	getView(type: TypeDefinition, id: string, editMode: boolean): View<any, TypeDefinition> {
-		var viewName = type.view || type.type;
+		var viewName = editMode ? type.inputView || type.view || type.type
+			: type.view || type.type;
 		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return view(id);
 	}

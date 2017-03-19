@@ -1,5 +1,5 @@
 import { View } from '../View';
-import { TypeDefinition, EnumEntry, EnumDefinition, DynamicDefinition } from '../Types';
+import { TypeDefinition, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry } from '../Types';
 import { Output } from '../Output';
 import { Type } from "typescript/lib/typescript";
 import { Eval } from "../Eval";
@@ -8,23 +8,38 @@ import { SelectOptions } from "../Theme";
 export class DynamicView extends View<object, DynamicDefinition> {
     attributes: any;
     data: any;
-    type: EnumDefinition;
+    type: DynamicDefinition;
+    targetOutput: Output;
+    entriesByKey: { [key: string]: DynamicEntry } = {};
 
-    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
-        if (data === undefined) data = "";
-        if (typeof data !== 'string') data = JSON.stringify(data);
-        if (!data) data = "";
+    build(data: any, type: DynamicDefinition, attributes: { [key: string]: string }): void {
+        debugger;
+        if (data === undefined) data = {};
+        if (typeof data !== 'object') data = { value: data };
 
         this.attributes = attributes || {};
         this.data = data;
-        this.type = type as EnumDefinition;
+        this.type = type;
 
+        for (var e of type.entries) {
+            this.entriesByKey[e.key] = e;
+        }
     }
 
     render(output: Output): void {
-        var enumEntries: EnumEntry[] = this.type.entries;
+        var enumEntries: DynamicEntry[] = this.type.entries;
         var selectOptions: SelectOptions = { entries: enumEntries, attributes: this.attributes, id: this.attributes.id };
-        output.printSelect(selectOptions, this.data, this.type);
+        output.printSelect(selectOptions, this.data.type, this.type, (str) => this.selectionChanged(this.entriesByKey[str]));
+        this.targetOutput = output.printDynamicSection({ name: "dynamic" });
+        this.selectionChanged(this.entriesByKey[this.data]);
+    }
+
+    selectionChanged(entry: DynamicEntry) {
+        var innertype = (entry || this.type.entries[0]).type;
+        var innerView = this.evalContext.getViewForExpr(this.data, innertype, this.targetOutput.isEditMode(), {});
+        innerView.render(this.targetOutput);
+        this.type.entries
+        this.targetOutput.render();
     }
 
     getValue(): any {
