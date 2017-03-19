@@ -117,8 +117,8 @@ export class Eval {
 		this.functions[name] = getNew;
 	}
 
-	registerType<T>(name: string, typeDefinition: Type) {
-		this.types[name] = typeDefinition;
+	registerType<T>(name: string, type: Type) {
+		this.types[name] = type;
 	}
 
 	getVariable(variableName: string): any {
