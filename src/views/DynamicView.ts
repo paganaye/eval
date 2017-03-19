@@ -10,6 +10,7 @@ export class DynamicView extends View<object, DynamicDefinition> {
     type: DynamicDefinition;
     targetOutput: Output;
     entriesByKey: { [key: string]: DynamicEntry } = {};
+    contentId: string;
 
     build(data: any, type: DynamicDefinition, attributes: { [key: string]: string }): void {
         debugger;
@@ -19,6 +20,7 @@ export class DynamicView extends View<object, DynamicDefinition> {
         this.attributes = attributes || {};
         this.data = data;
         this.type = type;
+        this.contentId = this.evalContext.nextId();
 
         for (var e of type.entries) {
             this.entriesByKey[e.key] = e;
@@ -26,11 +28,18 @@ export class DynamicView extends View<object, DynamicDefinition> {
     }
 
     render(output: Output): void {
-        var enumEntries: DynamicEntry[] = this.type.entries;
-        var selectOptions: SelectOptions = { entries: enumEntries, attributes: this.attributes, id: this.attributes.id };
-        output.printSelect(selectOptions, this.data.type, this.type, (str) => this.selectionChanged(this.entriesByKey[str]));
-        this.targetOutput = output.printDynamicSection({ name: "dynamic" });
-        this.selectionChanged(this.entriesByKey[this.data]);
+        output.printSection({ name: "dynamic-control", attributes: this.attributes }, () => {
+            var enumEntries: DynamicEntry[] = this.type.entries;
+            var selectOptions: SelectOptions = { entries: enumEntries };
+
+            output.printRawProperty({}, (output) => {
+                output.printSelect(selectOptions, this.data.type, this.type, (str) => this.selectionChanged(this.entriesByKey[str]));
+            }, (output, options) => {
+                this.targetOutput = output.printDynamicSection({ name: "dynamic", attributes: options.attributes });
+            });
+
+            setTimeout(() => { this.selectionChanged(this.entriesByKey[this.data]); });
+        });
     }
 
     selectionChanged(entry: DynamicEntry) {

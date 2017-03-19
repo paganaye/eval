@@ -9,6 +9,7 @@ import { Expression, GetVariable } from './Expression';
 import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { MapView } from "./views/MapView";
+import { DynamicView } from "./views/DynamicView";
 
 
 export class Output {
@@ -42,14 +43,23 @@ export class Output {
 	}
 
 
-	printTag(tag: string, attributes: any, content?: string) {
+	printTag(tag: string, attributes: any, content?: string | ((output: Output) => void)) {
 		this.html.push("<" + tag);
 		for (var key in attributes) {
 			this.html.push(" " + key + "=\"" + Output.escapeAttribute(attributes[key]) + "\"");
 		}
 		if (content || !Output.selfClosing[tag.toLowerCase()]) {
 			this.html.push(">");
-			this.html.push(Output.escapeHtml(content));
+			switch (typeof content) {
+				case "function":
+					(content as any)(this);
+					break;
+				case "undefined":
+				// empty tag
+				default:
+					this.html.push(Output.escapeHtml(content));
+					break;
+			}
 			this.html.push("</" + tag + ">");
 		} else {
 			this.html.push(" />");
@@ -71,8 +81,26 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(objectView: ObjectView | MapView, key: string, options: ContentOptions, data: any, type: Type): View<any, any> {
-		return this.evalContext.theme.printProperty(this, objectView, options, key, data, type);
+	printProperty(key: string | ((output: Output) => void), options: ContentOptions, data: any, type: Type): View<any, any> {
+		var result: View<any, any>;
+		this.printRawProperty(options, (output, options) => {
+			if (typeof key === "string") {
+				this.html.push(Output.escapeHtml(key));
+			}
+			else {
+				key(output);
+			}
+		}, (output, options) => {
+			result = this.evalContext.getViewForExpr(data, type, this.editMode, options.attributes);
+			result.render(output);
+		});
+		return result;
+	}
+
+	printRawProperty(options: ContentOptions,
+		printKey: string | ((output: Output, options: ContentOptions) => void),
+		printData: ((output: Output, options: ContentOptions) => void)): void {
+		return this.evalContext.theme.printProperty(this, options, printKey, printData);
 	}
 
 	printArrayEntry(arrayView: ArrayView, key: number, options: ArrayEntryOptions, data: any, type: Type): View<any, any> {

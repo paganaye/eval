@@ -10,7 +10,10 @@ import { MapView } from "./views/MapView";
 export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
       abstract initialize(output: Output): void;
-      abstract printProperty(output: Output, objectView: ObjectView | MapView, options: ContentOptions, key: string, data: any, type: Type): View<any, any>;
+      abstract printProperty(output: Output, options: ContentOptions,
+            printKey: string | ((output: Output, options: ContentOptions) => void),
+            printData: ((output: Output, options: ContentOptions) => void)): void;
+
       abstract printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any, any>;
       abstract printForm(output: Output, options: FormOptions, printContent: (options: ContentOptions) => void);
       abstract printPage(output: Output, options: PageOptions, printContent: (options: ContentOptions) => void);

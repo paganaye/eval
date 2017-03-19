@@ -27,14 +27,14 @@ export class ObjectView extends View<Object, ObjectDefinition> {
             output.printSection({ name: "object-known-properties" }, () => {
                 for (var key of this.keys) {
                     var value = this.data[key];
-                    this.views[key] = output.printProperty(this, key, {}, value, this.properties[key]);
+                    this.views[key] = output.printProperty(key, {}, value, this.properties[key]);
                 }
             })
             output.printSection({ name: "object-orphans" }, () => {
                 for (var key in this.data) {
                     var value = this.data[key];
                     if (this.properties[key] !== undefined) continue;
-                    this.views[key] = output.printProperty(this, key, {}, value, null);
+                    this.views[key] = output.printProperty(key, {}, value, null);
                 }
             });
         });

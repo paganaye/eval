@@ -19,11 +19,10 @@ export class MapView extends View<Object, MapDefinition> {
     }
 
     render(output: Output): void {
-
         output.printSection({ name: "map-properties", attributes: this.attributes }, () => {
             for (var key of this.keys) {
                 var value = this.data[key];
-                this.views[key] = output.printProperty(this, key, {}, value, this.type.entryType);
+                this.views[key] = output.printProperty(key, {}, value, this.type.entryType);
             }
         });
     }

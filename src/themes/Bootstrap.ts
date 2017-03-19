@@ -7,6 +7,7 @@ import { View } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
 import { MapView } from "../views/MapView";
+import { DynamicView } from "../views/DynamicView";
 
 
 export class Bootstrap extends Theme {
@@ -33,18 +34,32 @@ export class Bootstrap extends Theme {
     }
 
 
-    printProperty(output: Output, objectView: ObjectView | MapView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any, any> {
-        var id = this.evalContext.nextId();
+    // printProperty(output: Output, objectView: ObjectView | MapView | DynamicView, contentOptions: ContentOptions, key: string | ((output: Output) => void), data: any, type: Type): View<any, any> {
+    //     var id = this.evalContext.nextId();
+    //     output.printStartTag("div", { class: "form-group row" });
+    //     output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
+    //     var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10 " });
+    //     innerView.render(output);
+    //     output.printEndTag();
+    //     return innerView;
+    // }
+
+    printProperty(output: Output, options: ContentOptions,
+        printKey: string | ((output: Output, options: ContentOptions) => void),
+        printData: ((output: Output, options: ContentOptions) => void)): void {
+
         output.printStartTag("div", { class: "form-group row" });
-        output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
-        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10 " });
-        innerView.render(output);
+
+        output.printTag("label", { class: "col-sm-2 col-form-label", for: options.id },
+            typeof printKey === "string"
+                ? printKey
+                : (output) => (printKey as ((output: Output, options: ContentOptions) => void))(output, options));
+
+        var innerView = printData(output, { attributes: { class: "col-sm-10 " } });
         output.printEndTag();
-
-
-
         return innerView;
     }
+
 
     printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any, any> {
         var id = this.evalContext.nextId();
@@ -123,9 +138,11 @@ export class Bootstrap extends Theme {
 
 
     printDynamicSection(output: Output, options: SectionOptions): Output {
+        var attributes = options.attributes || {};
+        this.addClass(attributes, options.name);
         switch (options.name) {
             case "array-entries":
-                var output2 = output.printDynamic("div", { class: "array-entries" }, "...",
+                var output2 = output.printDynamic("div", attributes, "...",
                     (elt) => {
                         var Sortable = (window as any).Sortable;
                         var sortable = Sortable.create(elt, {
@@ -136,7 +153,7 @@ export class Bootstrap extends Theme {
 
             default:
                 console.error("Dynamic Section " + options.name + " not implemented in Bootstrap.");
-                var output2 = output.printDynamic("div", { class: options.name }, "...", (elt) => {
+                var output2 = output.printDynamic("div", attributes, "...", (elt) => {
                     output2.render();
                 });
                 return output2;
