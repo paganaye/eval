@@ -1,15 +1,14 @@
 import { View } from '../View';
-import { TypeDefinition } from '../Types';
+import { Type } from '../Types';
 import { Output } from '../Output';
-import { Type } from "typescript/lib/typescript";
 import { Eval } from "../Eval";
 
 export class InputView extends View<any,any> {
     attributes: any;
     data: any;
-    type: TypeDefinition;
+    type: Type;
 
-    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+    build(data: any, type: Type, attributes: { [key: string]: string }): void {
         if (data === undefined) data = "";
         if (typeof data !== 'string') data = JSON.stringify(data);
         if (!data) data = "";

@@ -37,11 +37,11 @@ export class Bootstrap extends Theme {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row" });
         output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
-
         var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10 " });
         innerView.render(output);
-
         output.printEndTag();
+
+
 
         return innerView;
     }
@@ -158,7 +158,7 @@ export class Bootstrap extends Theme {
         var id = attributes.id;
         if (!id) {
             id = this.evalContext.nextId();
-            attributes.id = id;            
+            attributes.id = id;
         }
 
         output.printDynamic("select", attributes, () => {

@@ -11,9 +11,9 @@ export abstract class EvalFunction<T> {
 }
 
 export class ParameterDefinition {
-   constructor(readonly name: string, 
-      readonly type: Type, 
-      readonly description?: string, 
+   constructor(readonly name: string,
+      readonly type: Type | String,
+      readonly description?: string,
       readonly multiple?: boolean) {
    }
 }

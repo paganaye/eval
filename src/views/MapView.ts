@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition, ObjectDefinition, MapDefinition } from "../Types";
+import { Type, ObjectDefinition, MapDefinition } from "../Types";
 
 export class MapView extends View<Object, MapDefinition> {
     attributes: { [key: string]: string };

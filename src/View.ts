@@ -1,9 +1,9 @@
 import { Output } from "./Output";
-import { TypeDefinition } from "./Types";
+import { Type } from "./Types";
 import { Expression } from './Expression';
 import { Eval } from "./Eval";
 
-export abstract class View<TValue,TTypeDefinition extends TypeDefinition> {
+export abstract class View<TValue,TTypeDefinition extends Type> {
     constructor(protected evalContext: Eval, private readonly id: string) {
         this.id = id; 
     }

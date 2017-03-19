@@ -1,4 +1,4 @@
-import { TypeDefinition, Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition, EnumDefinition } from './Types';
+import { Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition, EnumDefinition, TypeOrString } from './Types';
 import { View } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -36,9 +36,9 @@ export class Eval {
 
 	idCounter: number = 0;
 
-	private types: { [key: string]: TypeDefinition } = {};
+	private types: { [key: string]: Type } = {};
 
-	viewFactory: { [key: string]: (id: string) => View<any, TypeDefinition> } = {};
+	viewFactory: { [key: string]: (id: string) => View<any, Type> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -109,7 +109,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: (id: string) => View<any, TypeDefinition>) {
+	registerView(name: string, getNew: (id: string) => View<any, Type>) {
 		this.viewFactory[name] = getNew;
 	}
 
@@ -117,7 +117,7 @@ export class Eval {
 		this.functions[name] = getNew;
 	}
 
-	registerType<T>(name: string, typeDefinition: TypeDefinition) {
+	registerType<T>(name: string, typeDefinition: Type) {
 		this.types[name] = typeDefinition;
 	}
 
@@ -137,7 +137,7 @@ export class Eval {
 		return JSON.stringify(expr);
 	}
 
-	getTypeDef(data: any, type: Type): TypeDefinition {
+	getTypeDef(data: any, type: TypeOrString): Type {
 		if (typeof type == "string") type = this.types[type];
 		if (!type) type = this.types[typeof data] || this.types['object'];
 
@@ -148,14 +148,14 @@ export class Eval {
 	}
 
 
-	getView(type: TypeDefinition, id: string, editMode: boolean): View<any, TypeDefinition> {
+	getView(type: Type, id: string, editMode: boolean): View<any, Type> {
 		var viewName = editMode ? type.inputView || type.view || type.type
 			: type.view || type.type;
 		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return view(id);
 	}
 
-	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any, TypeDefinition> {
+	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any, Type> {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!attributes) attributes = {};
 		var id = attributes.id;

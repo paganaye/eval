@@ -8,8 +8,8 @@ import { View } from "../View";
 
 export class Hello extends Command {
    who: Expression<string>;
-   innerView: View<any>;
-   
+   innerView: View<any, any>;
+
    getParameters() {
       return [{ name: "who", type: "Expression" }];
    }

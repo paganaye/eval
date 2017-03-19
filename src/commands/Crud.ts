@@ -9,7 +9,7 @@ import { View } from "../View";
 export class Crud extends Command {
       private tableName: string;
       private recordId: string;
-      private innerView: View<any>;
+      private innerView: View<any, any>;
 
       constructor(evalContext: Eval, private commandName: string) {
             super(evalContext);

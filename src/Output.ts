@@ -2,7 +2,7 @@ import { app } from "./App";
 import { YoutubeView } from "./views/YoutubeView";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
-import { TypeDefinition, Type, EnumEntry } from './Types';
+import { Type, EnumEntry } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';

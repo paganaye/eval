@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition } from "../Types";
+import { Type } from "../Types";
 
 interface ImageSource {
     src?: string;
@@ -12,7 +12,7 @@ export class ImageView extends View<ImageSource, any> {
     data: any;
     attributes: any;
 
-    build(data: ImageSource, type: TypeDefinition, attributes: { [key: string]: string }): void {
+    build(data: ImageSource, type: Type, attributes: { [key: string]: string }): void {
         this.data = data;
         attributes.width = (data.width || 560).toString();
         attributes.height = (data.height || 315).toString();

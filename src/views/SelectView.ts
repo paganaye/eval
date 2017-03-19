@@ -1,7 +1,6 @@
 import { View } from '../View';
-import { TypeDefinition, EnumEntry, EnumDefinition } from '../Types';
+import { Type, EnumEntry, EnumDefinition } from '../Types';
 import { Output } from '../Output';
-import { Type } from "typescript/lib/typescript";
 import { Eval } from "../Eval";
 import { SelectOptions } from "../Theme";
 
@@ -10,7 +9,7 @@ export class SelectView extends View<String, EnumDefinition> {
     data: any;
     type: EnumDefinition;
 
-    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+    build(data: any, type: Type, attributes: { [key: string]: string }): void {
         if (data === undefined) data = "";
         if (typeof data !== 'string') data = JSON.stringify(data);
         if (!data) data = "";

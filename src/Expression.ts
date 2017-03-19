@@ -1,6 +1,6 @@
 import { Eval } from './Eval';
 import { EvalFunction, ParameterDefinition } from './EvalFunction';
-import { TypeDefinition } from './Types';
+import { Type } from './Types';
 
 export interface Subscriber {
 	on(publisher: Publisher);
@@ -13,7 +13,7 @@ export interface Publisher {
 
 export interface HasValue extends Publisher {
 	getValue(context: Eval): any;
-	getType(context: Eval): TypeDefinition;
+	getType(context: Eval): Type;
 	getLabel(context: Eval): string;
 	getUnit(context: Eval): string;
 }
@@ -24,7 +24,7 @@ export abstract class Expression<T> implements HasValue, Publisher, Subscriber {
 	private calculatedValue: any;
 	private label: string;
 	private unit: string;
-	private type: TypeDefinition;
+	private type: Type;
 	abstract calcValue(evalContext: Eval): T;
 
 	getLabel(): string {
@@ -35,15 +35,11 @@ export abstract class Expression<T> implements HasValue, Publisher, Subscriber {
 		return this.unit;
 	}
 
-	getType(evalContext: Eval): TypeDefinition {
-		var result: TypeDefinition = this.type;
-		if (!result) {
-			if (value && (value as any).type) result = (value as any).type;
-		}
-		if (typeof result == "string") result = evalContext.types[result as string];
+	getType(evalContext: Eval): Type {
+		var result: Type = this.type;
 		if (!result) {
 			var value = this.getValue(evalContext);
-			result = evalContext.getTypeDef(value,null);
+			result = evalContext.getTypeDef(value, null);
 		}
 		return result;
 	}

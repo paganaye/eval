@@ -1,5 +1,5 @@
 import { Output } from "./Output";
-import { Type, EnumEntry } from "./Types";
+import { EnumEntry, Type } from "./Types";
 import { Eval } from "./Eval";
 import { View } from "./View";
 import { ArrayView } from "./views/ArrayView";

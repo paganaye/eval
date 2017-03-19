@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition } from "../Types";
+import { Type } from "../Types";
 
 interface IYoutubeSource {
     video?: string;
@@ -12,7 +12,7 @@ export class YoutubeView extends View<any, any> {
     data: any;
     attributes: any;
 
-    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+    build(data: any, type: Type, attributes: { [key: string]: string }): void {
         this.data = data;
         //var attributes: any = {
         attributes.frameBorder = "0";

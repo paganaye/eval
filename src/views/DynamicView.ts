@@ -1,7 +1,6 @@
 import { View } from '../View';
-import { TypeDefinition, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry } from '../Types';
+import { Type, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry } from '../Types';
 import { Output } from '../Output';
-import { Type } from "typescript/lib/typescript";
 import { Eval } from "../Eval";
 import { SelectOptions } from "../Theme";
 

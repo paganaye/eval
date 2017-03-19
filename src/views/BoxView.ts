@@ -1,13 +1,13 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition, ArrayDefinition } from "../Types";
+import { Type } from "../Types";
 
-export class BoxView extends View<any,any> {
+export class BoxView extends View<any, any> {
    data: any;
    text: string;
    attributes: { [key: string]: string };
 
-   build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+   build(data: any, type: Type, attributes: { [key: string]: string }): void {
       this.data = data;
       this.attributes = attributes;
       this.text = JSON.stringify(data);

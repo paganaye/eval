@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition, NumberDefinition } from "../Types";
+import { Type, NumberDefinition } from "../Types";
 
 export class RomanView extends View<number,NumberDefinition> {
     result: string;

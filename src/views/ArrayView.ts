@@ -1,17 +1,17 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition, ArrayDefinition } from "../Types";
+import { Type, ArrayDefinition } from "../Types";
 
-export class ArrayView extends View<any, ArrayDefinition>
+export class ArrayView extends View<any, ArrayDefinition<any>>
 {
    attributes: { [key: string]: string };
    data: any[];
    views: View<any, any>[];
-   entryType: TypeDefinition;
+   entryType: Type;
    indexById: { [key: string]: number };
    arrayEntriesOutput: Output;
 
-   build(data: any, type: ArrayDefinition, attributes: { [key: string]: string }): void {
+   build(data: any, type: ArrayDefinition<any>, attributes: { [key: string]: string }): void {
       this.attributes = attributes;
       if (Array.isArray(data)) {
          this.data = data;

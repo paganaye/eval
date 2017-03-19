@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition, ObjectDefinition } from "../Types";
+import { Type, ObjectDefinition } from "../Types";
 
 export class ObjectView extends View<Object, ObjectDefinition> {
     attributes: { [key: string]: string };
