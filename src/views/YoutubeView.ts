@@ -8,7 +8,7 @@ interface IYoutubeSource {
     height?: number;
 }
 
-export class YoutubeView extends View<any> {
+export class YoutubeView extends View<any, any> {
     data: any;
     attributes: any;
 

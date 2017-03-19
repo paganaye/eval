@@ -33,7 +33,7 @@ export class Bootstrap extends Theme {
     }
 
 
-    printProperty(output: Output, objectView: ObjectView | MapView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any> {
+    printProperty(output: Output, objectView: ObjectView | MapView, contentOptions: ContentOptions, key: string, data: any, type: Type): View<any, any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row" });
         output.printTag("label", { class: "col-sm-2 col-form-label", for: id }, key);
@@ -46,7 +46,7 @@ export class Bootstrap extends Theme {
         return innerView;
     }
 
-    printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any> {
+    printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any, any> {
         var id = this.evalContext.nextId();
         output.printStartTag("div", { class: "form-group row", id: id });
 
@@ -153,26 +153,46 @@ export class Bootstrap extends Theme {
         output.printTag("input", attributes)
     }
 
-    printSelect(output: Output, options: SelectOptions, data: string, type: Type) {
-        output.printStartTag("select", options.attributes);
-        var currentGroup = null;
+    printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
+        var attributes = options.attributes || {};
+        var id = attributes.id;
+        if (!id) {
+            id = this.evalContext.nextId();
+            attributes.id = id;
+        }
 
-        for (var entry of options.entries) {
-            if (entry.group != currentGroup) {
-                if (currentGroup) output.printEndTag();
-                output.printStartTag("opt-group", {});
+        output.printDynamic("select", attributes, () => {
+            var currentGroup = null;
+            for (var entry of options.entries) {
+                if (entry.group != currentGroup) {
+                    if (currentGroup) output.printEndTag();
+                    output.printStartTag("opt-group", {});
+                }
+                var optionAttributes = { key: entry.key };
+                if (data == entry.key) {
+                    optionAttributes["selected"] = true;
+                }
+                output.printTag("option", optionAttributes, entry.label || entry.key);
             }
-            var optionAttributes = { key: entry.key };
-            if (data == entry.key) {
-                optionAttributes["selected"] = true;
+            if (currentGroup) {
+                output.printEndTag();
+                currentGroup = null;
             }
-            output.printTag("option", optionAttributes, entry.label || entry.key);
-        }
-        if (currentGroup) {
-            output.printEndTag();
-            currentGroup = null;
-        }
-        output.printEndTag(); //select
+        }, (selectElement) => {
+            selectElement.onchange = ((a) => {
+                alert("he" + a)
+            });
+        });
+    }
+
+    printDynamic(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
+        this.printSelect(output, options, data, type, (data) => {
+
+        });
+        var id = options.attributes[id];
+        output.printDynamic("p", {}, "...", () => {
+
+        });
     }
 
     printButton(output: Output, options: ButtonOptions, text: string, action: () => void) {

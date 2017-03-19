@@ -1,3 +1,4 @@
+
 import { View } from "./View";
 
 
@@ -38,7 +39,7 @@ export interface BooleanDefinition extends BaseTypeDefinition<boolean> {
    defaultValue?: boolean;
 }
 
-export interface ObjectDefinition extends BaseTypeDefinition<any> {
+export interface ObjectDefinition extends BaseTypeDefinition<object> {
    type: "object";
    properties?: { [key: string]: Type };
    displayOrder?: string[];
@@ -53,14 +54,14 @@ export interface ArrayDefinition extends BaseTypeDefinition<any[]> {
    canReorder?: boolean;
 }
 
-export interface MapDefinition extends BaseTypeDefinition<any> {
+export interface MapDefinition extends BaseTypeDefinition<object> {
    type: "map";
    entryType: TypeDefinition;
    key: StringDefinition | EnumDefinition;
 }
 
 export interface EnumDefinition extends BaseTypeDefinition<string> {
-   type: "enum";
+   type: "select";
    defaultValue?: string;
    entries: EnumEntry[];
    multiple?: boolean;
@@ -72,8 +73,25 @@ export interface EnumEntry {
    label?: string
 }
 
+export interface DynamicDefinition extends BaseTypeDefinition<any> {
+   type: "dynamic";
+   entries: DynamicEntry[];
+}
+
+export interface DynamicEntry extends EnumEntry {
+   // group?: string;
+   // key: string
+   // label?: string
+   type: Type;
+}
+
+export interface TypedObject {
+   type: string;
+   [otherFields: string]: any;
+}
+
 export type TypeDefinition = NumberDefinition | StringDefinition | BooleanDefinition
-   | EnumDefinition | ObjectDefinition | ArrayDefinition | MapDefinition;
+   | EnumDefinition | ObjectDefinition | ArrayDefinition | MapDefinition | DynamicDefinition;
 
 export type Type = TypeDefinition | string;
 

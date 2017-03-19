@@ -1,10 +1,8 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition } from "../Types";
-import { ContentOptions } from "../Theme";
-import { Map } from "typescript/lib/typescript";
+import { TypeDefinition, ArrayDefinition } from "../Types";
 
-export class JSONView extends View<any,any> {
+export class BoxView extends View<any,any> {
    data: any;
    text: string;
    attributes: { [key: string]: string };

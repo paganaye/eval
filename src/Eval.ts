@@ -22,6 +22,7 @@ import { Crud } from './commands/Crud';
 import { Theme } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
+import { DynamicView } from "./views/DynamicView";
 
 
 export class Eval {
@@ -31,11 +32,12 @@ export class Eval {
 	arrayViewFactory = (id: string) => new ArrayView(this, id);
 	inputViewFactory = (id: string) => new InputView(this, id);
 	selectViewFactory = (id: string) => new SelectView(this, id);
+	dynamicViewFactory = (id: string) => new DynamicView(this, id);
 
 	idCounter: number = 0;
 
 	types: { [key: string]: TypeDefinition } = {};
-	viewFactory: { [key: string]: (id: string) => View<any> } = {};
+	viewFactory: { [key: string]: (id: string) => View<any, TypeDefinition> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -53,7 +55,8 @@ export class Eval {
 			array: this.arrayViewFactory,
 			input: this.inputViewFactory,
 			select: this.selectViewFactory,
-			enum: this.selectViewFactory
+			enum: this.selectViewFactory,
+			dynamic: this.dynamicViewFactory
 		};
 
 		this.types = {
@@ -104,7 +107,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: (id: string) => View<any>) {
+	registerView(name: string, getNew: (id: string) => View<any, TypeDefinition>) {
 		this.viewFactory[name] = getNew;
 	}
 
@@ -139,13 +142,13 @@ export class Eval {
 	}
 
 
-	getView(type: TypeDefinition, id: string, editMode: boolean): View<any> {
+	getView(type: TypeDefinition, id: string, editMode: boolean): View<any, TypeDefinition> {
 		var viewName = type.view || type.type;
 		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return view(id);
 	}
 
-	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any> {
+	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any, TypeDefinition> {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!attributes) attributes = {};
 		var id = attributes.id;
@@ -153,7 +156,7 @@ export class Eval {
 			id = this.nextId();
 			attributes.id = id;
 		}
-		var view: View<any> = this.getView(typeDef, id, editMode)
+		var view: View<any, any> = this.getView(typeDef, id, editMode)
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;

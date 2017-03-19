@@ -1,12 +1,12 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { TypeDefinition } from "../Types";
+import { TypeDefinition, NumberDefinition } from "../Types";
 
-export class RomanView extends View<number> {
+export class RomanView extends View<number,NumberDefinition> {
     result: string;
     data: any;
     
-    build(data: number, type: TypeDefinition, attributes: { [key: string]: string }): void {
+    build(data: number, type: NumberDefinition, attributes: { [key: string]: string }): void {
         this.data = data;
         var num = typeof data === "number" ? data : parseInt(<any>data, 10);
         if (+num) {

@@ -2,16 +2,16 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { TypeDefinition, ArrayDefinition } from "../Types";
 
-export class ArrayView extends View<any>
+export class ArrayView extends View<any, ArrayDefinition>
 {
    attributes: { [key: string]: string };
    data: any[];
-   views: View<any>[];
+   views: View<any, any>[];
    entryType: TypeDefinition;
    indexById: { [key: string]: number };
    arrayEntriesOutput: Output;
 
-   build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+   build(data: any, type: ArrayDefinition, attributes: { [key: string]: string }): void {
       this.attributes = attributes;
       if (Array.isArray(data)) {
          this.data = data;
@@ -20,7 +20,7 @@ export class ArrayView extends View<any>
       }
       this.views = [];
       this.indexById = {};
-      this.entryType = type ? (type as ArrayDefinition).entryType : null
+      this.entryType = type ? type.entryType : null
    }
 
    render(output: Output): void {

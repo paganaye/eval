@@ -2,21 +2,19 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { TypeDefinition, ObjectDefinition, MapDefinition } from "../Types";
 
-export class MapView extends View<any> {
+export class MapView extends View<Object, MapDefinition> {
     attributes: { [key: string]: string };
     data: any;
     keys: string[];
-    views: { [key: string]: View<any> } = {};
+    views: { [key: string]: View<any, any> } = {};
     type: MapDefinition;
 
-    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+    build(data: Object, type: MapDefinition, attributes: { [key: string]: string }): void {
         this.attributes = attributes;
         if (data == null) data = {};
         this.data = data;
         this.type = type as MapDefinition;
-        if (!type && data && data.type) {
-            type = data.type;
-        }
+
         this.keys = Object.keys(this.data);
     }
 

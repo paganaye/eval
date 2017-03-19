@@ -71,11 +71,11 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(objectView: ObjectView | MapView, key: string, options: ContentOptions, data: any, type: Type): View<any> {
+	printProperty(objectView: ObjectView | MapView, key: string, options: ContentOptions, data: any, type: Type): View<any, any> {
 		return this.evalContext.theme.printProperty(this, objectView, options, key, data, type);
 	}
 
-	printArrayEntry(arrayView: ArrayView, key: number, options: ArrayEntryOptions, data: any, type: Type): View<any> {
+	printArrayEntry(arrayView: ArrayView, key: number, options: ArrayEntryOptions, data: any, type: Type): View<any, any> {
 		return this.evalContext.theme.printArrayEntry(this, arrayView, options, key, data, type)
 	}
 
@@ -83,8 +83,8 @@ export class Output {
 		this.evalContext.theme.printInput(this, options, data, type)
 	}
 
-	printSelect(options: SelectOptions, data: string, type: Type) {
-		this.evalContext.theme.printSelect(this, options, data, type)
+	printSelect(options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
+		this.evalContext.theme.printSelect(this, options, data, type, onChanged)
 	}
 
 	printButton(options: ButtonOptions, text: string, action: () => void): void {
@@ -147,7 +147,7 @@ export class Output {
 		}
 	}
 
-	raiseAfterRender(elt: HTMLElement) {
+	private raiseAfterRender(elt: HTMLElement) {
 		for (var x in this.afterRender) {
 			var callback = this.afterRender[x];
 			callback(elt);
@@ -192,14 +192,20 @@ export class Output {
 		});
 	}
 
-	printDynamic(tag: string, attributes: any, text: string, callback: (elt: HTMLElement) => void): Output {
+	printDynamic(tag: string, attributes: any, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): Output {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
 			id = this.evalContext.nextId();
 			attributes.id = id;
 		}
-		this.printTag(tag, attributes, text);
+		if (typeof text === "string") {
+			this.printTag(tag, attributes, text);
+		} else {
+			this.printStartTag(tag, attributes);
+			text(this);
+			this.printEndTag();
+		}
 		this.afterRender.push(() => {
 			var elt = document.getElementById(id);
 			if (elt) {

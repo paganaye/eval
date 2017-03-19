@@ -5,7 +5,7 @@ import { Type } from "typescript/lib/typescript";
 import { Eval } from "../Eval";
 import { SelectOptions } from "../Theme";
 
-export class SelectView extends View<any> {
+export class SelectView extends View<String, EnumDefinition> {
     attributes: any;
     data: any;
     type: EnumDefinition;
@@ -24,7 +24,11 @@ export class SelectView extends View<any> {
     render(output: Output): void {
         var enumEntries: EnumEntry[] = this.type.entries;
         var selectOptions: SelectOptions = { entries: enumEntries, attributes: this.attributes, id: this.attributes.id };
-        output.printSelect(selectOptions, this.data, this.type);
+        output.printSelect(selectOptions, this.data, this.type, (a) => {
+            alert("value changed" + a)
+        });
+        var output2 = output.printDynamicSection({ name: "dynamic" });
+
     }
 
     getValue(): any {

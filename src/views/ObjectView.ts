@@ -2,14 +2,14 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { TypeDefinition, ObjectDefinition } from "../Types";
 
-export class ObjectView extends View<any> {
+export class ObjectView extends View<Object, ObjectDefinition> {
     attributes: { [key: string]: string };
     data: any;
     keys: string[];
     properties: any;
-    views: { [key: string]: View<any> } = {};
+    views: { [key: string]: View<any, any> } = {};
 
-    build(data: any, type: TypeDefinition, attributes: { [key: string]: string }): void {
+    build(data: any, type: ObjectDefinition, attributes: { [key: string]: string }): void {
         this.attributes = attributes;
         if (data == null) data = {};
         this.data = data;
@@ -17,8 +17,8 @@ export class ObjectView extends View<any> {
         if (!type && data && data.type) {
             type = data.type;
         }
-        this.properties = (type && (type as ObjectDefinition).properties) || {};
-        this.keys = (type as ObjectDefinition).displayOrder || Object.keys(this.properties);
+        this.properties = (type && type.properties) || {};
+        this.keys = type.displayOrder || Object.keys(this.properties);
     }
 
     render(output: Output): void {
