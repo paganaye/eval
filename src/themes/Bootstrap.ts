@@ -1,5 +1,5 @@
 
-import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions, ButtonGroupOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -11,7 +11,6 @@ import { DynamicView } from "../views/DynamicView";
 
 
 export class Bootstrap extends Theme {
-
 
     constructor(evalContext: Eval, private addScripts: boolean = true) {
         super(evalContext);
@@ -57,17 +56,16 @@ export class Bootstrap extends Theme {
 
         var innerView = printData(output, { attributes: { class: "col-sm-10 " } });
         output.printEndTag();
-        return innerView;
     }
 
 
     printArrayEntry(output: Output, arrayView: ArrayView, options: ArrayEntryOptions, key: number, data: any, type: Type): View<any, any> {
-        var id = this.evalContext.nextId();
-        output.printStartTag("div", { class: "form-group row", id: id });
+        output.printStartTag("div", { class: "form-group row" });
 
+        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { class: "col-sm-10" });
+        var id = innerView.getId();
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
 
-        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { id: id, class: "col-sm-10" });
         innerView.render(output);
         output.printStartTag("div", { class: "col-sm-1" });
         if (options.deletable) {
@@ -83,7 +81,6 @@ export class Bootstrap extends Theme {
     }
 
     getArrayEntriesIndex(element: HTMLElement): string[] {
-        debugger;
         var children = element.children;
         var result = [];
         for (var i = 0; i < children.length; i++) {
@@ -172,18 +169,14 @@ export class Bootstrap extends Theme {
 
     printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
         var attributes = options.attributes || {};
-        var id = attributes.id;
-        if (!id) {
-            id = this.evalContext.nextId();
-            attributes.id = id;
-        }
 
         output.printDynamic("select", attributes, () => {
             var currentGroup = null;
             for (var entry of options.entries) {
                 if (entry.group != currentGroup) {
                     if (currentGroup) output.printEndTag();
-                    output.printStartTag("opt-group", {});
+                    currentGroup = entry.group;
+                    output.printStartTag("optgroup", { label: currentGroup });
                 }
                 var optionAttributes = { key: entry.key };
                 if (data == entry.key) {
@@ -218,14 +211,38 @@ export class Bootstrap extends Theme {
 
     printButton(output: Output, options: ButtonOptions, text: string, action: () => void) {
         var attributes = options.attributes || {};
-        var id = this.evalContext.nextId();
-        attributes.id = id;
         output.printDynamic("button", attributes, text, (elt) => {
-            var elt = document.getElementById(id);
-            if (elt) elt.onclick = () => action();
+            elt.onclick = () => action();
         });
     }
 
+    printButtonGroup(output: Output, options: ButtonGroupOptions, text: string, action: (string: any) => void) {
+        output.printTag("div", { class: "dropdown" }, () => {
+
+            output.printStartTag("a", { type: "button", class: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown", "aria-haspopup": true, "aria-expanded": false });
+            output.printText("Add");
+            output.printEndTag(); // button
+
+            output.printStartTag("div", { class: "dropdown-menu" });
+
+            var currentGroup = null;
+            for (var entry of options.entries) {
+                if (entry.group != currentGroup) {
+                    output.printHTML("<div class=\"dropdown-divider\"></div>");
+                    output.printText(entry.group);
+                    output.printHTML("</li>");
+                }
+                var optionAttributes = { key: entry.key };
+                output.printDynamic("a", { class: "dropdown-item", href: "#" },
+                    entry.label || entry.key, (elt) => {
+                        elt.onclick = () => {
+                            action(entry.key);
+                        }
+                    });
+            }
+            output.printEndTag(); // dropdown-menu
+        });
+    }
 
     addClass(attributes: { [key: string]: string }, newEntry: string): void {
         if (attributes.class) {

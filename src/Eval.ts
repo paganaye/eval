@@ -26,19 +26,17 @@ import { DynamicView } from "./views/DynamicView";
 
 
 export class Eval {
-	jsonViewFactory = (id: string) => new JSONView(this, id);
-	objectViewFactory = (id: string) => new ObjectView(this, id);
-	mapViewFactory = (id: string) => new MapView(this, id);
-	arrayViewFactory = (id: string) => new ArrayView(this, id);
-	inputViewFactory = (id: string) => new InputView(this, id);
-	selectViewFactory = (id: string) => new SelectView(this, id);
-	dynamicViewFactory = (id: string) => new DynamicView(this, id);
-
-	idCounter: number = 0;
+	jsonViewFactory = () => new JSONView(this);
+	objectViewFactory = () => new ObjectView(this);
+	mapViewFactory = () => new MapView(this);
+	arrayViewFactory = () => new ArrayView(this);
+	inputViewFactory = () => new InputView(this);
+	selectViewFactory = () => new SelectView(this);
+	dynamicViewFactory = () => new DynamicView(this);
 
 	private types: { [key: string]: Type } = {};
 
-	viewFactory: { [key: string]: (id: string) => View<any, Type> } = {};
+	viewFactory: { [key: string]: () => View<any, Type> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -46,6 +44,7 @@ export class Eval {
 
 	database: Database;
 	theme: Theme;
+	private idCounter: { [key: string]: number } = {};
 
 	constructor() {
 
@@ -88,10 +87,10 @@ export class Eval {
 		this.setTheme(new Bootstrap(this));
 	}
 
-	nextId(): string {
-		return "elt" + this.idCounter++;
+	nextId(prefix: string) {
+		var counter = this.idCounter[prefix] = (this.idCounter[prefix] || 0) + 1;
+		return prefix + counter;
 	}
-
 
 	raise(actions: (() => void)[]): void {
 		if (!actions) return;
@@ -109,7 +108,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: (id: string) => View<any, Type>) {
+	registerView(name: string, getNew: () => View<any, Type>) {
 		this.viewFactory[name] = getNew;
 	}
 
@@ -148,22 +147,17 @@ export class Eval {
 	}
 
 
-	getView(type: Type, id: string, editMode: boolean): View<any, Type> {
+	getView(type: Type, editMode: boolean): View<any, Type> {
 		var viewName = editMode ? type.inputView || type.view || type.type
 			: type.view || type.type;
 		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
-		return view(id);
+		return view();
 	}
 
 	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any, Type> {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!attributes) attributes = {};
-		var id = attributes.id;
-		if (!id) {
-			id = this.nextId();
-			attributes.id = id;
-		}
-		var view: View<any, any> = this.getView(typeDef, id, editMode)
+		var view: View<any, any> = this.getView(typeDef, editMode)
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;

@@ -9,8 +9,7 @@ export class DynamicView extends View<object, DynamicDefinition> {
     data: any;
     type: DynamicDefinition;
     targetOutput: Output;
-    entriesByKey: { [key: string]: DynamicEntry } = {};
-    contentId: string;
+    entriesByKey: { [key: string]: DynamicEntry } = {};    
 
     build(data: any, type: DynamicDefinition, attributes: { [key: string]: string }): void {
         if (data === undefined) data = {};
@@ -19,7 +18,6 @@ export class DynamicView extends View<object, DynamicDefinition> {
         this.attributes = attributes || {};
         this.data = data;
         this.type = type;
-        this.contentId = this.evalContext.nextId();
 
         for (var e of type.entries) {
             this.entriesByKey[e.key] = e;

@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { Type, ArrayDefinition } from "../Types";
+import { Type, ArrayDefinition, EnumEntry } from "../Types";
 
 export class ArrayView extends View<any, ArrayDefinition<any>>
 {
@@ -37,19 +37,35 @@ export class ArrayView extends View<any, ArrayDefinition<any>>
          }
 
          output.printSection({ name: "array-buttons" }, () => {
-            output.printButton({}, "+", () => {
-               debugger;
-               var index = this.data.length;
-               var entry = {};
-               this.data.push(entry);
-               view = this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
-               this.arrayEntriesOutput.append();
+            if (this.entryType.type == "dynamic") {
+               var entries: EnumEntry[] = [];
+               for (var entryKey in this.entryType.entries) {
+                  var entry = this.entryType.entries[entryKey];
+                  entries.push({ key: entryKey, label: entry.label || entryKey });
+               }
+               output.printButtonGroup({
+                  entries: entries
+               }, "Add", (str) => {
 
-               this.indexById[view.getId()] = this.views.length;
-               this.views.push(view);
-            });
+               });
+            } else {
+               output.printButton({}, "+", () => {
+                  this.addOne(null);
+               });
+            }
          });
       });
+   }
+
+   addOne(type: String) {
+      var index = this.data.length;
+      var entry = {};
+      this.data.push(entry);
+      var view = this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
+      this.arrayEntriesOutput.append();
+
+      this.indexById[view.getId()] = this.views.length;
+      this.views.push(view);
    }
 
    getValue(): any {

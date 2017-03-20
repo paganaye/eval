@@ -6,7 +6,7 @@ import { Type, EnumEntry } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions } from "./Theme";
+import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions, ButtonGroupOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { MapView } from "./views/MapView";
 import { DynamicView } from "./views/DynamicView";
@@ -81,7 +81,7 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(key: string | ((output: Output) => void), options: ContentOptions, data: any, type: Type): View<any, any> {
+	printPropertyAndView(key: string | ((output: Output) => void), options: ContentOptions, data: any, type: Type): View<any, any> {
 		var result: View<any, any>;
 		this.printRawProperty(options, (output, options) => {
 			if (typeof key === "string") {
@@ -100,7 +100,7 @@ export class Output {
 	printRawProperty(options: ContentOptions,
 		printKey: string | ((output: Output, options: ContentOptions) => void),
 		printData: ((output: Output, options: ContentOptions) => void)): void {
-		return this.evalContext.theme.printProperty(this, options, printKey, printData);
+		this.evalContext.theme.printProperty(this, options, printKey, printData);
 	}
 
 	printArrayEntry(arrayView: ArrayView, key: number, options: ArrayEntryOptions, data: any, type: Type): View<any, any> {
@@ -117,6 +117,10 @@ export class Output {
 
 	printButton(options: ButtonOptions, text: string, action: () => void): void {
 		this.evalContext.theme.printButton(this, options, text, action);
+	}
+
+	printButtonGroup(options: ButtonGroupOptions, text: string, action: (string) => void) {
+		this.evalContext.theme.printButtonGroup(this, options, text, action);
 	}
 
 	printForm(options: FormOptions, printContent: (contentOptions: ContentOptions) => void) {
@@ -220,11 +224,12 @@ export class Output {
 		});
 	}
 
+
 	printDynamic(tag: string, attributes: any, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): Output {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
-			id = this.evalContext.nextId();
+			id = this.evalContext.nextId(tag);
 			attributes.id = id;
 		}
 		if (typeof text === "string") {
