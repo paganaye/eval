@@ -52,15 +52,14 @@ export class Bootstrap extends Theme {
 
     printArrayEntry(output: Output, arrayView: ArrayView<any>, attributes: ArrayAttributes, key: number, data: any, type: Type): View<any, Type, ElementAttributes> {
         output.printStartTag("div", { class: "form-group row" });
-
         var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { cssAttributes: { class: "col-sm-10" } });
         var id = innerView.getId();
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
         innerView.render(output);
         output.printStartTag("div", { class: "col-sm-1" });
         if (attributes.deletable) {
-            output.printButton({}, "x", () => {
-                var elt = document.getElementById(id);
+            output.printButton({}, "x", (ev: Event) => {    //                
+                var elt = (ev.target as HTMLElement).parentElement;
                 if (elt) elt.parentElement.remove();
             });
         }
@@ -126,7 +125,6 @@ export class Bootstrap extends Theme {
                 break;
 
             default:
-                debugger;
                 console.error("Section " + attributes.name + " not implemented by Bootstrap Eval theme.");
                 output.printStartTag("div", attributes.cssAttributes);
                 printContent({});
@@ -229,10 +227,10 @@ export class Bootstrap extends Theme {
 
     }
 
-    printButton(output: Output, attributes: ButtonAttributes, text: string, action: () => void) {
+    printButton(output: Output, attributes: ButtonAttributes, text: string, action: (ev: Event) => void) {
         var cssAttributes = attributes.cssAttributes || {};
         output.printAsync("button", attributes, text, (elt) => {
-            elt.onclick = () => action();
+            elt.onclick = (ev) => action(ev);
         });
     }
 

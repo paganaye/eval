@@ -24,8 +24,8 @@ export abstract class Theme {
 
       abstract printInput(output: Output, attributes: InputAttributes, data: any, type: Type);
       abstract printSelect(output: Output, attributes: SelectAttributes, data: string, type: Type, onChanged?: (string) => void);
-      abstract printButton(output: Output, attributes: ButtonAttributes, text: string, action: () => void);
-      abstract printButtonGroup(output: Output, attributes: ButtonGroupAttributes, text: string, action: (string) => void);
+      abstract printButton(output: Output, attributes: ButtonAttributes, text: string, action: (ev: Event) => void);
+      abstract printButtonGroup(output: Output, attributes: ButtonGroupAttributes, text: string, action: (ev: Event, text: string) => void);
 }
 
 export type CssAttributes = { [key: string]: string };

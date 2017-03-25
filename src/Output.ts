@@ -117,7 +117,7 @@ export class Output {
 		this.evalContext.theme.printSelect(this, attributes, data, type, onChanged)
 	}
 
-	printButton(attributes: ButtonAttributes, text: string, action: () => void): void {
+	printButton(attributes: ButtonAttributes, text: string, action: (ev: Event) => void): void {
 		this.evalContext.theme.printButton(this, attributes, text, action);
 	}
 

@@ -47,7 +47,7 @@ export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayAttributes>
                   this.addOne(str);
                });
             } else {
-               output.printButton({}, "+", () => {
+               output.printButton({}, "+", (ev:Event) => {
                   this.addOne(null);
                });
             }
