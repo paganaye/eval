@@ -8,7 +8,7 @@ export class Tests {
 	constructor(private console: EvalConsole) { }
 
 	public selfTests() {
-		this.console.echo("Running tests...");
+		console.log("Running tests...");
 		this.testNextChar();
 		this.testTokenizer();
 		this.testParser();
@@ -17,12 +17,12 @@ export class Tests {
 	}
 
 	public testFunctions() {
-		this.console.echo("Functions...");
+		console.log("Functions...");
 		this.assertParse(1, "abs(-1)")
 	}
 
 	public testParser() {
-		this.console.echo("Parser...");
+		console.log("Parser...");
 		this.assertParse(17, "1+2*3+10")
 		this.assertParse(1, "6/2/3")
 		this.assertParse("AB", "\"A\" + \"B\"")
@@ -60,7 +60,7 @@ export class Tests {
 	}
 
 	public testTokenizer() {
-		this.console.echo("Tokenizer...");
+		console.log("Tokenizer...");
 		var tokenizer = new Tokenizer("12+3<=ab");
 		var token = tokenizer.nextToken();
 		this.assert(TokenType.Number, token.type);
@@ -80,7 +80,7 @@ export class Tests {
 	}
 
 	public testNextChar() {
-		this.console.echo("NextChar...");
+		console.log("NextChar...");
 		var tokenizer = new Tokenizer("a 1");
 		this.assert("a", tokenizer.curChar);
 		this.assert(0, tokenizer.position)
@@ -99,7 +99,7 @@ export class Tests {
 
 			// var commandParser = this.console.commandParser;
 			// var commandCall = commandParser.parse("myCommand 1 true "A" n1:\"C D\" \"n2\":{}");
-			// this.console.echo(commandCall.getSource());
+			// console.log(commandCall.getSource());
 			// this.assert("myCommand", commandCall.getCommand().getName())
 
 			// this.assertCommandParser("cmd1", { 0: 1, 1: true, 2: "A", 3: "B" },
@@ -111,7 +111,7 @@ export class Tests {
 
 		}
 		catch (e) {
-			this.console.error(JSON.stringify(e));
+			console.error(JSON.stringify(e));
 		}
 	}
 
@@ -127,11 +127,11 @@ export class Tests {
 		}
 		var actualJSON = JSON.stringify(actual);
 		if (actualJSON == expectedJSON) {
-			this.console.echo("[Pass] " + message + " => " + actualJSON);
+			console.log("[Pass] " + message + " => " + actualJSON);
 		} else {
-			this.console.error("[Fail] " + message);
-			this.console.echo("  expected: " + expectedJSON);
-			this.console.echo("  actual: " + actualJSON);
+			console.error("[Fail] " + message);
+			console.log("  expected: " + expectedJSON);
+			console.log("  actual: " + actualJSON);
 		}
 	}
 }

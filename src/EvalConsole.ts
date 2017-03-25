@@ -23,7 +23,7 @@ export class EvalConsole {
       this.evalContext.theme.printPage(output, { title: commandString }, () => res.run(output));
       output.render();
     } catch (error) {
-      this.error(error);
+      console.error(error);
     }
   }
 }

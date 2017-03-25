@@ -20,17 +20,21 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
         output.printSection({ name: "dynamic-control", cssAttributes: this.getCssAttributes() }, () => {
             var enumEntries: DynamicEntry[] = this.type.entries;
             var selectOptions: SelectAttributes = { entries: enumEntries };
-            var viewId: string = null;
+
+            // var viewId: string = null;
             output.printRawProperty({},
-                viewId,
                 (output) => {
                     if (this.attributes.freezeType) {
                         output.printText(this.data.type);
                     } else {
                         output.printSelect(selectOptions, this.data.type, this.type, (str) => this.selectionChanged(this.entriesByKey[str]));
                     }
-                }, (output, attributes) => {
-                    this.targetOutput = output.printSectionAsync({ name: "dynamic", cssAttributes: attributes.cssAttributes });
+                },
+                {
+                    getId: () => this.getId(),
+                    render: () => {
+                        this.targetOutput = output.printSectionAsync({ name: "dynamic", cssAttributes: this.getCssAttributes() });
+                    }
                 });
 
             setTimeout(() => { this.selectionChanged(this.entriesByKey[this.data.type]); });

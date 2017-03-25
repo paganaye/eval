@@ -15,7 +15,7 @@ export class MapView extends View<Object, MapDefinition, MapAttributes> {
         output.printSection({ name: "map-properties", cssAttributes: this.getCssAttributes() }, () => {
             for (var key of this.keys) {
                 var value = this.data[key];
-                this.views[key] = output.printPropertyAndView(key, {}, value, this.type.entryType);
+                this.views[key] = output.printLabelAndView(key, {}, value, this.type.entryType);
             }
         });
     }

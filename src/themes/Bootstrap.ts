@@ -1,8 +1,8 @@
-import { Theme, FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, DynamicObjectAttributes, CssAttributes } from "../Theme";
+import { Theme, FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, DynamicObjectAttributes, CssAttributes, PropertyAttributes } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
-import { View } from "../View";
+import { View, LightView } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
 import { MapView } from "../views/MapView";
@@ -31,22 +31,24 @@ export class Bootstrap extends Theme {
         }
     }
 
-    printProperty(output: Output, attributes: ElementAttributes,
-        viewId: string,
-        printKey: string | ((output: Output, attributes: ElementAttributes) => void),
-        printData: ((output: Output, attributes: ElementAttributes) => void)): void {
+    printProperty(output: Output, attributes: PropertyAttributes,
+        printKey: string | ((output: Output, attributes: ElementAttributes) => void), view: LightView) {
 
         output.printStartTag("div", { class: "form-group row" });
 
-        output.printTag("label", { class: "col-sm-2 col-form-label", for: viewId },
+        this.addClass(attributes.labelCssAttributes, "col-sm-2");
+        this.addClass(attributes.labelCssAttributes, "col-form-label");
+        this.addClass(attributes.cssAttributes, "col-sm-10");
+        attributes.labelCssAttributes.for = view.getId();
+
+        output.printTag("label", attributes.labelCssAttributes,
             typeof printKey === "string"
                 ? printKey
                 : (output) => (printKey as ((output: Output, attributes: ElementAttributes) => void))(output, attributes));
 
-        var innerView = printData(output, { cssAttributes: { class: "col-sm-10 " } });
+        view.render(output);
         output.printEndTag();
     }
-
 
     printArrayEntry(output: Output, arrayView: ArrayView<any>, attributes: ArrayAttributes, key: number, data: any, type: Type): View<any, Type, ElementAttributes> {
         output.printStartTag("div", { class: "form-group row" });
@@ -106,14 +108,27 @@ export class Bootstrap extends Theme {
         this.addClass(cssAttributes, attributes.name);
         switch (attributes.name) {
             case "object-properties":
-                output.printStartTag("div", attributes);
+            case "array-buttons":
+            case "array":
+            case "object-orphans":
+            case "map-properties":
+            case "dynamic-control":
+            case "crud-update":
+            case "object-known-properties":
+                output.printStartTag("div", attributes.cssAttributes);
                 printContent({});
                 output.printEndTag();
                 break;
-            default:
-                console.log("Section:" + attributes.name + " unhandled by Bootstrap");
 
-                output.printStartTag("div", attributes);
+            case "nodiv":
+                // no tag for those but we pass the attributes along
+                printContent(attributes);
+                break;
+
+            default:
+                debugger;
+                console.error("Section " + attributes.name + " not implemented by Bootstrap Eval theme.");
+                output.printStartTag("div", attributes.cssAttributes);
                 printContent({});
                 output.printEndTag();
 
@@ -135,9 +150,14 @@ export class Bootstrap extends Theme {
                         });
                     });
                 return output2;
+            case "dynamic":
+                var output2 = output.printAsync("div", attributes, "...", (elt) => {
+                    output2.render();
+                });
+                return output2;
 
             default:
-                console.error("Dynamic Section " + attributes.name + " not implemented in Bootstrap.");
+                console.error("Async Section " + attributes.name + " not implemented by Bootstrap Eval theme.");
                 var output2 = output.printAsync("div", attributes, "...", (elt) => {
                     output2.render();
                 });
@@ -219,7 +239,11 @@ export class Bootstrap extends Theme {
     printButtonGroup(output: Output, attributes: ButtonGroupAttributes, text: string, action: (string: any) => void) {
         output.printTag("div", { class: "dropdown" }, () => {
 
-            output.printStartTag("a", { type: "button", class: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown", "aria-haspopup": true, "aria-expanded": false });
+            output.printStartTag("a",
+                {
+                    type: "button", class: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown",
+                    "aria-haspopup": "true", "aria-expanded": "false"
+                });
             output.printText("Add");
             output.printEndTag(); // button
 

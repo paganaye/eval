@@ -1,7 +1,7 @@
 import { Output } from "./Output";
 import { EnumEntry, Type } from "./Types";
 import { Eval } from "./Eval";
-import { View } from "./View";
+import { View, LightView } from "./View";
 import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
 import { MapView } from "./views/MapView";
@@ -14,9 +14,9 @@ export abstract class Theme {
       abstract printForm(output: Output, attributes: FormAttributes, printContent: (attributes: ElementAttributes) => void);
       abstract printPage(output: Output, attributes: PageAttributes, printContent: (attributes: ElementAttributes) => void);
       abstract printSection(output: Output, attributes: SectionAttributes, printContent: (attributes: ElementAttributes) => void);
-      abstract printProperty(output: Output, attributes: ElementAttributes, viewId: string,
-            printKey: string | ((output: Output, attributes: ElementAttributes) => void),
-            printData: ((output: Output, attributes: ElementAttributes) => void)): void;
+      abstract printProperty(output: Output, attributes: PropertyAttributes,
+            printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: LightView);
+
       abstract printSectionAsync(output: Output, attributes: SectionAttributes): Output;
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
             attributes: ArrayAttributes, key: number, data: any, type: Type): View<any, Type, ElementAttributes>;
@@ -33,6 +33,10 @@ export type CssAttributes = { [key: string]: string };
 export class ElementAttributes {
       id?: string;
       cssAttributes?: CssAttributes;
+}
+
+export class PropertyAttributes extends ElementAttributes {
+      labelCssAttributes?: CssAttributes;
 }
 
 export class ArrayAttributes extends ElementAttributes {

@@ -3,10 +3,10 @@ import { YoutubeView } from "./views/YoutubeView";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
 import { Type, EnumEntry } from './Types';
-import { View } from "./View";
+import { View, LightView } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, CssAttributes } from "./Theme";
+import { FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, CssAttributes, PropertyAttributes } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { MapView } from "./views/MapView";
 import { DynamicView } from "./views/DynamicView";
@@ -28,7 +28,6 @@ export class Output {
 			: this.outputElt;
 	}
 
-
 	isEditMode(): boolean {
 		return this.editMode;
 	}
@@ -42,14 +41,9 @@ export class Output {
 		this.html.push(html);
 	}
 
-
 	printTag(tag: string, attributes: CssAttributes, content?: string | ((output: Output) => void)) {
-		this.html.push("<" + tag);
-		for (var key in attributes) {
-			this.html.push(" " + key + "=\"" + Output.escapeAttribute(attributes[key]) + "\"");
-		}
 		if (content || !Output.selfClosing[tag.toLowerCase()]) {
-			this.html.push(">");
+			this.printStartTag(tag, attributes);
 			switch (typeof content) {
 				case "function":
 					(content as any)(this);
@@ -60,51 +54,55 @@ export class Output {
 					this.html.push(Output.escapeHtml(content));
 					break;
 			}
-			this.html.push("</" + tag + ">");
+			this.printEndTag();
 		} else {
-			this.html.push(" />");
+			this.printStartTag(tag, attributes, true);
 		}
 	}
 
 	private startedTags: String[] = [];
 
-	printStartTag(tag: string, attributes: any) {
+	printStartTag(tag: string, attributes: CssAttributes, empty?: boolean) {
 		this.html.push("<" + tag);
 		for (var key in attributes) {
 			this.html.push(" " + key + "=\"" + Output.escapeAttribute(attributes[key]) + "\"");
 		}
-		this.html.push(">");
-		this.startedTags.push(tag);
+		if (empty) {
+			this.html.push(" />");
+		} else {
+			this.html.push(">");
+			this.startedTags.push(tag);
+		}
 	}
 
 	printEndTag() {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printPropertyAndView(key: string | ((output: Output) => void), attributes: ElementAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
-		var result: View<any, Type, ElementAttributes>;
-		result = this.evalContext.getViewForExpr(data, type, this.editMode, attributes.cssAttributes);
-		
+	printLabelAndView(key: string | ((output: Output) => void), attributes: PropertyAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
+		var view: View<any, Type, ElementAttributes>;
+
+		view = this.evalContext.getViewForExpr(data, type, this.editMode, attributes);
+
 		this.printRawProperty(attributes,
-			result.getId(),
 			(output, attributes) => {
-			if (typeof key === "string") {
-				this.html.push(Output.escapeHtml(key));
-			}
-			else {
-				key(output);
-			}
-		}, (output, attributes) => {
-			result.render(output);
-		});
-		return result;
+				if (typeof key === "string") {
+					this.html.push(Output.escapeHtml(key));
+				}
+				else {
+					key(output);
+				}
+			},
+			view);
+		return view;
 	}
 
-	printRawProperty(attributes: ElementAttributes,
-		viewId: string,
-		printLabel: string | ((output: Output, attributes: ElementAttributes) => void),
-		printData: ((output: Output, attributes: ElementAttributes) => void)): void {
-		this.evalContext.theme.printProperty(this, attributes, viewId, printLabel, printData);
+	printRawProperty(attributes: PropertyAttributes,
+		printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: LightView) {
+		if (!attributes) attributes = {};
+		if (!attributes.labelCssAttributes) attributes.labelCssAttributes = {};
+		if (!attributes.cssAttributes) attributes.cssAttributes = {};
+		this.evalContext.theme.printProperty(this, attributes, printKey, view);
 	}
 
 	printArrayEntry(arrayView: ArrayView<any>, key: number, attributes: ArrayAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
@@ -127,15 +125,15 @@ export class Output {
 		this.evalContext.theme.printButtonGroup(this, attributes, text, action);
 	}
 
-	printForm(attributes: FormAttributes, printContent: (contentOptions: ElementAttributes) => void) {
+	printForm(attributes: FormAttributes, printContent: (elementAttributes: ElementAttributes) => void) {
 		this.evalContext.theme.printForm(this, attributes, printContent)
 	}
 
-	printPage(attributes: PageAttributes, printContent: (contentOptions: ElementAttributes) => void) {
+	printPage(attributes: PageAttributes, printContent: (elementAttributes: ElementAttributes) => void) {
 		this.evalContext.theme.printPage(this, attributes, printContent)
 	}
 
-	printSection(attributes: SectionAttributes, printContent: (contentOptions: ElementAttributes) => void) {
+	printSection(attributes: SectionAttributes, printContent: (elementAttributes: ElementAttributes) => void) {
 		this.evalContext.theme.printSection(this, attributes, printContent)
 	}
 

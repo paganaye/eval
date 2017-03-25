@@ -11,6 +11,7 @@ export class ObjectView extends View<Object, ObjectDefinition, ElementAttributes
     build(): void {
         this.properties = (this.type.properties) || {};
         this.keys = this.type.displayOrder || Object.keys(this.properties);
+        if (!this.data) this.data = {};
     }
 
     render(output: Output): void {
@@ -19,14 +20,14 @@ export class ObjectView extends View<Object, ObjectDefinition, ElementAttributes
             output.printSection({ name: "object-known-properties" }, () => {
                 for (var key of this.keys) {
                     var value = this.data[key];
-                    this.views[key] = output.printPropertyAndView(key, {}, value, this.properties[key]);
+                    this.views[key] = output.printLabelAndView(key, {}, value, this.properties[key]);
                 }
             })
             output.printSection({ name: "object-orphans" }, () => {
                 for (var key in this.data) {
                     var value = this.data[key];
                     if (this.properties[key] !== undefined) continue;
-                    this.views[key] = output.printPropertyAndView(key, {}, value, null);
+                    this.views[key] = output.printLabelAndView(key, {}, value, null);
                 }
             });
         });
