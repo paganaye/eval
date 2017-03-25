@@ -10,6 +10,7 @@ import { MapView } from "./views/MapView";
 export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
       abstract initialize(output: Output): void;
+      abstract prepareViewBeforeBuild(view: View<any, Type, ElementAttributes>): void;
 
       abstract printForm(output: Output, attributes: FormAttributes, printContent: (attributes: ElementAttributes) => void);
       abstract printPage(output: Output, attributes: PageAttributes, printContent: (attributes: ElementAttributes) => void);
@@ -24,8 +25,8 @@ export abstract class Theme {
 
       abstract printInput(output: Output, attributes: InputAttributes, data: any, type: Type);
       abstract printSelect(output: Output, attributes: SelectAttributes, data: string, type: Type, onChanged?: (string) => void);
-      abstract printButton(output: Output, attributes: ButtonAttributes, text: string, action: (ev: Event) => void);
-      abstract printButtonGroup(output: Output, attributes: ButtonGroupAttributes, text: string, action: (ev: Event, text: string) => void);
+      abstract printButton(output: Output, attributes: ButtonAttributes, action: (ev: Event) => void);
+      abstract printButtonGroup(output: Output, attributes: ButtonGroupAttributes, action: (ev: Event, text: string) => void);
 }
 
 export type CssAttributes = { [key: string]: string };
@@ -74,9 +75,11 @@ export class DynamicObjectAttributes extends ElementAttributes {
 }
 
 export class ButtonAttributes extends ElementAttributes {
+      buttonText: string;
 }
 
 export class ButtonGroupAttributes extends ElementAttributes {
+      buttonText: string;
       entries: EnumEntry[];
 }
 

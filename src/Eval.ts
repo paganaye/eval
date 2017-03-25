@@ -165,6 +165,7 @@ export class Eval {
 		var cssAttributes = attributes.cssAttributes || (attributes.cssAttributes = {});
 		//cssAttributes.id = view.getId();
 		view.beforeBuild(actualValue, typeDef, attributes);
+		this.theme.prepareViewBeforeBuild(view);
 		view.build();
 		return view;
 	}

@@ -117,12 +117,12 @@ export class Output {
 		this.evalContext.theme.printSelect(this, attributes, data, type, onChanged)
 	}
 
-	printButton(attributes: ButtonAttributes, text: string, action: (ev: Event) => void): void {
-		this.evalContext.theme.printButton(this, attributes, text, action);
+	printButton(attributes: ButtonAttributes, action: (ev: Event) => void): void {
+		this.evalContext.theme.printButton(this, attributes, action);
 	}
 
-	printButtonGroup(attributes: ButtonGroupAttributes, text: string, action: (string) => void) {
-		this.evalContext.theme.printButtonGroup(this, attributes, text, action);
+	printButtonGroup(attributes: ButtonGroupAttributes, action: (ev: Event, string) => void) {
+		this.evalContext.theme.printButtonGroup(this, attributes, action);
 	}
 
 	printForm(attributes: FormAttributes, printContent: (elementAttributes: ElementAttributes) => void) {
@@ -186,6 +186,7 @@ export class Output {
 			var callback = this.afterRenderCallbacks[x];
 			callback(elt);
 		}
+		this.afterRenderCallbacks = [];
 	}
 
 	static selfClosing = {
@@ -227,19 +228,22 @@ export class Output {
 	}
 
 
-	printAsync(tag: string, attributes: any, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): Output {
+	printAsync(tag: string, attributes: CssAttributes, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): Output {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
 			id = this.evalContext.nextId(tag);
 			attributes.id = id;
 		}
-		if (typeof text === "string") {
-			this.printTag(tag, attributes, text);
-		} else {
-			this.printStartTag(tag, attributes);
-			text(this);
-			this.printEndTag();
+		switch (typeof text) {
+			case "string":
+				this.printTag(tag, attributes, text);
+				break;
+			case "function":
+				this.printStartTag(tag, attributes);
+				(text as ((output: Output) => void))(this);
+				this.printEndTag();
+				break;
 		}
 		this.afterRenderCallbacks.push(() => {
 			var elt = document.getElementById(id);

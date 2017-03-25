@@ -10,7 +10,6 @@ import { DynamicView } from "../views/DynamicView";
 
 
 export class Bootstrap extends Theme {
-
     constructor(evalContext: Eval, private addScripts: boolean = true) {
         super(evalContext);
     }
@@ -53,12 +52,13 @@ export class Bootstrap extends Theme {
     printArrayEntry(output: Output, arrayView: ArrayView<any>, attributes: ArrayAttributes, key: number, data: any, type: Type): View<any, Type, ElementAttributes> {
         output.printStartTag("div", { class: "form-group row" });
         var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { cssAttributes: { class: "col-sm-10" } });
+
         var id = innerView.getId();
         output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
         innerView.render(output);
         output.printStartTag("div", { class: "col-sm-1" });
         if (attributes.deletable) {
-            output.printButton({}, "x", (ev: Event) => {    //                
+            output.printButton({ buttonText: "x" }, (ev: Event) => {    //                
                 var elt = (ev.target as HTMLElement).parentElement;
                 if (elt) elt.parentElement.remove();
             });
@@ -140,7 +140,7 @@ export class Bootstrap extends Theme {
         this.addClass(cssAttributes, attributes.name);
         switch (attributes.name) {
             case "array-entries":
-                var output2 = output.printAsync("div", attributes, "...",
+                var output2 = output.printAsync("div", attributes.cssAttributes, "...",
                     (elt) => {
                         var Sortable = (window as any).Sortable;
                         var sortable = Sortable.create(elt, {
@@ -149,14 +149,14 @@ export class Bootstrap extends Theme {
                     });
                 return output2;
             case "dynamic":
-                var output2 = output.printAsync("div", attributes, "...", (elt) => {
+                var output2 = output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
                     output2.render();
                 });
                 return output2;
 
             default:
                 console.error("Async Section " + attributes.name + " not implemented by Bootstrap Eval theme.");
-                var output2 = output.printAsync("div", attributes, "...", (elt) => {
+                var output2 = output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
                     output2.render();
                 });
                 return output2;
@@ -176,7 +176,7 @@ export class Bootstrap extends Theme {
     printSelect(output: Output, attributes: SelectAttributes, data: string, type: Type, onChanged?: (string) => void) {
         var cssAttributes = attributes.cssAttributes || {};
 
-        output.printAsync("select", attributes, () => {
+        output.printAsync("select", attributes.cssAttributes, () => {
             var currentGroup = null;
             for (var entry of attributes.entries) {
                 if (entry.group != currentGroup) {
@@ -205,36 +205,15 @@ export class Bootstrap extends Theme {
         });
     }
 
-    printAsync(output: Output, attributes: DynamicObjectAttributes, data: string, type: Type, onChanged?: (string) => void) {
 
-
-        if (attributes.freezeType) {
-            output.printTag("", {}, "...");
-            var id: string = attributes.cssAttributes[id];
-            output.printAsync("p", {}, "...", () => {
-
-            });
-        } else {
-            //var entries = 
-            this.printSelect(output, { entries: attributes.entries }, data, type, (data) => {
-
-            });
-            var id = attributes.cssAttributes[id];
-            output.printAsync("p", {}, "...", () => {
-
-            });
-        }
-
-    }
-
-    printButton(output: Output, attributes: ButtonAttributes, text: string, action: (ev: Event) => void) {
+    printButton(output: Output, attributes: ButtonAttributes, action: (ev: Event) => void) {
         var cssAttributes = attributes.cssAttributes || {};
-        output.printAsync("button", attributes, text, (elt) => {
+        output.printAsync("button", attributes.cssAttributes, attributes.buttonText, (elt) => {
             elt.onclick = (ev) => action(ev);
         });
     }
 
-    printButtonGroup(output: Output, attributes: ButtonGroupAttributes, text: string, action: (string: any) => void) {
+    printButtonGroup(output: Output, attributes: ButtonGroupAttributes, action: (ev: Event, string: any) => void) {
         output.printTag("div", { class: "dropdown" }, () => {
 
             output.printStartTag("a",
@@ -242,13 +221,13 @@ export class Bootstrap extends Theme {
                     type: "button", class: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown",
                     "aria-haspopup": "true", "aria-expanded": "false"
                 });
-            output.printText("Add");
+            output.printText(attributes.buttonText);
             output.printEndTag(); // button
 
             output.printStartTag("div", { class: "dropdown-menu" });
 
             var currentGroup = null;
-            for (var entry of attributes.entries) {
+            for (let entry of attributes.entries) {
                 if (entry.group != currentGroup) {
                     output.printHTML("<div class=\"dropdown-divider\"></div>");
                     output.printText(entry.group);
@@ -257,8 +236,8 @@ export class Bootstrap extends Theme {
                 var optionAttributes = { key: entry.key };
                 output.printAsync("a", { class: "dropdown-item", href: "#" },
                     entry.label || entry.key, (elt) => {
-                        elt.onclick = () => {
-                            action(entry.key);
+                        elt.onclick = (ev) => {
+                            action(ev, entry.key);
                         }
                     });
             }
@@ -276,4 +255,10 @@ export class Bootstrap extends Theme {
         } else cssAttributes.class = newEntry;
     }
 
+    prepareViewBeforeBuild(view: View<any, Type, ElementAttributes>): void {
+        if (view instanceof DynamicView) {
+            // not sure about this
+            view.attributes.freezeType = true;
+        }
+    }
 }

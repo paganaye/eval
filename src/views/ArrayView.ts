@@ -37,17 +37,18 @@ export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayAttributes>
          output.printSection({ name: "array-buttons" }, () => {
             if (this.entryType.type == "dynamic") {
                var entries: EnumEntry[] = [];
-               for (var entryKey in this.entryType.entries) {
-                  var entry = this.entryType.entries[entryKey];
-                  entries.push({ key: entryKey, label: entry.label || entryKey });
+               for (var entry of this.entryType.entries) {
+                  //var entry = this.entryType.entries[entryKey];
+                  entries.push({ key: entry.key, label: entry.label || entry.key });
                }
                output.printButtonGroup({
+                  buttonText: "Add",
                   entries: entries
-               }, "Add", (str) => {
+               }, (ev, str) => {
                   this.addOne(str);
                });
             } else {
-               output.printButton({}, "+", (ev:Event) => {
+               output.printButton({ buttonText: "+" }, (ev: Event) => {
                   this.addOne(null);
                });
             }
@@ -57,7 +58,9 @@ export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayAttributes>
 
    addOne(type: String) {
       var index = this.data.length;
-      var entry = {};
+      var entry: T = null;
+      if (type) entry = { type: type } as any as T;
+
       this.data.push(entry);
       var attributes: ArrayAttributes = { cssAttributes: { class: "array-entry" }, deletable: true };
       if (type) attributes.frozenDynamic = true;

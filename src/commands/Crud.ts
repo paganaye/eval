@@ -51,7 +51,7 @@ export class Crud extends Command {
                                     this.innerView = this.evalContext.getViewForExpr(data, type, true);
                                     this.innerView.render(output2);
                                     output2.printSection({ name: "crud-update" }, (attributes) => {
-                                          output2.printButton({}, "Save", () => {
+                                          output2.printButton({ buttonText: "Save" }, () => {
                                                 var data = this.innerView.getValue();
                                                 alert("saving..." + JSON.stringify(data));
                                           });

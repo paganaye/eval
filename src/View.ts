@@ -7,7 +7,7 @@ import { ElementAttributes, CssAttributes } from "Theme";
 export abstract class View<TValue, TType extends Type, TElementAttributes extends ElementAttributes> implements ViewOrElement {
     protected data: TValue; // stored data
     protected type: TType; // stored type
-    protected attributes: TElementAttributes; // runtime extra stuff
+    public attributes: TElementAttributes; // runtime extra stuff
     private readonly id: string;
 
     beforeBuild(data: TValue, type: TType, attributes: TElementAttributes): void {
