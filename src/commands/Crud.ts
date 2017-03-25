@@ -5,11 +5,12 @@ import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
 import { View } from "../View";
+import { ElementAttributes } from "Theme";
 
 export class Crud extends Command {
       private tableName: string;
       private recordId: string;
-      private innerView: View<any, any>;
+      private innerView: View<any, Type, ElementAttributes>;
 
       constructor(evalContext: Eval, private commandName: string) {
             super(evalContext);
@@ -22,7 +23,7 @@ export class Crud extends Command {
       }
 
       run(output: Output) {
-            var output2 = output.printDynamic("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt) => {
+            var output2 = output.printAsync("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt) => {
                   //alert("yes?");
             });
             this.evalContext.getTableType(this.tableName, (type) => {
@@ -49,7 +50,7 @@ export class Crud extends Command {
                                     output2.setEditMode(true);
                                     this.innerView = this.evalContext.getViewForExpr(data, type, true);
                                     this.innerView.render(output2);
-                                    output2.printSection({ name: "" }, (options) => {
+                                    output2.printSection({ name: "" }, (attributes) => {
                                           output2.printButton({}, "Save", () => {
                                                 var data = this.innerView.getValue();
                                                 alert("saving..." + JSON.stringify(data));
@@ -60,7 +61,7 @@ export class Crud extends Command {
                               location.hash = ("update " + this.tableName + " " + this.recordId);
                               break;
                         case "delete":
-                              // output.printDynamic("div", {}, "Loading " + this.tableName + " " + JSON.stringify(this.recordId) + "...", (output) => {
+                              // output.printAsync("div", {}, "Loading " + this.tableName + " " + JSON.stringify(this.recordId) + "...", (output) => {
                               //       var res = this.evalContext.database.on(this.tableName + "/" + this.recordId, (data, error) => {
                               //             output.printText("Result:" + JSON.stringify(data));
                               //       });

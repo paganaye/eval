@@ -1,6 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
+import { ElementAttributes } from "Theme";
 
 interface ImageSource {
     src?: string;
@@ -8,23 +9,21 @@ interface ImageSource {
     height?: number;
 }
 
-export class ImageView extends View<ImageSource, any> {
-    data: any;
-    attributes: any;
+export class ImageView extends View<ImageSource, any, ElementAttributes> {
 
-    build(data: ImageSource, type: Type, attributes: { [key: string]: string }): void {
-        this.data = data;
-        attributes.width = (data.width || 560).toString();
-        attributes.height = (data.height || 315).toString();
+    build(): void {
+        var cssAttributes = this.getCssAttributes();
+        var data = this.data;
+        cssAttributes.width = (data.width || 560).toString();
+        cssAttributes.height = (data.height || 315).toString();
 
-        attributes.src = ((typeof data == "string")
-            ? attributes.src = data
+        cssAttributes.src = ((typeof data == "string")
+            ? cssAttributes.src = data
             : data.src);
-        this.attributes = attributes;
     }
 
     render(output: Output): void {
-        output.printTag("img", this.attributes);
+        output.printTag("img", this.attributes.cssAttributes);
     }
 
     getValue(): any {

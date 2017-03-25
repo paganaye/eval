@@ -4,11 +4,12 @@ import { Eval } from "../Eval";
 import { Expression } from '../Expression';
 import { Output } from "../Output";
 import { View } from "../View";
+import { ElementAttributes } from "Theme";
 
 
 export class Hello extends Command {
    who: Expression<string>;
-   innerView: View<any, any>;
+   innerView: View<any, Type, ElementAttributes>;
 
    getParameters() {
       return [{ name: "who", type: "Expression" }];

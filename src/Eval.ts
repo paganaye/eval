@@ -19,7 +19,7 @@ import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Database } from './Database';
 import { Crud } from './commands/Crud';
-import { Theme } from "./Theme";
+import { Theme, ElementAttributes } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
 import { DynamicView } from "./views/DynamicView";
@@ -36,7 +36,7 @@ export class Eval {
 
 	private types: { [key: string]: Type } = {};
 
-	viewFactory: { [key: string]: () => View<any, Type> } = {};
+	viewFactory: { [key: string]: () => View<any, Type, ElementAttributes> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -108,7 +108,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: () => View<any, Type>) {
+	registerView(name: string, getNew: () => View<any, Type, ElementAttributes>) {
 		this.viewFactory[name] = getNew;
 	}
 
@@ -147,23 +147,25 @@ export class Eval {
 	}
 
 
-	getView(type: Type, editMode: boolean): View<any, Type> {
+	getView(type: Type, editMode: boolean): View<any, Type, ElementAttributes> {
 		var viewName = editMode ? type.inputView || type.view || type.type
 			: type.view || type.type;
 		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return view();
 	}
 
-	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: { [key: string]: string }): View<any, Type> {
+	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: ElementAttributes): View<any, Type, ElementAttributes> {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!attributes) attributes = {};
-		var view: View<any, any> = this.getView(typeDef, editMode)
+		var view: View<any, Type, ElementAttributes> = this.getView(typeDef, editMode)
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
 		if (!attributes) attributes = {};
-		attributes.id = view.getId();
-		view.build(actualValue, typeDef, attributes);
+		var cssAttributes = attributes.cssAttributes || (attributes.cssAttributes = {});
+		//cssAttributes.id = view.getId();
+		view.beforeBuild(actualValue, typeDef, attributes);
+		view.build();
 		return view;
 	}
 

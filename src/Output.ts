@@ -6,7 +6,7 @@ import { Type, EnumEntry } from './Types';
 import { View } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ContentOptions, InputOptions, ButtonOptions, ArrayEntryOptions, SelectOptions, ButtonGroupOptions } from "./Theme";
+import { FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, CssAttributes } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { MapView } from "./views/MapView";
 import { DynamicView } from "./views/DynamicView";
@@ -16,7 +16,7 @@ export class Output {
 	public html: String[] = [];
 	private rendered = false;
 	private editMode: boolean;
-	private afterRender: ((elt: HTMLElement) => void)[] = [];
+	private afterRenderCallbacks: ((elt: HTMLElement) => void)[] = [];
 
 	constructor(private evalContext: Eval, private outputElt: HTMLElement | string, parent?: Output) {
 		this.editMode = (parent && parent.editMode) || false;
@@ -43,7 +43,7 @@ export class Output {
 	}
 
 
-	printTag(tag: string, attributes: any, content?: string | ((output: Output) => void)) {
+	printTag(tag: string, attributes: CssAttributes, content?: string | ((output: Output) => void)) {
 		this.html.push("<" + tag);
 		for (var key in attributes) {
 			this.html.push(" " + key + "=\"" + Output.escapeAttribute(attributes[key]) + "\"");
@@ -81,62 +81,66 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printPropertyAndView(key: string | ((output: Output) => void), options: ContentOptions, data: any, type: Type): View<any, any> {
-		var result: View<any, any>;
-		this.printRawProperty(options, (output, options) => {
+	printPropertyAndView(key: string | ((output: Output) => void), attributes: ElementAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
+		var result: View<any, Type, ElementAttributes>;
+		result = this.evalContext.getViewForExpr(data, type, this.editMode, attributes.cssAttributes);
+		
+		this.printRawProperty(attributes,
+			result.getId(),
+			(output, attributes) => {
 			if (typeof key === "string") {
 				this.html.push(Output.escapeHtml(key));
 			}
 			else {
 				key(output);
 			}
-		}, (output, options) => {
-			result = this.evalContext.getViewForExpr(data, type, this.editMode, options.attributes);
+		}, (output, attributes) => {
 			result.render(output);
 		});
 		return result;
 	}
 
-	printRawProperty(options: ContentOptions,
-		printKey: string | ((output: Output, options: ContentOptions) => void),
-		printData: ((output: Output, options: ContentOptions) => void)): void {
-		this.evalContext.theme.printProperty(this, options, printKey, printData);
+	printRawProperty(attributes: ElementAttributes,
+		viewId: string,
+		printLabel: string | ((output: Output, attributes: ElementAttributes) => void),
+		printData: ((output: Output, attributes: ElementAttributes) => void)): void {
+		this.evalContext.theme.printProperty(this, attributes, viewId, printLabel, printData);
 	}
 
-	printArrayEntry(arrayView: ArrayView, key: number, options: ArrayEntryOptions, data: any, type: Type): View<any, any> {
-		return this.evalContext.theme.printArrayEntry(this, arrayView, options, key, data, type)
+	printArrayEntry(arrayView: ArrayView<any>, key: number, attributes: ArrayAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
+		return this.evalContext.theme.printArrayEntry(this, arrayView, attributes, key, data, type)
 	}
 
-	printInput(options: InputOptions, data: any, type: Type) {
-		this.evalContext.theme.printInput(this, options, data, type)
+	printInput(attributes: InputAttributes, data: any, type: Type) {
+		this.evalContext.theme.printInput(this, attributes, data, type)
 	}
 
-	printSelect(options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
-		this.evalContext.theme.printSelect(this, options, data, type, onChanged)
+	printSelect(attributes: SelectAttributes, data: string, type: Type, onChanged?: (string) => void) {
+		this.evalContext.theme.printSelect(this, attributes, data, type, onChanged)
 	}
 
-	printButton(options: ButtonOptions, text: string, action: () => void): void {
-		this.evalContext.theme.printButton(this, options, text, action);
+	printButton(attributes: ButtonAttributes, text: string, action: () => void): void {
+		this.evalContext.theme.printButton(this, attributes, text, action);
 	}
 
-	printButtonGroup(options: ButtonGroupOptions, text: string, action: (string) => void) {
-		this.evalContext.theme.printButtonGroup(this, options, text, action);
+	printButtonGroup(attributes: ButtonGroupAttributes, text: string, action: (string) => void) {
+		this.evalContext.theme.printButtonGroup(this, attributes, text, action);
 	}
 
-	printForm(options: FormOptions, printContent: (contentOptions: ContentOptions) => void) {
-		this.evalContext.theme.printForm(this, options, printContent)
+	printForm(attributes: FormAttributes, printContent: (contentOptions: ElementAttributes) => void) {
+		this.evalContext.theme.printForm(this, attributes, printContent)
 	}
 
-	printPage(options: PageOptions, printContent: (contentOptions: ContentOptions) => void) {
-		this.evalContext.theme.printPage(this, options, printContent)
+	printPage(attributes: PageAttributes, printContent: (contentOptions: ElementAttributes) => void) {
+		this.evalContext.theme.printPage(this, attributes, printContent)
 	}
 
-	printSection(options: SectionOptions, printContent: (contentOptions: ContentOptions) => void) {
-		this.evalContext.theme.printSection(this, options, printContent)
+	printSection(attributes: SectionAttributes, printContent: (contentOptions: ElementAttributes) => void) {
+		this.evalContext.theme.printSection(this, attributes, printContent)
 	}
 
-	printDynamicSection(options: SectionOptions): Output {
-		return this.evalContext.theme.printDynamicSection(this, options);
+	printSectionAsync(attributes: SectionAttributes): Output {
+		return this.evalContext.theme.printSectionAsync(this, attributes);
 	}
 
 	printText(text: string) {
@@ -180,8 +184,8 @@ export class Output {
 	}
 
 	private raiseAfterRender(elt: HTMLElement) {
-		for (var x in this.afterRender) {
-			var callback = this.afterRender[x];
+		for (var x in this.afterRenderCallbacks) {
+			var callback = this.afterRenderCallbacks[x];
 			callback(elt);
 		}
 	}
@@ -225,7 +229,7 @@ export class Output {
 	}
 
 
-	printDynamic(tag: string, attributes: any, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): Output {
+	printAsync(tag: string, attributes: any, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): Output {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
@@ -239,7 +243,7 @@ export class Output {
 			text(this);
 			this.printEndTag();
 		}
-		this.afterRender.push(() => {
+		this.afterRenderCallbacks.push(() => {
 			var elt = document.getElementById(id);
 			if (elt) {
 				callback(elt);

@@ -1,18 +1,15 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ContentOptions } from "../Theme";
+import { ElementAttributes } from "../Theme";
 import { Map } from "typescript/lib/typescript";
 
-export class JSONView extends View<any,any> {
+export class JSONView extends View<any, any, ElementAttributes> {
    data: any;
-   text: string;
-   attributes: { [key: string]: string };
+   text: string;   
 
-   build(data: any, type: Type, attributes: { [key: string]: string }): void {
-      this.data = data;
-      this.attributes = attributes;
-      this.text = JSON.stringify(data);
+   build(): void {
+      this.text = JSON.stringify(this.data);
    }
 
    render(output: Output): void {

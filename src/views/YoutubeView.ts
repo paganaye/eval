@@ -1,6 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
+import { ElementAttributes } from "Theme";
 
 interface IYoutubeSource {
     video?: string;
@@ -8,13 +9,13 @@ interface IYoutubeSource {
     height?: number;
 }
 
-export class YoutubeView extends View<any, any> {
+export class YoutubeView extends View<any, Type, ElementAttributes> {
     data: any;
-    attributes: any;
+    attributes: ElementAttributes;
 
-    build(data: any, type: Type, attributes: { [key: string]: string }): void {
-        this.data = data;
-        //var attributes: any = {
+    build(): void {
+        var data = this.data;
+        var attributes = this.getCssAttributes();
         attributes.frameBorder = "0";
         attributes.allowFullscreen = "true";
         //};
@@ -24,11 +25,10 @@ export class YoutubeView extends View<any, any> {
         attributes.src = "https://www.youtube.com/embed/" + ((typeof data == "string")
             ? attributes.src = data
             : (data as IYoutubeSource).video);
-        this.attributes = attributes;
     }
 
     render(output: Output): void {
-        output.printTag("iframe", this.attributes);
+        output.printTag("iframe", this.getCssAttributes());
     }
 
     getValue(): any {

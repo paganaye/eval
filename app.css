@@ -2,20 +2,6 @@ body {
     margin: 0px;
 }
 
-.terminal,
-.terminal .terminal-output div div,
-.cmd,
-.cmd .prompt {
-    font-size: 18px;
-    line-height: 20px;
-}
-
-.terminal {
-    position: absolute !important;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-}
 
 span.print {
     background-color: bisque;
@@ -23,6 +9,7 @@ span.print {
     padding: 2px 8px;
     margin: 5px 3px;
 }
+
 h1#logo {
     font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif;
     font-size: 200px;
@@ -34,7 +21,7 @@ h1#logo {
     user-select: none;
     margin: 0;
 }
+
 .panel-heading {
     background-color:orange;
 }
-.

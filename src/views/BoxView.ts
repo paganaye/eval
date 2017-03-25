@@ -1,21 +1,16 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
+import { ElementAttributes } from "Theme";
 
-export class BoxView extends View<any, any> {
-   data: any;
-   text: string;
-   attributes: { [key: string]: string };
+export class BoxView extends View<any, Type, ElementAttributes> {
 
-   build(data: any, type: Type, attributes: { [key: string]: string }): void {
-      this.data = data;
-      this.attributes = attributes;
-      this.text = JSON.stringify(data);
+   build(): void {
    }
 
    render(output: Output): void {
-      output.printStartTag("span", this.attributes);
-      output.printText(this.text);
+      output.printStartTag("span", this.getCssAttributes());
+      output.printText("Todo");
       output.printEndTag();
 
    }

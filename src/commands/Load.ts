@@ -14,7 +14,7 @@ export class Load extends Command {
       }
 
       run(output: Output) {
-            // output.printDynamic("div", {}, "Loading...", (output) => {
+            // output.printAsync("div", {}, "Loading...", (output) => {
             //       var res = this.evalContext.database.on(this.path, (data, error) => {
             //             output.printText(error || data);
             //       });

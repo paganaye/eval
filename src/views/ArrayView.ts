@@ -1,35 +1,33 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, ArrayDefinition, EnumEntry } from "../Types";
+import { ArrayAttributes, ElementAttributes, CssAttributes } from "../Theme";
 
-export class ArrayView extends View<any, ArrayDefinition<any>>
+export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayAttributes>
 {
-   attributes: { [key: string]: string };
    data: any[];
-   views: View<any, any>[];
+   views: View<any, Type, ElementAttributes>[];
    entryType: Type;
    indexById: { [key: string]: number };
    arrayEntriesOutput: Output;
 
-   build(data: any, type: ArrayDefinition<any>, attributes: { [key: string]: string }): void {
-      this.attributes = attributes;
-      if (Array.isArray(data)) {
-         this.data = data;
-      } else {
-         this.data = [data];
+   build(): void {
+      if (!Array.isArray(this.data)) {
+         this.data = [this.data];
       }
       this.views = [];
       this.indexById = {};
-      this.entryType = type ? type.entryType : null
+      this.entryType = this.type.entryType
    }
 
    render(output: Output): void {
-      output.printSection({ name: "array", attributes: this.attributes }, (attributes) => {
-         this.arrayEntriesOutput = output.printDynamicSection({ name: "array-entries", attributes: attributes });
+      output.printSection({ name: "array", cssAttributes: this.getCssAttributes() }, (attributes) => {
+         var cssAttributes: CssAttributes = attributes.cssAttributes || {};
+         this.arrayEntriesOutput = output.printSectionAsync({ name: "array-entries", cssAttributes: cssAttributes });
          if (Array.isArray(this.data)) {
             for (var index = 0; index < this.data.length; index++) {
                var entry = this.data[index];
-               var view = this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
+               var view = this.arrayEntriesOutput.printArrayEntry(this, index, { cssAttributes: { class: "array-entry" }, deletable: true }, entry, this.entryType);
                this.indexById[view.getId()] = this.views.length;
                this.views.push(view);
             }
@@ -46,7 +44,7 @@ export class ArrayView extends View<any, ArrayDefinition<any>>
                output.printButtonGroup({
                   entries: entries
                }, "Add", (str) => {
-
+                  this.addOne(str);
                });
             } else {
                output.printButton({}, "+", () => {
@@ -61,7 +59,9 @@ export class ArrayView extends View<any, ArrayDefinition<any>>
       var index = this.data.length;
       var entry = {};
       this.data.push(entry);
-      var view = this.arrayEntriesOutput.printArrayEntry(this, index, { class: "array-entry", deletable: true }, entry, this.entryType);
+      var attributes: ArrayAttributes = { cssAttributes: { class: "array-entry" }, deletable: true };
+      if (type) attributes.frozenDynamic = true;
+      var view = this.arrayEntriesOutput.printArrayEntry(this, index, attributes, entry, this.entryType);
       this.arrayEntriesOutput.append();
 
       this.indexById[view.getId()] = this.views.length;

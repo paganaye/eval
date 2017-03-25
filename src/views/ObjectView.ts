@@ -1,29 +1,21 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, ObjectDefinition } from "../Types";
+import { ElementAttributes } from "Theme";
 
-export class ObjectView extends View<Object, ObjectDefinition> {
-    attributes: { [key: string]: string };
-    data: any;
+export class ObjectView extends View<Object, ObjectDefinition, ElementAttributes> {
     keys: string[];
     properties: any;
-    views: { [key: string]: View<any, any> } = {};
+    views: { [key: string]: View<any, Type, ElementAttributes> } = {};
 
-    build(data: any, type: ObjectDefinition, attributes: { [key: string]: string }): void {
-        this.attributes = attributes;
-        if (data == null) data = {};
-        this.data = data;
-
-        if (!type && data && data.type) {
-            type = data.type;
-        }
-        this.properties = (type && type.properties) || {};
-        this.keys = type.displayOrder || Object.keys(this.properties);
+    build(): void {
+        this.properties = (this.type.properties) || {};
+        this.keys = this.type.displayOrder || Object.keys(this.properties);
     }
 
     render(output: Output): void {
 
-        output.printSection({ name: "object-properties", attributes: this.attributes }, () => {
+        output.printSection({ name: "object-properties", cssAttributes: this.getCssAttributes() }, () => {
             output.printSection({ name: "object-known-properties" }, () => {
                 for (var key of this.keys) {
                     var value = this.data[key];

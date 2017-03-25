@@ -1,41 +1,39 @@
 import { View } from '../View';
-import { Type, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry } from '../Types';
+import { Type, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry, TypedObject } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { SelectOptions } from "../Theme";
+import { SelectAttributes, ElementAttributes, DynamicObjectAttributes } from "../Theme";
 
-export class DynamicView extends View<object, DynamicDefinition> {
-    attributes: any;
-    data: any;
-    type: DynamicDefinition;
+export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObjectAttributes> {
     targetOutput: Output;
-    entriesByKey: { [key: string]: DynamicEntry } = {};    
+    entriesByKey: { [key: string]: DynamicEntry } = {};
 
-    build(data: any, type: DynamicDefinition, attributes: { [key: string]: string }): void {
-        if (data === undefined) data = {};
-        if (typeof data !== 'object') data = { value: data };
-
-        this.attributes = attributes || {};
-        this.data = data;
-        this.type = type;
-
-        for (var e of type.entries) {
+    build(): void {
+        for (var e of this.type.entries) {
             this.entriesByKey[e.key] = e;
         }
+        var data = this.data || (this.data = { type: "ojbect" });
+        if (!data.type) data.type = "object";
     }
 
     render(output: Output): void {
-        output.printSection({ name: "dynamic-control", attributes: this.attributes }, () => {
+        output.printSection({ name: "dynamic-control", cssAttributes: this.getCssAttributes() }, () => {
             var enumEntries: DynamicEntry[] = this.type.entries;
-            var selectOptions: SelectOptions = { entries: enumEntries };
+            var selectOptions: SelectAttributes = { entries: enumEntries };
+            var viewId: string = null;
+            output.printRawProperty({},
+                viewId,
+                (output) => {
+                    if (this.attributes.freezeType) {
+                        output.printText(this.data.type);
+                    } else {
+                        output.printSelect(selectOptions, this.data.type, this.type, (str) => this.selectionChanged(this.entriesByKey[str]));
+                    }
+                }, (output, attributes) => {
+                    this.targetOutput = output.printSectionAsync({ name: "dynamic", cssAttributes: attributes.cssAttributes });
+                });
 
-            output.printRawProperty({}, (output) => {
-                output.printSelect(selectOptions, this.data.type, this.type, (str) => this.selectionChanged(this.entriesByKey[str]));
-            }, (output, options) => {
-                this.targetOutput = output.printDynamicSection({ name: "dynamic", attributes: options.attributes });
-            });
-
-            setTimeout(() => { this.selectionChanged(this.entriesByKey[this.data]); });
+            setTimeout(() => { this.selectionChanged(this.entriesByKey[this.data.type]); });
         });
     }
 
@@ -48,11 +46,11 @@ export class DynamicView extends View<object, DynamicDefinition> {
     }
 
     getValue(): any {
-        var elt = document.getElementById(this.attributes.id);
+        var elt = document.getElementById(this.attributes.cssAttributes.id);
         if (elt) {
             return (elt as HTMLSelectElement).value;
         } else {
-            return this.attributes.id + " not found.";
+            return this.attributes.cssAttributes.id + " not found.";
         }
     }
 }

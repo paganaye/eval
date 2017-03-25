@@ -1,13 +1,14 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberDefinition } from "../Types";
+import { ElementAttributes } from "Theme";
 
-export class RomanView extends View<number,NumberDefinition> {
+export class RomanView extends View<number, NumberDefinition, ElementAttributes> {
     result: string;
     data: any;
-    
-    build(data: number, type: NumberDefinition, attributes: { [key: string]: string }): void {
-        this.data = data;
+
+    build(): void {
+        var data = this.data;
         var num = typeof data === "number" ? data : parseInt(<any>data, 10);
         if (+num) {
             var digits = String(+num).split(""), key = [

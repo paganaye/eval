@@ -19,8 +19,7 @@
   "dependencies": {
     "firebase": "^3.6.9",
     "fuse-box": "^1.3.109",
-    "jasmine": "^2.5.3",
-    "jquery.terminal": "^1.0.5"
+    "jasmine": "^2.5.3"
   },
   "devDependencies": {
     "typescript": "^2.1.6",
