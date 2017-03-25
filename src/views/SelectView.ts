@@ -12,16 +12,14 @@ export class SelectView extends View<string, EnumDefinition, SelectAttributes> {
 
     render(output: Output): void {
         var enumEntries: EnumEntry[] = this.type.entries;
-        output.printSelect({
-            entries: enumEntries, cssAttributes: this.getCssAttributes(),
-            id: this.getId()
-        },
+        var cssAttributes = this.getCssAttributes();
+        cssAttributes.id = this.getId();
+
+        output.printSelect(
+            { entries: enumEntries, cssAttributes: cssAttributes },
             this.data, this.type, (a) => {
                 alert("value changed" + a)
             });
-        output.printSectionAsync({ name: "dynamic" }, (elt) => {
-
-        });
     }
 
     getValue(): any {

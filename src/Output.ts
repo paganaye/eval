@@ -6,7 +6,7 @@ import { Type, EnumEntry } from './Types';
 import { View, ViewOrElement } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, CssAttributes, PropertyAttributes } from "./Theme";
+import { FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, CssAttributes, PropertyAttributes, ArrayEntryAttributes } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { MapView } from "./views/MapView";
 import { DynamicView } from "./views/DynamicView";
@@ -98,8 +98,8 @@ export class Output {
 		this.evalContext.theme.printProperty(this, attributes, printKey, view);
 	}
 
-	printArrayEntry(arrayView: ArrayView<any>, key: number, attributes: ArrayAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
-		return this.evalContext.theme.printArrayEntry(this, arrayView, attributes, key, data, type)
+	printArrayEntry(arrayView: ArrayView<any>, attributes: ArrayEntryAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
+		return this.evalContext.theme.printArrayEntry(this, arrayView, attributes, data, type)
 	}
 
 	printInput(attributes: InputAttributes, data: any, type: Type) {
@@ -241,6 +241,10 @@ export class Output {
 				}
 			});
 		}
+	}
+
+	getOutputElt(): HTMLElement {
+		return this.elt;
 	}
 }
 

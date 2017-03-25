@@ -20,7 +20,7 @@ export abstract class Theme {
 
       abstract printSectionAsync(output: Output, attributes: SectionAttributes, callback: (elt: HTMLElement) => void): void;
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
-            attributes: ArrayAttributes, key: number, data: any, type: Type): View<any, Type, ElementAttributes>;
+            attributes: ArrayEntryAttributes, data: any, type: Type): View<any, Type, ElementAttributes>;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
 
       abstract printInput(output: Output, attributes: InputAttributes, data: any, type: Type);
@@ -32,7 +32,7 @@ export abstract class Theme {
 export type CssAttributes = { [key: string]: string };
 
 export class ElementAttributes {
-      id?: string;
+      //id?: string;
       cssAttributes?: CssAttributes;
 }
 
@@ -43,6 +43,13 @@ export class PropertyAttributes extends ElementAttributes {
 export class ArrayAttributes extends ElementAttributes {
       deletable?: boolean;
       frozenDynamic?: boolean;
+}
+
+export class ArrayEntryAttributes extends ElementAttributes {
+      id: string;
+      label: string;
+      deletable: boolean;
+      frozenDynamic: boolean;
 }
 
 export class MapAttributes extends ElementAttributes {

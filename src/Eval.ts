@@ -89,7 +89,11 @@ export class Eval {
 
 	nextId(prefix: string) {
 		var counter = this.idCounter[prefix] = (this.idCounter[prefix] || 0) + 1;
-		return prefix + counter;
+		var result = prefix + counter;
+		if (result == "div2111") {
+			debugger;
+		}
+		return result;
 	}
 
 	raise(actions: (() => void)[]): void {

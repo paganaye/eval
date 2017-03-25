@@ -1,4 +1,4 @@
-import { Theme, FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, DynamicObjectAttributes, CssAttributes, PropertyAttributes } from "../Theme";
+import { Theme, FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, DynamicObjectAttributes, CssAttributes, PropertyAttributes, ArrayEntryAttributes } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -49,12 +49,14 @@ export class Bootstrap extends Theme {
         output.printEndTag();
     }
 
-    printArrayEntry(output: Output, arrayView: ArrayView<any>, attributes: ArrayAttributes, key: number, data: any, type: Type): View<any, Type, ElementAttributes> {
-        output.printStartTag("div", { class: "form-group row" });
-        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { cssAttributes: { class: "col-sm-10" } });
+    printArrayEntry(output: Output, arrayView: ArrayView<any>, attributes: ArrayEntryAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
 
-        var id = innerView.getId();
-        output.printTag("label", { class: "col-sm-1 col-form-label", for: id }, '#' + key);
+        output.printStartTag("div", { class: "form-group row", id: attributes.id });
+        var cssAttributes = attributes.cssAttributes || {};
+        this.addClass(cssAttributes, "col-sm-1");
+        this.addClass(cssAttributes, "col-form-label");
+        output.printTag("label", cssAttributes, attributes.label);
+        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { cssAttributes: { class: "col-sm-10" } });
         innerView.render(output);
         output.printStartTag("div", { class: "col-sm-1" });
         if (attributes.deletable) {
@@ -75,7 +77,7 @@ export class Bootstrap extends Theme {
         var result = [];
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
-            result.push(child.children[1].id);
+            result.push(child.id);
         }
         return result;
     }

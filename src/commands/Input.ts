@@ -7,6 +7,7 @@ import { Output } from "../Output";
 
 export class Input extends Command {
       private inputs: Expression<any>[];
+      
 
       getParameters(): ParameterDefinition[] {
             return [{ name: "inputs", type: "Expression", multiple: true }];
