@@ -22,7 +22,7 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
             var selectOptions: SelectAttributes = { entries: enumEntries };
 
             // var viewId: string = null;
-            output.printRawProperty({},
+            output.printProperty({},
                 (output) => {
                     if (this.attributes.freezeType) {
                         output.printText(this.data.type);

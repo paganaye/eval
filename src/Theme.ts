@@ -1,7 +1,7 @@
 import { Output } from "./Output";
 import { EnumEntry, Type } from "./Types";
 import { Eval } from "./Eval";
-import { View, LightView } from "./View";
+import { View, ViewOrElement } from "./View";
 import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
 import { MapView } from "./views/MapView";
@@ -15,7 +15,7 @@ export abstract class Theme {
       abstract printPage(output: Output, attributes: PageAttributes, printContent: (attributes: ElementAttributes) => void);
       abstract printSection(output: Output, attributes: SectionAttributes, printContent: (attributes: ElementAttributes) => void);
       abstract printProperty(output: Output, attributes: PropertyAttributes,
-            printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: LightView);
+            printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: ViewOrElement);
 
       abstract printSectionAsync(output: Output, attributes: SectionAttributes): Output;
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,

@@ -3,7 +3,7 @@ import { YoutubeView } from "./views/YoutubeView";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
 import { Type, EnumEntry } from './Types';
-import { View, LightView } from "./View";
+import { View, ViewOrElement } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, CssAttributes, PropertyAttributes } from "./Theme";
@@ -84,7 +84,7 @@ export class Output {
 
 		view = this.evalContext.getViewForExpr(data, type, this.editMode, attributes);
 
-		this.printRawProperty(attributes,
+		this.printProperty(attributes,
 			(output, attributes) => {
 				if (typeof key === "string") {
 					this.html.push(Output.escapeHtml(key));
@@ -97,8 +97,8 @@ export class Output {
 		return view;
 	}
 
-	printRawProperty(attributes: PropertyAttributes,
-		printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: LightView) {
+	printProperty(attributes: PropertyAttributes,
+		printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: ViewOrElement) {
 		if (!attributes) attributes = {};
 		if (!attributes.labelCssAttributes) attributes.labelCssAttributes = {};
 		if (!attributes.cssAttributes) attributes.cssAttributes = {};

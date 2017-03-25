@@ -4,12 +4,7 @@ import { Expression } from './Expression';
 import { Eval } from "./Eval";
 import { ElementAttributes, CssAttributes } from "Theme";
 
-export interface LightView {
-    getId(): string;
-    render(output: Output): void;
-}
-
-export abstract class View<TValue, TType extends Type, TElementAttributes extends ElementAttributes> implements LightView {
+export abstract class View<TValue, TType extends Type, TElementAttributes extends ElementAttributes> implements ViewOrElement {
     protected data: TValue; // stored data
     protected type: TType; // stored type
     protected attributes: TElementAttributes; // runtime extra stuff
@@ -38,4 +33,7 @@ export abstract class View<TValue, TType extends Type, TElementAttributes extend
     abstract getValue(): TValue;
 }
 
-
+export interface ViewOrElement {
+    getId(): string;
+    render(output: Output): void;
+}

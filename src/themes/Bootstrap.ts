@@ -2,7 +2,7 @@ import { Theme, FormAttributes, PageAttributes, SectionAttributes, ElementAttrib
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
-import { View, LightView } from "../View";
+import { View, ViewOrElement } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
 import { MapView } from "../views/MapView";
@@ -32,7 +32,7 @@ export class Bootstrap extends Theme {
     }
 
     printProperty(output: Output, attributes: PropertyAttributes,
-        printKey: string | ((output: Output, attributes: ElementAttributes) => void), view: LightView) {
+        printKey: string | ((output: Output, attributes: ElementAttributes) => void), view: ViewOrElement) {
 
         output.printStartTag("div", { class: "form-group row" });
 
