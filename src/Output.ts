@@ -14,18 +14,11 @@ import { DynamicView } from "./views/DynamicView";
 
 export class Output {
 	public html: String[] = [];
-	private rendered = false;
 	private editMode: boolean;
 	private afterRenderCallbacks: ((elt: HTMLElement) => void)[] = [];
 
-	constructor(private evalContext: Eval, private outputElt: HTMLElement | string, parent?: Output) {
-		this.editMode = (parent && parent.editMode) || false;
-	}
-
-	getOutputElt(): HTMLElement {
-		return typeof this.outputElt === "string"
-			? document.getElementById(this.outputElt)
-			: this.outputElt;
+	constructor(private evalContext: Eval, private elt: HTMLElement, private parentOutput?: Output) {
+		this.editMode = (parentOutput && parentOutput.editMode) || false;
 	}
 
 	isEditMode(): boolean {
@@ -137,8 +130,8 @@ export class Output {
 		this.evalContext.theme.printSection(this, attributes, printContent)
 	}
 
-	printSectionAsync(attributes: SectionAttributes): Output {
-		return this.evalContext.theme.printSectionAsync(this, attributes);
+	printSectionAsync(attributes: SectionAttributes, callback: (elt: HTMLElement) => void): void {
+		this.evalContext.theme.printSectionAsync(this, attributes, callback);
 	}
 
 	printText(text: string) {
@@ -151,40 +144,28 @@ export class Output {
 
 	render(): void {
 		var htmlText = this.toString();
-		var elt = this.getOutputElt();
 
-		if (elt == null) {
-			setTimeout(() => this.render());
-		} else {
-			elt.innerHTML = htmlText;
-			this.rendered = true;
-			this.html = [];
-			this.raiseAfterRender(elt);
-		}
+		this.elt.innerHTML = htmlText;
+		this.html = [];
+		this.raiseAfterRender();
 	}
 
 	append(): void {
 		var htmlText = this.toString();
-		var elt = (typeof this.outputElt) === "string" ? document.getElementById(this.outputElt as string) : this.outputElt as HTMLElement;
-		if (elt == null) {
-			setTimeout(() => this.append());
-		} else {
-			var tmpDiv = document.createElement('div');
-			tmpDiv.innerHTML = htmlText;
+		var tmpDiv = document.createElement('div');
+		tmpDiv.innerHTML = htmlText;
 
-			while (tmpDiv.firstChild) {
-				elt.appendChild(tmpDiv.firstChild);
-			}
-			this.rendered = true;
-			this.html = [];
-			this.raiseAfterRender(elt);
+		while (tmpDiv.firstChild) {
+			this.elt.appendChild(tmpDiv.firstChild);
 		}
+		this.html = [];
+		this.raiseAfterRender();
 	}
 
-	private raiseAfterRender(elt: HTMLElement) {
+	private raiseAfterRender() {
 		for (var x in this.afterRenderCallbacks) {
 			var callback = this.afterRenderCallbacks[x];
-			callback(elt);
+			callback(this.elt);
 		}
 		this.afterRenderCallbacks = [];
 	}
@@ -228,7 +209,7 @@ export class Output {
 	}
 
 
-	printAsync(tag: string, attributes: CssAttributes, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): Output {
+	printAsync(tag: string, attributes: CssAttributes, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): void {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
@@ -245,18 +226,21 @@ export class Output {
 				this.printEndTag();
 				break;
 		}
-		this.afterRenderCallbacks.push(() => {
-			var elt = document.getElementById(id);
-			if (elt) {
-				callback(elt);
-			} else {
-				console.error("Could not find element " + id);
-			}
-		})
-		var newOutput = new Output(this.evalContext, id, this);
-		return newOutput;
-
+		var elt = document.getElementById(id);
+		if (elt) {
+			callback(elt);
+			return;
+		}
+		else {
+			this.afterRenderCallbacks.push(() => {
+				var elt = document.getElementById(id);
+				if (elt) {
+					callback(elt);
+				} else {
+					console.error("Could not find element " + id);
+				}
+			});
+		}
 	}
-
 }
 

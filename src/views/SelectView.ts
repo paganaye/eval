@@ -19,8 +19,9 @@ export class SelectView extends View<string, EnumDefinition, SelectAttributes> {
             this.data, this.type, (a) => {
                 alert("value changed" + a)
             });
-        var output2 = output.printSectionAsync({ name: "dynamic" });
+        output.printSectionAsync({ name: "dynamic" }, (elt) => {
 
+        });
     }
 
     getValue(): any {

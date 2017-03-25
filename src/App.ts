@@ -43,8 +43,6 @@ class App {
 
 		this.evalContext.registerType("roman", { type: "object", view: "roman" });
 		this.evalContext.registerType("youtube", { type: "object", view: "youtube" });
-
-		//this.output = new Output(this.evalContext, outputElt);
 	}
 
 	initConsole() {

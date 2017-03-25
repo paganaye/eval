@@ -33,7 +33,10 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
                 {
                     getId: () => this.getId(),
                     render: () => {
-                        this.targetOutput = output.printSectionAsync({ name: "dynamic", cssAttributes: this.getCssAttributes() });
+                        output.printSectionAsync({ name: "dynamic", cssAttributes: this.getCssAttributes() },
+                            (elt) => {
+                                this.targetOutput = new Output(this.evalContext, elt, output);
+                            });
                     }
                 });
 
@@ -45,7 +48,7 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
         var innertype = (entry || this.type.entries[0]).type;
         var innerView = this.evalContext.getViewForExpr(this.data, innertype, this.targetOutput.isEditMode(), {});
         innerView.render(this.targetOutput);
-        this.type.entries
+        //this.type.entries
         this.targetOutput.render();
     }
 

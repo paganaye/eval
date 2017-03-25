@@ -11,7 +11,7 @@ export class EvalConsole {
   constructor(private evalContext: Eval) {
     this.parser = new Parser(this.evalContext);
   }
-  
+
   public initialize(outputElement: HTMLElement, visible: boolean): void {
     this.outputElement = outputElement;
   }

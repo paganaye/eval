@@ -58,7 +58,8 @@ export class Bootstrap extends Theme {
         innerView.render(output);
         output.printStartTag("div", { class: "col-sm-1" });
         if (attributes.deletable) {
-            output.printButton({ buttonText: "x" }, (ev: Event) => {    //                
+
+            output.printButton({ buttonText: "x" }, (ev: Event) => {    // 
                 var elt = (ev.target as HTMLElement).parentElement;
                 if (elt) elt.parentElement.remove();
             });
@@ -135,31 +136,31 @@ export class Bootstrap extends Theme {
     }
 
 
-    printSectionAsync(output: Output, attributes: SectionAttributes): Output {
+    printSectionAsync(output: Output, attributes: SectionAttributes, callback: (elt: HTMLElement) => void): void {
         var cssAttributes = attributes.cssAttributes || {};
         this.addClass(cssAttributes, attributes.name);
         switch (attributes.name) {
             case "array-entries":
-                var output2 = output.printAsync("div", attributes.cssAttributes, "...",
+                output.printAsync("div", attributes.cssAttributes, "...",
                     (elt) => {
                         var Sortable = (window as any).Sortable;
                         var sortable = Sortable.create(elt, {
                             animation: 200
                         });
+                        callback(elt);
                     });
-                return output2;
+                break;
             case "dynamic":
-                var output2 = output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
-                    output2.render();
+                output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
+                    callback(elt);
                 });
-                return output2;
-
+                break;
             default:
                 console.error("Async Section " + attributes.name + " not implemented by Bootstrap Eval theme.");
-                var output2 = output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
-                    output2.render();
+                output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
+                    callback(elt);
                 });
-                return output2;
+                break;
         }
     }
 

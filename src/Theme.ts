@@ -18,7 +18,7 @@ export abstract class Theme {
       abstract printProperty(output: Output, attributes: PropertyAttributes,
             printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: ViewOrElement);
 
-      abstract printSectionAsync(output: Output, attributes: SectionAttributes): Output;
+      abstract printSectionAsync(output: Output, attributes: SectionAttributes, callback: (elt: HTMLElement) => void): void;
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
             attributes: ArrayAttributes, key: number, data: any, type: Type): View<any, Type, ElementAttributes>;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
