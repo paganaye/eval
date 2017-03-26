@@ -35,7 +35,7 @@ export class Tests {
 		var command = parser.parseCommand("print 1+2");
 		this.assert("print", command.getName());
 		//this.assert({ expr: { value: 3 }, type: {} }, command.getParamsObject(evalContext));
-		var output = new Output(evalContext, document.createElement("div"));
+		var output = new Output(evalContext);
 		var command = parser.parseCommand("a=1+1");
 		command.run(output);
 		this.assert(2, evalContext.getVariable("a"));

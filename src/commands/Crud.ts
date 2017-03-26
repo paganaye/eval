@@ -23,9 +23,8 @@ export class Crud extends Command {
       }
 
       run(output: Output) {
-            output.printAsync("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt) => {
+            output.printAsync("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt, output2) => {
                   var parentView: AnyView = null;
-                  var output2 = new Output(this.evalContext, elt, output);
 
                   this.evalContext.getTableType(this.tableName, (type) => {
                         switch (this.commandName.toLowerCase()) {

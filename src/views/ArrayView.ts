@@ -22,9 +22,9 @@ export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayOptions>
 
    render(output: Output): void {
       output.printSection({ name: "array" }, (options) => {
-         output.printAsync("div", { class: "array-entries" }, "...", (elt) => {
+         output.printAsync("div", { class: "array-entries" }, "...", (elt, output) => {
             //    printContent(output, { class: "gosh" });
-            this.arrayEntriesOutput = new Output(this.evalContext, elt, output);
+            this.arrayEntriesOutput = output;
 
             if (Array.isArray(this.data)) {
                for (var index = 0; index < this.data.length; index++) {

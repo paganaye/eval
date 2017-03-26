@@ -17,7 +17,7 @@ export class Output {
 	private editMode: boolean;
 	private afterRenderCallbacks: ((elt: HTMLElement) => void)[] = [];
 
-	constructor(private evalContext: Eval, private elt: HTMLElement, private parentOutput?: Output) {
+	constructor(private evalContext: Eval, private elt?: HTMLElement, private parentOutput?: Output) {
 		this.editMode = (parentOutput && parentOutput.editMode) || false;
 	}
 
@@ -209,7 +209,7 @@ export class Output {
 	}
 
 
-	printAsync(tag: string, attributes: ElementAttributes, text: string | ((output: Output) => void), callback: (elt: HTMLElement) => void): void {
+	printAsync(tag: string, attributes: ElementAttributes, text: string | ((output: Output) => void), callback: (elt: HTMLElement, output: Output) => void): void {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
@@ -227,20 +227,16 @@ export class Output {
 				break;
 		}
 		var elt = document.getElementById(id);
-		if (elt) {
-			callback(elt);
-			return;
-		}
-		else {
-			this.afterRenderCallbacks.push(() => {
-				var elt = document.getElementById(id);
-				if (elt) {
-					callback(elt);
-				} else {
-					console.error("Could not find element " + id);
-				}
-			});
-		}
+
+		this.afterRenderCallbacks.push(() => {
+			var elt = document.getElementById(id);
+			if (elt) {
+				var output = new Output(this.evalContext, elt, this);
+				callback(elt, output);
+			} else {
+				console.error("Could not find element " + id);
+			}
+		});
 	}
 
 	getOutputElt(): HTMLElement {

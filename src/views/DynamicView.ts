@@ -35,8 +35,8 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
             {
                 getId: () => this.getId(),
                 render: (output) => {
-                    output.printAsync("div", { id: this.getId(), class: "dynamic-object" }, "...", (elt) => {
-                        this.targetOutput = new Output(this.evalContext, elt, output);
+                    output.printAsync("div", { id: this.getId(), class: "dynamic-object" }, "...", (elt, output) => {
+                        this.targetOutput = output;
                         var str = this.data.type;
                         this.selectionChanged(this.entriesByKey[str]);
                     });

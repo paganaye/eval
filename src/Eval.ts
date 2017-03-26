@@ -241,7 +241,7 @@ export class Eval {
 		const themeStart = "<!--Eval Theme Start-->\n";
 		const themeEnd = "<!--Eval Theme End-->";
 		this.theme = newTheme;
-		var themeoutput = new Output(this, null);
+		var themeoutput = new Output(this);
 		themeoutput.printHTML(themeStart);
 		this.theme.initialize(themeoutput);
 		themeoutput.printHTML(themeEnd);
