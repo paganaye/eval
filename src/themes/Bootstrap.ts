@@ -51,14 +51,16 @@ export class Bootstrap extends Theme {
 
     printDynamicObject(output: Output, options: PropertyOptions,
         printKey: string | ((output: Output, options: ViewOptions) => void), view: ViewOrElement) {
-
-        output.printStartTag("div", { class: "form-group row" });
-
+        var parentView = view.getParentView();
+        if (parentView instanceof ArrayView){
+            
+        }
+        output.printStartTag("div", { class: "evl-dynamic-type" });
         output.printTag("label", { class: "", for: view.getId() },
             typeof printKey === "string"
                 ? printKey
                 : (output) => (printKey as ((output: Output, options: ViewOptions) => void))(output, options));
-
+        output.printEndTag();
         view.render(output);
         output.printEndTag();
     }
@@ -170,7 +172,7 @@ export class Bootstrap extends Theme {
     }
 
     printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
-        var attributes: ElementAttributes = {};
+        var attributes: ElementAttributes = { class: "form-control" };
         attributes.id = options.id;
         output.printAsync("select", attributes, () => {
             var currentGroup = null;
@@ -234,6 +236,7 @@ export class Bootstrap extends Theme {
                 output.printAsync("a", { class: "dropdown-item", href: "#" },
                     entry.label || entry.key, (elt) => {
                         elt.onclick = (ev) => {
+                            ev.preventDefault();
                             action(ev, entry.key);
                         }
                     });

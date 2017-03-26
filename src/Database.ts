@@ -1,6 +1,7 @@
 import { app } from "./App";
 import { Eval } from './Eval';
 import { Output } from "./Output";
+
 var firebase: any;
 
 export class Database {
@@ -12,6 +13,7 @@ export class Database {
         messagingSenderId: "435172815609"
     };
 
+    updates: { [path: string]: any } = {};
 
     constructor(private evalContext: Eval) {
         if (!firebase) {
@@ -33,6 +35,15 @@ export class Database {
                 db.off("value", func);
             }
         };
+    }
+
+    addUpdate(path, data): void {
+        this.updates[path] = data;
+    }
+
+    runUpdates(): void {
+        var db = firebase.database().ref().update(this.updates);
+        this.updates = {};
     }
 }
 

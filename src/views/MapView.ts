@@ -8,7 +8,8 @@ export class MapView extends View<Object, MapDefinition, MapOptions> {
     views: { [key: string]: View<any, Type, ViewOptions> } = {};
 
     build(): void {
-        this.keys = Object.keys(this.data);
+        var data = this.data || (this.data = {});
+        this.keys = Object.keys(data);
     }
 
     render(output: Output): void {

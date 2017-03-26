@@ -9,6 +9,7 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     protected type: TType; // stored type
     public options: TViewOptions; // runtime extra stuff
     private readonly id: string;
+    parentView: View<any, Type, ViewOptions>;
 
     beforeBuild(data: TValue, type: TType, options: TViewOptions): void {
         this.data = (data === undefined) ? null : data;
@@ -25,9 +26,13 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     build(): void { } // overridable
     abstract render(output: Output): void;
     abstract getValue(): TValue;
+    getParentView(): View<any, Type, ViewOptions> {
+        return this.parentView;
+    }
 }
 
 export interface ViewOrElement {
     getId(): string;
     render(output: Output): void;
+    getParentView(): View<any, Type, ViewOptions>;
 }

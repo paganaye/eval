@@ -48,13 +48,27 @@ export class Crud extends Command {
                                     location.hash = ("read " + this.tableName + " " + this.recordId);
                                     break;
                               case "update":
-                                    this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
+                                    var path = "tables/" + this.tableName + "/" + this.recordId;
+                                    this.evalContext.database.on(path, (data, error) => {
                                           output2.setEditMode(true);
                                           this.innerView = this.evalContext.getViewForExpr(data, type, true);
                                           this.innerView.render(output2);
                                           output2.printSection({ name: "crud-update" }, (options) => {
                                                 output2.printButton({ buttonText: "Save" }, () => {
                                                       var data = this.innerView.getValue();
+                                                      this.evalContext.database.addUpdate(path, data);
+                                                      this.evalContext.database.runUpdates();
+
+                                                      // // Get a key for a new Post.
+                                                      // var newPostKey = firebase.database().ref().child('posts').push().key;
+
+                                                      // // Write the new post's data simultaneously in the posts list and the user's post list.
+                                                      // var updates = {};
+                                                      // updates['/posts/' + newPostKey] = postData;
+                                                      // updates['/user-posts/' + uid + '/' + newPostKey] = postData;
+
+                                                      // return firebase.database().ref().update(updates);
+
                                                       alert("saving..." + JSON.stringify(data));
                                                 });
                                           });

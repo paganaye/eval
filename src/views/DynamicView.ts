@@ -40,7 +40,8 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
                         var str = this.data.type;
                         this.selectionChanged(this.entriesByKey[str]);
                     });
-                }
+                },
+                getParentView: () => this
             });
     }
 

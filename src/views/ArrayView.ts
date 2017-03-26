@@ -13,7 +13,7 @@ export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayOptions>
 
    build(): void {
       if (!Array.isArray(this.data)) {
-         this.data = [this.data];
+         this.data = this.data == null ? [] : [this.data];
       }
       this.views = [];
       this.indexById = {};
