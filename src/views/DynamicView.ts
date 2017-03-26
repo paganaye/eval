@@ -5,6 +5,8 @@ import { Eval } from "../Eval";
 import { SelectOptions, ViewOptions, DynamicObjectOptions, PropertyOptions } from "../Theme";
 
 export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObjectOptions> {
+    innertype: Type;
+    typeName: string;
     targetOutput: Output;
     entriesByKey: { [key: string]: DynamicEntry } = {};
     view: AnyView
@@ -29,7 +31,7 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
                 } else {
                     var id: string = this.evalContext.nextId("select-");
                     output.printSelect({ entries: enumEntries, id: id }, this.data.type, this.type,
-                        (str) => this.selectionChanged(this.entriesByKey[str]));
+                        (typeName) => this.selectionChanged(typeName));
                 }
             },
             {
@@ -37,27 +39,32 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
                 render: (output) => {
                     output.printAsync("div", { id: this.getId(), class: "dynamic-object" }, "...", (elt, output) => {
                         this.targetOutput = output;
-                        var str = this.data.type;
-                        this.selectionChanged(this.entriesByKey[str]);
+                        var typeName = this.data.type;
+                        this.selectionChanged(typeName);
                     });
                 },
                 getParentView: () => this
             });
     }
 
-
-    selectionChanged(entry: DynamicEntry) {
-        var innertype = (entry || this.type.entries[0]).type;
-        var innerView = this.evalContext.getViewForExpr(this.data, innertype, this, this.targetOutput.isEditMode(), {});
-        innerView.render(this.targetOutput);
-        this.view = innerView;
-        this.targetOutput.render();
+    selectionChanged(typeName: string) {
+        this.typeName = typeName;
+        var entry = this.entriesByKey[typeName];
+        if (entry) {
+            var innerView = this.evalContext.getViewForExpr(this.data, entry.type, this, this.targetOutput.isEditMode(), {});
+            innerView.render(this.targetOutput);
+            this.view = innerView;
+            this.targetOutput.render();
+        }
     }
 
     getValue(): any {
         var result = {};
-        var container = this.targetOutput.getOutputElt();
+        //var container = this.targetOutput.getOutputElt();
         result = this.view.getValue();
+        if (typeof result === 'object') {
+            (result as TypedObject).type = this.typeName;
+        }
         return result;
     }
 }
