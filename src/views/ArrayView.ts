@@ -37,7 +37,8 @@ export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayOptions>
 
             var Sortable = (window as any).Sortable;
             var sortable = Sortable.create(elt, {
-               animation: 200
+               animation: 200,
+               handle: ".sort-handle"
             });
          });
          output.printSection({ name: "array-buttons" }, (options) => {

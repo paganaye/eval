@@ -71,7 +71,7 @@ export class Bootstrap extends Theme {
         output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
         this.addClass({}, "card-header");
 
-        output.printTag("h4", {}, (output) => {
+        output.printTag("h4", { class: "sort-handle" }, (output) => {
             output.printText(options.label);
             if (options.deletable) {
                 output.printButton({ buttonText: "x", class: "close" }, (ev: Event) => {
