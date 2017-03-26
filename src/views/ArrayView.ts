@@ -1,4 +1,4 @@
-import { View } from "../View";
+import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type, ArrayDefinition, EnumEntry } from "../Types";
 import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from "../Theme";
@@ -6,7 +6,7 @@ import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from 
 export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayOptions>
 {
    data: any[];
-   views: View<any, Type, ViewOptions>[];
+   views: AnyView[];
    entryType: Type;
    indexById: { [key: string]: number };
    arrayEntriesOutput: Output;

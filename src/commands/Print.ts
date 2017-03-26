@@ -14,7 +14,7 @@ export class Print extends Command {
 
       run(output: Output) {
             for (var item of this.data) {
-                  var view = this.evalContext.getViewForExpr(item.getValue(this.evalContext), item.getType(this.evalContext), false);
+                  var view = this.evalContext.getViewForExpr(item.getValue(this.evalContext), item.getType(this.evalContext), null, false);
                   view.render(output);
             }
       }

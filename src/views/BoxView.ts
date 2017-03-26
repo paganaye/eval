@@ -1,4 +1,4 @@
-import { View } from "../View";
+import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { ViewOptions } from "Theme";

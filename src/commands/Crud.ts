@@ -4,13 +4,13 @@ import { ParameterDefinition } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
-import { View } from "../View";
+import { View, AnyView } from "../View";
 import { ViewOptions } from "Theme";
 
 export class Crud extends Command {
       private tableName: string;
       private recordId: string;
-      private innerView: View<any, Type, ViewOptions>;
+      private innerView: AnyView;
 
       constructor(evalContext: Eval, private commandName: string) {
             super(evalContext);
@@ -24,7 +24,7 @@ export class Crud extends Command {
 
       run(output: Output) {
             output.printAsync("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt) => {
-
+                  var parentView: AnyView = null;
                   var output2 = new Output(this.evalContext, elt, output);
 
                   this.evalContext.getTableType(this.tableName, (type) => {
@@ -33,7 +33,7 @@ export class Crud extends Command {
                                     // this should
                                     output2.setEditMode(true);
                                     output2.printForm({ buttons: ["Save"] }, (options) => {
-                                          this.innerView = this.evalContext.getViewForExpr({}, type, true);
+                                          this.innerView = this.evalContext.getViewForExpr({}, type, parentView, true);
                                           this.innerView.render(output2);
                                           output2.render();
                                     });
@@ -41,7 +41,7 @@ export class Crud extends Command {
                                     break;
                               case "read":
                                     this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
-                                          this.innerView = this.evalContext.getViewForExpr(data, type, false);
+                                          this.innerView = this.evalContext.getViewForExpr(data, type, parentView, false);
                                           this.innerView.render(output2);
                                           output2.render();
                                     })
@@ -51,7 +51,7 @@ export class Crud extends Command {
                                     var path = "tables/" + this.tableName + "/" + this.recordId;
                                     this.evalContext.database.on(path, (data, error) => {
                                           output2.setEditMode(true);
-                                          this.innerView = this.evalContext.getViewForExpr(data, type, true);
+                                          this.innerView = this.evalContext.getViewForExpr(data, type, parentView, true);
                                           this.innerView.render(output2);
                                           output2.printSection({ name: "crud-update" }, (options) => {
                                                 output2.printButton({ buttonText: "Save" }, () => {

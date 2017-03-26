@@ -1,7 +1,7 @@
 import "jquery";
 import { EvalConsole } from "./EvalConsole";
 import { Database } from "./Database";
-import { View } from "./View";
+import { View, AnyView } from "./View";
 import { Output } from "./Output";
 import { Type } from "./Types";
 import { Tests } from "./Tests";
@@ -38,8 +38,8 @@ class App {
 
 	initEval() {
 		this.evalContext = new Eval();
-		this.evalContext.registerView("roman", () => new RomanView(this.evalContext));
-		this.evalContext.registerView("youtube", () => new YoutubeView(this.evalContext));
+		this.evalContext.registerView("roman", (parent: AnyView) => new RomanView(this.evalContext, parent));
+		this.evalContext.registerView("youtube", (parent: AnyView) => new YoutubeView(this.evalContext, parent));
 
 		this.evalContext.registerType("roman", { type: "object", view: "roman" });
 		this.evalContext.registerType("youtube", { type: "object", view: "youtube" });

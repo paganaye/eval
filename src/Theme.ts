@@ -1,7 +1,7 @@
 import { Output } from "./Output";
 import { EnumEntry, Type } from "./Types";
 import { Eval } from "./Eval";
-import { View, ViewOrElement } from "./View";
+import { View, ViewOrElement, AnyView } from "./View";
 import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
 import { MapView } from "./views/MapView";
@@ -10,7 +10,7 @@ import { MapView } from "./views/MapView";
 export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
       abstract initialize(output: Output): void;
-      abstract prepareViewBeforeBuild(view: View<any, Type, ViewOptions>): void;
+      abstract prepareViewBeforeBuild(view: AnyView): void;
 
       abstract printForm(output: Output, options: FormOptions, printContent: (options: ViewOptions) => void);
       abstract printPage(output: Output, options: PageOptions, printContent: (options: ViewOptions) => void);
@@ -22,7 +22,7 @@ export abstract class Theme {
       abstract printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void);
 
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
-            options: ArrayEntryOptions, data: any, type: Type): View<any, Type, ViewOptions>;
+            options: ArrayEntryOptions, data: any, type: Type): AnyView;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
 
       abstract printInput(output: Output, options: InputOptions, data: any, type: Type);

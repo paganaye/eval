@@ -1,5 +1,5 @@
 import { Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition, EnumDefinition, TypeOrString } from './Types';
-import { View } from "./View";
+import { View, AnyView } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
 import { ObjectView } from './views/ObjectView';
@@ -26,17 +26,17 @@ import { DynamicView } from "./views/DynamicView";
 
 
 export class Eval {
-	jsonViewFactory = () => new JSONView(this);
-	objectViewFactory = () => new ObjectView(this);
-	mapViewFactory = () => new MapView(this);
-	arrayViewFactory = () => new ArrayView(this);
-	inputViewFactory = () => new InputView(this);
-	selectViewFactory = () => new SelectView(this);
-	dynamicViewFactory = () => new DynamicView(this);
+	jsonViewFactory = (parent: AnyView) => new JSONView(this, parent);
+	objectViewFactory = (parent: AnyView) => new ObjectView(this, parent);
+	mapViewFactory = (parent: AnyView) => new MapView(this, parent);
+	arrayViewFactory = (parent: AnyView) => new ArrayView(this, parent);
+	inputViewFactory = (parent: AnyView) => new InputView(this, parent);
+	selectViewFactory = (parent: AnyView) => new SelectView(this, parent);
+	dynamicViewFactory = (parent: AnyView) => new DynamicView(this, parent);
 
 	private types: { [key: string]: Type } = {};
 
-	viewFactory: { [key: string]: () => View<any, Type, ViewOptions> } = {};
+	viewFactory: { [key: string]: (parent: AnyView) => AnyView } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -112,7 +112,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: () => View<any, Type, ViewOptions>) {
+	registerView(name: string, getNew: (parent: AnyView) => AnyView) {
 		this.viewFactory[name] = getNew;
 	}
 
@@ -151,17 +151,17 @@ export class Eval {
 	}
 
 
-	getView(type: Type, editMode: boolean): View<any, Type, ViewOptions> {
+	getView(type: Type, parent: AnyView, editMode: boolean): AnyView {
 		var viewName = editMode ? type.inputView || type.view || type.type
 			: type.view || type.type;
-		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
-		return view();
+		var viewFactory = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
+		return viewFactory(parent);
 	}
 
-	getViewForExpr(expr: any, type: Type, editMode: boolean, options?: ViewOptions): View<any, Type, ViewOptions> {
+	getViewForExpr(expr: any, type: Type, parent: AnyView, editMode: boolean, options?: ViewOptions): AnyView {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!options) options = {};
-		var view: View<any, Type, ViewOptions> = this.getView(typeDef, editMode)
+		var view: AnyView = this.getView(typeDef, parent, editMode)
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;

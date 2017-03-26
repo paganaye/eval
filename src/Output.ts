@@ -3,7 +3,7 @@ import { YoutubeView } from "./views/YoutubeView";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
 import { Type, EnumEntry } from './Types';
-import { View, ViewOrElement } from "./View";
+import { View, ViewOrElement, AnyView } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions } from "./Theme";
@@ -72,10 +72,10 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printLabelAndView(key: string | ((output: Output) => void), options: PropertyOptions, data: any, type: Type): View<any, Type, ViewOptions> {
-		var view: View<any, Type, ViewOptions>;
+	printLabelAndView(key: string | ((output: Output) => void), options: PropertyOptions, data: any, type: Type, parentView: AnyView): AnyView {
+		var view: AnyView;
 
-		view = this.evalContext.getViewForExpr(data, type, this.editMode, options);
+		view = this.evalContext.getViewForExpr(data, type, parentView, this.editMode, options);
 
 		this.printProperty(options,
 			(output, options) => {
@@ -102,7 +102,7 @@ export class Output {
 		this.evalContext.theme.printDynamicObject(this, options, printKey, view);
 	}
 
-	printArrayEntry(arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): View<any, Type, ViewOptions> {
+	printArrayEntry(arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
 		return this.evalContext.theme.printArrayEntry(this, arrayView, options, data, type)
 	}
 

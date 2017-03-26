@@ -1,4 +1,4 @@
-import { View } from '../View';
+import { View, AnyView } from '../View';
 import { Type, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry, TypedObject } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
@@ -7,7 +7,7 @@ import { SelectOptions, ViewOptions, DynamicObjectOptions, PropertyOptions } fro
 export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObjectOptions> {
     targetOutput: Output;
     entriesByKey: { [key: string]: DynamicEntry } = {};
-    view: View<any, Type, ViewOptions>
+    view: AnyView
 
     build(): void {
         for (var e of this.type.entries) {
@@ -48,7 +48,7 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
 
     selectionChanged(entry: DynamicEntry) {
         var innertype = (entry || this.type.entries[0]).type;
-        var innerView = this.evalContext.getViewForExpr(this.data, innertype, this.targetOutput.isEditMode(), {});
+        var innerView = this.evalContext.getViewForExpr(this.data, innertype, this, this.targetOutput.isEditMode(), {});
         innerView.render(this.targetOutput);
         this.view = innerView;
         this.targetOutput.render();

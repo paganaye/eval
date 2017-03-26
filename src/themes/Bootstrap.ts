@@ -2,7 +2,7 @@ import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOpti
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
-import { View, ViewOrElement } from "../View";
+import { View, ViewOrElement, AnyView } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
 import { MapView } from "../views/MapView";
@@ -52,8 +52,8 @@ export class Bootstrap extends Theme {
     printDynamicObject(output: Output, options: PropertyOptions,
         printKey: string | ((output: Output, options: ViewOptions) => void), view: ViewOrElement) {
         var parentView = view.getParentView();
-        if (parentView instanceof ArrayView){
-            
+        if (parentView instanceof ArrayView) {
+
         }
         output.printStartTag("div", { class: "evl-dynamic-type" });
         output.printTag("label", { class: "", for: view.getId() },
@@ -66,7 +66,7 @@ export class Bootstrap extends Theme {
     }
 
 
-    printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): View<any, Type, ViewOptions> {
+    printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
 
         output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
         this.addClass({}, "card-header");
@@ -83,7 +83,7 @@ export class Bootstrap extends Theme {
 
         output.printStartTag("div", { class: "card-block" });
 
-        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), {});
+        var innerView = this.evalContext.getViewForExpr(data, type, arrayView, output.isEditMode(), {});
         innerView.render(output);
 
         output.printEndTag(); // card-block
@@ -255,7 +255,7 @@ export class Bootstrap extends Theme {
         } else css.class = newEntry;
     }
 
-    prepareViewBeforeBuild(view: View<any, Type, ViewOptions>): void {
+    prepareViewBeforeBuild(view: AnyView): void {
         if (view instanceof DynamicView) {
             // not sure about this
             view.options.freezeType = true;
