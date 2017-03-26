@@ -1,18 +1,18 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, ObjectDefinition, MapDefinition } from "../Types";
-import { ElementAttributes, MapAttributes } from "Theme";
+import { ViewOptions, MapOptions } from "Theme";
 
-export class MapView extends View<Object, MapDefinition, MapAttributes> {
+export class MapView extends View<Object, MapDefinition, MapOptions> {
     keys: string[];
-    views: { [key: string]: View<any, Type, ElementAttributes> } = {};
+    views: { [key: string]: View<any, Type, ViewOptions> } = {};
 
     build(): void {
         this.keys = Object.keys(this.data);
     }
 
     render(output: Output): void {
-        output.printSection({ name: "map-properties", cssAttributes: this.getCssAttributes() }, () => {
+        output.printSection({ name: "map-properties" }, (options) => {
             for (var key of this.keys) {
                 var value = this.data[key];
                 this.views[key] = output.printLabelAndView(key, {}, value, this.type.entryType);

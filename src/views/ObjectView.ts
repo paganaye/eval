@@ -1,12 +1,12 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, ObjectDefinition } from "../Types";
-import { ElementAttributes } from "Theme";
+import { ViewOptions } from "Theme";
 
-export class ObjectView extends View<Object, ObjectDefinition, ElementAttributes> {
+export class ObjectView extends View<Object, ObjectDefinition, ViewOptions> {
     keys: string[];
     properties: any;
-    views: { [key: string]: View<any, Type, ElementAttributes> } = {};
+    views: { [key: string]: View<any, Type, ViewOptions> } = {};
 
     build(): void {
         this.properties = (this.type.properties) || {};
@@ -16,14 +16,14 @@ export class ObjectView extends View<Object, ObjectDefinition, ElementAttributes
 
     render(output: Output): void {
 
-        output.printSection({ name: "object-properties", cssAttributes: this.getCssAttributes() }, () => {
-            output.printSection({ name: "object-known-properties" }, () => {
+        output.printSection({ name: "object" }, (options) => {
+            output.printSection({ name: "object-known-properties" }, (options) => {
                 for (var key of this.keys) {
                     var value = this.data[key];
                     this.views[key] = output.printLabelAndView(key, {}, value, this.properties[key]);
                 }
-            })
-            output.printSection({ name: "object-orphans" }, () => {
+            })            
+            output.printSection({ name: "object-orphans" }, (options) => {
                 for (var key in this.data) {
                     var value = this.data[key];
                     if (this.properties[key] !== undefined) continue;

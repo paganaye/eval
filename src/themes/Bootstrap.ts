@@ -1,4 +1,4 @@
-import { Theme, FormAttributes, PageAttributes, SectionAttributes, ElementAttributes, InputAttributes, ButtonAttributes, ArrayAttributes, SelectAttributes, ButtonGroupAttributes, DynamicObjectAttributes, CssAttributes, PropertyAttributes, ArrayEntryAttributes } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, DynamicObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -10,6 +10,8 @@ import { DynamicView } from "../views/DynamicView";
 
 
 export class Bootstrap extends Theme {
+    classPrefix = "evl-";
+
     constructor(evalContext: Eval, private addScripts: boolean = true) {
         super(evalContext);
     }
@@ -30,45 +32,74 @@ export class Bootstrap extends Theme {
         }
     }
 
-    printProperty(output: Output, attributes: PropertyAttributes,
-        printKey: string | ((output: Output, attributes: ElementAttributes) => void), view: ViewOrElement) {
+    printProperty(output: Output, options: PropertyOptions,
+        printKey: string | ((output: Output, options: ViewOptions) => void), view: ViewOrElement) {
 
         output.printStartTag("div", { class: "form-group row" });
 
-        this.addClass(attributes.labelCssAttributes, "col-sm-2");
-        this.addClass(attributes.labelCssAttributes, "col-form-label");
-        this.addClass(attributes.cssAttributes, "col-sm-10");
-        attributes.labelCssAttributes.for = view.getId();
-
-        output.printTag("label", attributes.labelCssAttributes,
+        output.printTag("label", { class: "col-sm-2 col-form-label", for: view.getId() },
             typeof printKey === "string"
                 ? printKey
-                : (output) => (printKey as ((output: Output, attributes: ElementAttributes) => void))(output, attributes));
+                : (output) => (printKey as ((output: Output, options: ViewOptions) => void))(output, options));
+
+
+        output.printStartTag("div", { class: "col-sm-10" });
+        view.render(output);
+        output.printEndTag(); // col-sm-10;
+        output.printEndTag(); // row
+    }
+
+    printDynamicObject(output: Output, options: PropertyOptions,
+        printKey: string | ((output: Output, options: ViewOptions) => void), view: ViewOrElement) {
+
+        output.printStartTag("div", { class: "form-group row" });
+
+debugger;
+        output.printTag("label", { class: "", for: view.getId() },
+            typeof printKey === "string"
+                ? printKey
+                : (output) => (printKey as ((output: Output, options: ViewOptions) => void))(output, options));
 
         view.render(output);
         output.printEndTag();
     }
 
-    printArrayEntry(output: Output, arrayView: ArrayView<any>, attributes: ArrayEntryAttributes, data: any, type: Type): View<any, Type, ElementAttributes> {
+    printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): View<any, Type, ViewOptions> {
 
-        output.printStartTag("div", { class: "form-group row", id: attributes.id });
-        var cssAttributes = attributes.cssAttributes || {};
-        this.addClass(cssAttributes, "col-sm-1");
-        this.addClass(cssAttributes, "col-form-label");
-        output.printTag("label", cssAttributes, attributes.label);
-        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), { cssAttributes: { class: "col-sm-10" } });
+        output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
+        this.addClass({}, "card-header");
+
+        output.printTag("h4", {}, (output) => {
+            output.printText(options.label);
+            if (options.deletable) {
+                output.printButton({ buttonText: "x", class: "close" }, (ev: Event) => {
+                    var elt = (ev.target as HTMLElement).parentElement;
+                    if (elt) elt.parentElement.remove();
+                });
+            }
+        });
+
+        output.printStartTag("div", { class: "card-block" });
+
+        var innerView = this.evalContext.getViewForExpr(data, type, output.isEditMode(), {});
         innerView.render(output);
-        output.printStartTag("div", { class: "col-sm-1" });
-        if (attributes.deletable) {
 
-            output.printButton({ buttonText: "x" }, (ev: Event) => {    // 
-                var elt = (ev.target as HTMLElement).parentElement;
-                if (elt) elt.parentElement.remove();
-            });
-        }
-        output.printEndTag(); // right column
+        output.printEndTag(); // card-block
+        output.printEndTag(); // card
 
-        output.printEndTag(); // row
+
+        //output.printStartTag("div", { id: options.id });
+
+        // output.printStartTag("div", { class: "row" });
+        // output.printStartTag("div", { class: "col-11" });
+        // output.printTag("label", {}, options.label);
+        // output.printEndTag();
+        // output.printStartTag("div", { class: "col-1" });
+        // output.printEndTag(); // right column
+        // output.printEndTag(); // top row
+
+
+        //output.printEndTag(); // row
         return innerView;
     }
 
@@ -82,15 +113,15 @@ export class Bootstrap extends Theme {
         return result;
     }
 
-    printForm(output: Output, attributes: FormAttributes, printContent: (attributes: ElementAttributes) => void) {
+    printForm(output: Output, options: FormOptions, printContent: (output: Output, options: ViewOptions) => void) {
         output.printStartTag("form", {});
-        printContent({});
+        printContent(output, {});
         // print buttons...
-        if (!attributes.buttons) attributes.buttons = ["Submit"];
+        if (!options.buttons) options.buttons = ["Submit"];
 
         output.printStartTag("div", {});
         var className = "btn";
-        for (var button of attributes.buttons) {
+        for (var button of options.buttons) {
             output.printTag("button", { type: "button", class: className }, button as string);
             className = "";
         }
@@ -98,90 +129,91 @@ export class Bootstrap extends Theme {
         output.printEndTag(); // form                
     }
 
-    printPage(output: Output, attributes: PageAttributes, printContent: (attributes: ElementAttributes) => void) {
+    printPage(output: Output, options: PageOptions, printContent: (output: Output, options: ViewOptions) => void) {
         output.printStartTag("div", { class: "container" });
-        printContent({});
+        printContent(output, {});
         output.printEndTag();
-        document.title = attributes.title;
+        document.title = options.title;
     }
 
-    printSection(output: Output, attributes: SectionAttributes, printContent: (attributes: ElementAttributes) => void) {
-        var cssAttributes = attributes.cssAttributes || {};
-        this.addClass(cssAttributes, attributes.name);
-        switch (attributes.name) {
-            case "object-properties":
+    printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void) {
+        this.addClass({}, options.name);
+        var attributes: ElementAttributes = { class: this.classPrefix + options.name };
+        switch (options.name) {
+            case "object":
             case "array-buttons":
-            case "array":
-            case "object-orphans":
             case "map-properties":
             case "dynamic-control":
             case "crud-update":
-            case "object-known-properties":
-                output.printStartTag("div", attributes.cssAttributes);
+                output.printStartTag("div", attributes);
                 printContent({});
                 output.printEndTag();
                 break;
 
-            case "nodiv":
-                // no tag for those but we pass the attributes along
-                printContent(attributes);
-                break;
-
-            default:
-                console.error("Section " + attributes.name + " not implemented by Bootstrap Eval theme.");
-                output.printStartTag("div", attributes.cssAttributes);
-                printContent({});
-                output.printEndTag();
-
-                break;
-        }
-    }
-
-
-    printSectionAsync(output: Output, attributes: SectionAttributes, callback: (elt: HTMLElement) => void): void {
-        var cssAttributes = attributes.cssAttributes || {};
-        this.addClass(cssAttributes, attributes.name);
-        switch (attributes.name) {
             case "array-entries":
-                output.printAsync("div", attributes.cssAttributes, "...",
-                    (elt) => {
-                        var Sortable = (window as any).Sortable;
-                        var sortable = Sortable.create(elt, {
-                            animation: 200
-                        });
-                        callback(elt);
-                    });
+            case "nodiv":
+            case "array":
+            case "object-known-properties":
+            case "object-orphans":
+                // no tag for those but we pass the options along
+                printContent(options);
                 break;
-            case "dynamic":
-                output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
-                    callback(elt);
-                });
-                break;
+
             default:
-                console.error("Async Section " + attributes.name + " not implemented by Bootstrap Eval theme.");
-                output.printAsync("div", attributes.cssAttributes, "...", (elt) => {
-                    callback(elt);
-                });
+                console.error("Section " + options.name + " not implemented by Bootstrap Eval theme.");
+                output.printStartTag("div", attributes);
+                printContent({});
+                output.printEndTag();
+
                 break;
         }
     }
 
-    printInput(output: Output, attributes: InputAttributes, data: any, type: Type) {
-        var cssAttributes = attributes.cssAttributes || {};
-        cssAttributes.value = data;
-        this.addClass(cssAttributes, "form-control");
+
+    // printSectionAsync(output: Output, options: SectionOptions, callback: (elt: HTMLElement) => void): void {
+    //     this.addClass({}, options.name);
+    //     switch (options.name) {
+    //         case "array-entries":
+    //             output.printAsync("div", {}, "...",
+    //                 (elt) => {
+    //                     var Sortable = (window as any).Sortable;
+    //                     var sortable = Sortable.create(elt, {
+    //                         animation: 200
+    //                     });
+    //                     callback(elt);
+    //                 });
+    //             break;
+    //         case "dynamic":
+    //             output.printAsync("div", {}, "...", (elt) => {
+    //                 callback(elt);
+    //             });
+    //             break;
+    //         default:
+    //             console.error("Async Section " + options.name + " not implemented by Bootstrap Eval theme.");
+    //             output.printAsync("div", {}, "...", (elt) => {
+    //                 callback(elt);
+    //             });
+    //             break;
+    //     }
+    // }
+
+    printInput(output: Output, options: InputOptions, data: any, type: Type) {
+        var attributes: ElementAttributes = { value: data };
+
+        this.addClass(attributes, "form-control");
         if (!output.isEditMode()) {
-            cssAttributes.readonly = "readonly";
+            attributes.readonly = "readonly";
         }
-        output.printTag("input", cssAttributes)
+        attributes.id = options.id;
+        output.printTag("input", attributes)
     }
 
-    printSelect(output: Output, attributes: SelectAttributes, data: string, type: Type, onChanged?: (string) => void) {
-        var cssAttributes = attributes.cssAttributes || {};
-
-        output.printAsync("select", attributes.cssAttributes, () => {
+    printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
+        var attributes: ElementAttributes = {};
+        attributes.id = options.id;
+        output.printAsync("select", attributes, () => {
             var currentGroup = null;
-            for (var entry of attributes.entries) {
+            for (var entry of options.entries) {
                 if (entry.group != currentGroup) {
                     if (currentGroup) output.printEndTag();
                     currentGroup = entry.group;
@@ -209,14 +241,15 @@ export class Bootstrap extends Theme {
     }
 
 
-    printButton(output: Output, attributes: ButtonAttributes, action: (ev: Event) => void) {
-        var cssAttributes = attributes.cssAttributes || {};
-        output.printAsync("button", attributes.cssAttributes, attributes.buttonText, (elt) => {
+    printButton(output: Output, options: ButtonOptions, action: (ev: Event) => void) {
+        var attributes: ElementAttributes = {};
+        if (options.class) attributes.class = options.class;
+        output.printAsync("button", attributes, options.buttonText, (elt) => {
             elt.onclick = (ev) => action(ev);
         });
     }
 
-    printButtonGroup(output: Output, attributes: ButtonGroupAttributes, action: (ev: Event, string: any) => void) {
+    printButtonGroup(output: Output, options: ButtonGroupOptions, action: (ev: Event, string: any) => void) {
         output.printTag("div", { class: "dropdown" }, () => {
 
             output.printStartTag("a",
@@ -224,13 +257,13 @@ export class Bootstrap extends Theme {
                     type: "button", class: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown",
                     "aria-haspopup": "true", "aria-expanded": "false"
                 });
-            output.printText(attributes.buttonText);
+            output.printText(options.buttonText);
             output.printEndTag(); // button
 
             output.printStartTag("div", { class: "dropdown-menu" });
 
             var currentGroup = null;
-            for (let entry of attributes.entries) {
+            for (let entry of options.entries) {
                 if (entry.group != currentGroup) {
                     output.printHTML("<div class=\"dropdown-divider\"></div>");
                     output.printText(entry.group);
@@ -248,20 +281,20 @@ export class Bootstrap extends Theme {
         });
     }
 
-    addClass(cssAttributes: CssAttributes, newEntry: string): void {
-        if (cssAttributes.class) {
-            var bits = cssAttributes.class.split(' ');
+    addClass(css: ElementAttributes, newEntry: string): void {
+        if (css.class) {
+            var bits = css.class.split(' ');
             if (bits.indexOf(newEntry) >= 0) return;
             bits.push(newEntry);
-            cssAttributes.class = bits.join(" ");
+            css.class = bits.join(" ");
 
-        } else cssAttributes.class = newEntry;
+        } else css.class = newEntry;
     }
 
-    prepareViewBeforeBuild(view: View<any, Type, ElementAttributes>): void {
+    prepareViewBeforeBuild(view: View<any, Type, ViewOptions>): void {
         if (view instanceof DynamicView) {
             // not sure about this
-            view.attributes.freezeType = true;
+            view.options.freezeType = true;
         }
     }
 }

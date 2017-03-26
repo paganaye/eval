@@ -1,10 +1,10 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ElementAttributes } from "../Theme";
+import { ViewOptions } from "../Theme";
 import { Map } from "typescript/lib/typescript";
 
-export class JSONView extends View<any, any, ElementAttributes> {
+export class JSONView extends View<any, any, ViewOptions> {
    data: any;
    text: string;
 
@@ -13,7 +13,7 @@ export class JSONView extends View<any, any, ElementAttributes> {
    }
 
    render(output: Output): void {
-      output.printStartTag("span", this.getCssAttributes());
+      output.printStartTag("span", {});
       output.printText(this.text);
       output.printEndTag();
 

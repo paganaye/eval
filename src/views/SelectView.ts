@@ -2,9 +2,9 @@ import { View } from '../View';
 import { Type, EnumEntry, EnumDefinition } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { SelectAttributes, ElementAttributes } from "../Theme";
+import { SelectOptions, ViewOptions } from "../Theme";
 
-export class SelectView extends View<string, EnumDefinition, SelectAttributes> {
+export class SelectView extends View<string, EnumDefinition, SelectOptions> {
 
     build(): void {
         if (typeof this.data !== 'string') this.data = JSON.stringify(this.data);
@@ -12,11 +12,9 @@ export class SelectView extends View<string, EnumDefinition, SelectAttributes> {
 
     render(output: Output): void {
         var enumEntries: EnumEntry[] = this.type.entries;
-        var cssAttributes = this.getCssAttributes();
-        cssAttributes.id = this.getId();
 
         output.printSelect(
-            { entries: enumEntries, cssAttributes: cssAttributes },
+            { entries: enumEntries, id: this.getId() },
             this.data, this.type, (a) => {
                 alert("value changed" + a)
             });

@@ -2,9 +2,9 @@ import { View } from '../View';
 import { Type, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry, TypedObject } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { SelectAttributes, ElementAttributes, DynamicObjectAttributes } from "../Theme";
+import { SelectOptions, ViewOptions, DynamicObjectOptions, PropertyOptions } from "../Theme";
 
-export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObjectAttributes> {
+export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObjectOptions> {
     targetOutput: Output;
     entriesByKey: { [key: string]: DynamicEntry } = {};
 
@@ -12,37 +12,37 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
         for (var e of this.type.entries) {
             this.entriesByKey[e.key] = e;
         }
-        var data = this.data || (this.data = { type: "ojbect" });
+        var data = this.data || (this.data = { type: "object" });
         if (!data.type) data.type = "object";
     }
 
     render(output: Output): void {
-        output.printSection({ name: "dynamic-control", cssAttributes: this.getCssAttributes() }, () => {
-            var enumEntries: DynamicEntry[] = this.type.entries;
-            var selectOptions: SelectAttributes = { entries: enumEntries };
+        var enumEntries: DynamicEntry[] = this.type.entries;
+        //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 
-            // var viewId: string = null;
-            output.printProperty({},
-                (output) => {
-                    if (this.attributes.freezeType) {
-                        output.printText(this.data.type);
-                    } else {
-                        output.printSelect(selectOptions, this.data.type, this.type, (str) => this.selectionChanged(this.entriesByKey[str]));
-                    }
-                },
-                {
-                    getId: () => this.getId(),
-                    render: () => {
-                        output.printSectionAsync({ name: "dynamic", cssAttributes: this.getCssAttributes() },
-                            (elt) => {
-                                this.targetOutput = new Output(this.evalContext, elt, output);
-                            });
-                    }
-                });
-
-            setTimeout(() => { this.selectionChanged(this.entriesByKey[this.data.type]); });
-        });
+        // var viewId: string = null;
+        output.printDynamicObject({},
+            (output) => {
+                if (this.options.freezeType) {
+                    output.printText(this.data.type);
+                } else {
+                    var id: string = this.evalContext.nextId("select-");
+                    output.printSelect({ entries: enumEntries, id: id }, this.data.type, this.type,
+                        (str) => this.selectionChanged(this.entriesByKey[str]));
+                }
+            },
+            {
+                getId: () => this.getId(),
+                render: (output) => {
+                    output.printAsync("div", { id: this.getId(), class: "dynamic-object" }, "...", (elt) => {
+                        this.targetOutput = new Output(this.evalContext, elt, output);
+                        var str = this.data.type;
+                        this.selectionChanged(this.entriesByKey[str]);
+                    });
+                }
+            });
     }
+
 
     selectionChanged(entry: DynamicEntry) {
         var innertype = (entry || this.type.entries[0]).type;
@@ -52,11 +52,11 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
     }
 
     getValue(): any {
-        var elt = document.getElementById(this.attributes.cssAttributes.id);
+        var elt = document.getElementById(this.options.id);
         if (elt) {
             return (elt as HTMLSelectElement).value;
         } else {
-            return this.attributes.cssAttributes.id + " not found.";
+            return this.options.id + " not found.";
         }
     }
 }

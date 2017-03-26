@@ -1,9 +1,9 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberDefinition } from "../Types";
-import { ElementAttributes } from "Theme";
+import { ViewOptions } from "Theme";
 
-export class RomanView extends View<number, NumberDefinition, ElementAttributes> {
+export class RomanView extends View<number, NumberDefinition, ViewOptions> {
     result: string;
     data: any;
 

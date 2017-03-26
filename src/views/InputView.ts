@@ -2,16 +2,14 @@ import { View } from '../View';
 import { Type } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { ElementAttributes, InputAttributes } from "Theme";
+import { ViewOptions, InputOptions } from "Theme";
 
-export class InputView extends View<any, any, InputAttributes> {
-   
+export class InputView extends View<any, any, InputOptions> {
+
     render(output: Output): void {
         // for simplicity we make the id of the input element identical to the id of the view.
         if (this.data == null) this.data = "";
-        var cssAttributes = this.getCssAttributes();
-        if (!cssAttributes.id) cssAttributes.id = this.getId();
-        output.printInput({ cssAttributes: cssAttributes }, this.data, this.type);
+        output.printInput({ id: this.getId() }, this.data, this.type);
     }
 
     getValue(): any {

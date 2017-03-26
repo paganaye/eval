@@ -5,12 +5,12 @@ import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
 import { View } from "../View";
-import { ElementAttributes } from "Theme";
+import { ViewOptions } from "Theme";
 
 export class Crud extends Command {
       private tableName: string;
       private recordId: string;
-      private innerView: View<any, Type, ElementAttributes>;
+      private innerView: View<any, Type, ViewOptions>;
 
       constructor(evalContext: Eval, private commandName: string) {
             super(evalContext);
@@ -32,7 +32,7 @@ export class Crud extends Command {
                               case "create":
                                     // this should
                                     output2.setEditMode(true);
-                                    output2.printForm({ buttons: ["Save"] }, () => {
+                                    output2.printForm({ buttons: ["Save"] }, (options) => {
                                           this.innerView = this.evalContext.getViewForExpr({}, type, true);
                                           this.innerView.render(output2);
                                           output2.render();
@@ -52,7 +52,7 @@ export class Crud extends Command {
                                           output2.setEditMode(true);
                                           this.innerView = this.evalContext.getViewForExpr(data, type, true);
                                           this.innerView.render(output2);
-                                          output2.printSection({ name: "crud-update" }, (attributes) => {
+                                          output2.printSection({ name: "crud-update" }, (options) => {
                                                 output2.printButton({ buttonText: "Save" }, () => {
                                                       var data = this.innerView.getValue();
                                                       alert("saving..." + JSON.stringify(data));

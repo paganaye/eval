@@ -10,82 +10,88 @@ import { MapView } from "./views/MapView";
 export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
       abstract initialize(output: Output): void;
-      abstract prepareViewBeforeBuild(view: View<any, Type, ElementAttributes>): void;
+      abstract prepareViewBeforeBuild(view: View<any, Type, ViewOptions>): void;
 
-      abstract printForm(output: Output, attributes: FormAttributes, printContent: (attributes: ElementAttributes) => void);
-      abstract printPage(output: Output, attributes: PageAttributes, printContent: (attributes: ElementAttributes) => void);
-      abstract printSection(output: Output, attributes: SectionAttributes, printContent: (attributes: ElementAttributes) => void);
-      abstract printProperty(output: Output, attributes: PropertyAttributes,
-            printKey: string | ((output: Output, attributes: PropertyAttributes) => void), view: ViewOrElement);
+      abstract printForm(output: Output, options: FormOptions, printContent: (options: ViewOptions) => void);
+      abstract printPage(output: Output, options: PageOptions, printContent: (options: ViewOptions) => void);
+      abstract printProperty(output: Output, options: PropertyOptions,
+            printKey: string | ((output: Output, options: PropertyOptions) => void), view: ViewOrElement);
+      abstract printDynamicObject(output: Output, options: PropertyOptions,
+            printKey: string | ((output: Output, options: PropertyOptions) => void), view: ViewOrElement);
 
-      abstract printSectionAsync(output: Output, attributes: SectionAttributes, callback: (elt: HTMLElement) => void): void;
+      abstract printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void);
+
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
-            attributes: ArrayEntryAttributes, data: any, type: Type): View<any, Type, ElementAttributes>;
+            options: ArrayEntryOptions, data: any, type: Type): View<any, Type, ViewOptions>;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
 
-      abstract printInput(output: Output, attributes: InputAttributes, data: any, type: Type);
-      abstract printSelect(output: Output, attributes: SelectAttributes, data: string, type: Type, onChanged?: (string) => void);
-      abstract printButton(output: Output, attributes: ButtonAttributes, action: (ev: Event) => void);
-      abstract printButtonGroup(output: Output, attributes: ButtonGroupAttributes, action: (ev: Event, text: string) => void);
+      abstract printInput(output: Output, options: InputOptions, data: any, type: Type);
+      abstract printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void);
+      abstract printButton(output: Output, options: ButtonOptions, action: (ev: Event) => void);
+      abstract printButtonGroup(output: Output, options: ButtonGroupOptions, action: (ev: Event, text: string) => void);
 }
 
-export type CssAttributes = { [key: string]: string };
+export type ElementAttributes = { [key: string]: string };
 
-export class ElementAttributes {
+export class ViewOptions {
       //id?: string;
-      cssAttributes?: CssAttributes;
+      //css?: CssAttributes;
 }
 
-export class PropertyAttributes extends ElementAttributes {
-      labelCssAttributes?: CssAttributes;
+export class PropertyOptions extends ViewOptions {
+      //labelCssAttributes?: CssAttributes;
 }
 
-export class ArrayAttributes extends ElementAttributes {
+export class ArrayOptions extends ViewOptions {
       deletable?: boolean;
       frozenDynamic?: boolean;
 }
 
-export class ArrayEntryAttributes extends ElementAttributes {
+export class ArrayEntryOptions extends ViewOptions {
       id: string;
       label: string;
       deletable: boolean;
       frozenDynamic: boolean;
 }
 
-export class MapAttributes extends ElementAttributes {
+export class MapOptions extends ViewOptions {
       deletable?: boolean;
       frozenDynamic?: boolean;
 }
 
-export class FormAttributes extends ElementAttributes {
+export class FormOptions extends ViewOptions {
       buttons?: (FormButton | string)[];
 }
 
-export class PageAttributes extends ElementAttributes {
+export class PageOptions extends ViewOptions {
       title?: string;
 }
 
-export class SectionAttributes extends ElementAttributes {
+export class SectionOptions extends ViewOptions {
       name: string;
 }
 
-export class InputAttributes extends ElementAttributes {
+export class InputOptions extends ViewOptions {
+      id: string;
 }
 
-export class SelectAttributes extends ElementAttributes {
+export class SelectOptions extends ViewOptions {
       entries: EnumEntry[];
+      id: string;
 }
 
-export class DynamicObjectAttributes extends ElementAttributes {
+export class DynamicObjectOptions extends ViewOptions {
       freezeType: boolean;
       entries: EnumEntry[];
+      id: string;
 }
 
-export class ButtonAttributes extends ElementAttributes {
+export class ButtonOptions extends ViewOptions {
       buttonText: string;
+      class?: string;
 }
 
-export class ButtonGroupAttributes extends ElementAttributes {
+export class ButtonGroupOptions extends ViewOptions {
       buttonText: string;
       entries: EnumEntry[];
 }

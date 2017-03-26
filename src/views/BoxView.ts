@@ -1,15 +1,15 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ElementAttributes } from "Theme";
+import { ViewOptions } from "Theme";
 
-export class BoxView extends View<any, Type, ElementAttributes> {
+export class BoxView extends View<any, Type, ViewOptions> {
 
    build(): void {
    }
 
    render(output: Output): void {
-      output.printStartTag("span", this.getCssAttributes());
+      output.printStartTag("span", {});
       output.printText("Todo");
       output.printEndTag();
 

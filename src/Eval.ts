@@ -19,7 +19,7 @@ import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Database } from './Database';
 import { Crud } from './commands/Crud';
-import { Theme, ElementAttributes } from "./Theme";
+import { Theme, ViewOptions } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
 import { DynamicView } from "./views/DynamicView";
@@ -36,7 +36,7 @@ export class Eval {
 
 	private types: { [key: string]: Type } = {};
 
-	viewFactory: { [key: string]: () => View<any, Type, ElementAttributes> } = {};
+	viewFactory: { [key: string]: () => View<any, Type, ViewOptions> } = {};
 	commands: { [key: string]: (Eval) => Command } = {};
 	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -112,7 +112,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: () => View<any, Type, ElementAttributes>) {
+	registerView(name: string, getNew: () => View<any, Type, ViewOptions>) {
 		this.viewFactory[name] = getNew;
 	}
 
@@ -151,24 +151,22 @@ export class Eval {
 	}
 
 
-	getView(type: Type, editMode: boolean): View<any, Type, ElementAttributes> {
+	getView(type: Type, editMode: boolean): View<any, Type, ViewOptions> {
 		var viewName = editMode ? type.inputView || type.view || type.type
 			: type.view || type.type;
 		var view = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return view();
 	}
 
-	getViewForExpr(expr: any, type: Type, editMode: boolean, attributes?: ElementAttributes): View<any, Type, ElementAttributes> {
+	getViewForExpr(expr: any, type: Type, editMode: boolean, options?: ViewOptions): View<any, Type, ViewOptions> {
 		var typeDef = this.getTypeDef(expr, type)
-		if (!attributes) attributes = {};
-		var view: View<any, Type, ElementAttributes> = this.getView(typeDef, editMode)
+		if (!options) options = {};
+		var view: View<any, Type, ViewOptions> = this.getView(typeDef, editMode)
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
-		if (!attributes) attributes = {};
-		var cssAttributes = attributes.cssAttributes || (attributes.cssAttributes = {});
-		//cssAttributes.id = view.getId();
-		view.beforeBuild(actualValue, typeDef, attributes);
+		if (!options) options = {};
+		view.beforeBuild(actualValue, typeDef, options);
 		this.theme.prepareViewBeforeBuild(view);
 		view.build();
 		return view;

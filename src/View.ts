@@ -2,24 +2,18 @@ import { Output } from "./Output";
 import { Type } from "./Types";
 import { Expression } from './Expression';
 import { Eval } from "./Eval";
-import { ElementAttributes, CssAttributes } from "Theme";
+import { ViewOptions, ElementAttributes } from "Theme";
 
-export abstract class View<TValue, TType extends Type, TElementAttributes extends ElementAttributes> implements ViewOrElement {
+export abstract class View<TValue, TType extends Type, TViewOptions extends ViewOptions> implements ViewOrElement {
     protected data: TValue; // stored data
     protected type: TType; // stored type
-    public attributes: TElementAttributes; // runtime extra stuff
+    public options: TViewOptions; // runtime extra stuff
     private readonly id: string;
 
-    beforeBuild(data: TValue, type: TType, attributes: TElementAttributes): void {
+    beforeBuild(data: TValue, type: TType, options: TViewOptions): void {
         this.data = (data === undefined) ? null : data;
         this.type = type || {} as TType;
-        this.attributes = attributes || {} as TElementAttributes;
-        if (!this.attributes.cssAttributes) this.attributes.cssAttributes = {};
-    }
-
-    getCssAttributes(): CssAttributes {
-        return this.attributes.cssAttributes || (this.attributes.cssAttributes = {});
-
+        this.options = options || {} as TViewOptions;
     }
 
     constructor(protected evalContext: Eval) {
