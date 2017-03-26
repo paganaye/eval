@@ -54,7 +54,6 @@ export class Bootstrap extends Theme {
 
         output.printStartTag("div", { class: "form-group row" });
 
-debugger;
         output.printTag("label", { class: "", for: view.getId() },
             typeof printKey === "string"
                 ? printKey
@@ -63,6 +62,7 @@ debugger;
         view.render(output);
         output.printEndTag();
     }
+
 
     printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): View<any, Type, ViewOptions> {
 
@@ -87,19 +87,6 @@ debugger;
         output.printEndTag(); // card-block
         output.printEndTag(); // card
 
-
-        //output.printStartTag("div", { id: options.id });
-
-        // output.printStartTag("div", { class: "row" });
-        // output.printStartTag("div", { class: "col-11" });
-        // output.printTag("label", {}, options.label);
-        // output.printEndTag();
-        // output.printStartTag("div", { class: "col-1" });
-        // output.printEndTag(); // right column
-        // output.printEndTag(); // top row
-
-
-        //output.printEndTag(); // row
         return innerView;
     }
 
@@ -170,32 +157,6 @@ debugger;
     }
 
 
-    // printSectionAsync(output: Output, options: SectionOptions, callback: (elt: HTMLElement) => void): void {
-    //     this.addClass({}, options.name);
-    //     switch (options.name) {
-    //         case "array-entries":
-    //             output.printAsync("div", {}, "...",
-    //                 (elt) => {
-    //                     var Sortable = (window as any).Sortable;
-    //                     var sortable = Sortable.create(elt, {
-    //                         animation: 200
-    //                     });
-    //                     callback(elt);
-    //                 });
-    //             break;
-    //         case "dynamic":
-    //             output.printAsync("div", {}, "...", (elt) => {
-    //                 callback(elt);
-    //             });
-    //             break;
-    //         default:
-    //             console.error("Async Section " + options.name + " not implemented by Bootstrap Eval theme.");
-    //             output.printAsync("div", {}, "...", (elt) => {
-    //                 callback(elt);
-    //             });
-    //             break;
-    //     }
-    // }
 
     printInput(output: Output, options: InputOptions, data: any, type: Type) {
         var attributes: ElementAttributes = { value: data };

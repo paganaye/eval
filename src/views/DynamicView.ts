@@ -7,6 +7,7 @@ import { SelectOptions, ViewOptions, DynamicObjectOptions, PropertyOptions } fro
 export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObjectOptions> {
     targetOutput: Output;
     entriesByKey: { [key: string]: DynamicEntry } = {};
+    view: View<any, Type, ViewOptions>
 
     build(): void {
         for (var e of this.type.entries) {
@@ -48,15 +49,14 @@ export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObj
         var innertype = (entry || this.type.entries[0]).type;
         var innerView = this.evalContext.getViewForExpr(this.data, innertype, this.targetOutput.isEditMode(), {});
         innerView.render(this.targetOutput);
+        this.view = innerView;
         this.targetOutput.render();
     }
 
     getValue(): any {
-        var elt = document.getElementById(this.options.id);
-        if (elt) {
-            return (elt as HTMLSelectElement).value;
-        } else {
-            return this.options.id + " not found.";
-        }
+        var result = {};
+        var container = this.targetOutput.getOutputElt();
+        result = this.view.getValue();
+        return result;
     }
 }
