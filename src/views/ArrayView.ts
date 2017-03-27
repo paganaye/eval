@@ -1,9 +1,9 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ArrayDefinition, EnumEntry } from "../Types";
+import { Type, ArrayType, EnumEntry } from "../Types";
 import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from "../Theme";
 
-export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayOptions>
+export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
 {
    data: any[];
    views: AnyView[];
@@ -42,7 +42,7 @@ export class ArrayView<T> extends View<any, ArrayDefinition<T>, ArrayOptions>
             });
          });
          output.printSection({ name: "array-buttons" }, (options) => {
-            if (this.entryType.type == "dynamic") {
+            if (this.entryType.kind == "dynamic") {
                var entries: EnumEntry[] = [];
                for (var entry of this.entryType.entries) {
                   entries.push({ key: entry.key, label: entry.label || entry.key });

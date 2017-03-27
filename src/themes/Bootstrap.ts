@@ -5,7 +5,6 @@ import { Eval } from "../Eval";
 import { View, ViewOrElement, AnyView } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
-import { MapView } from "../views/MapView";
 import { DynamicView } from "../views/DynamicView";
 
 
@@ -64,35 +63,6 @@ export class Bootstrap extends Theme {
         output.printEndTag();
         view.render(output);
         output.printEndTag();
-    }
-
-    printMapEntry(output: Output, mapView: MapView, options: MapEntryOptions, data: any, type: Type): View<any, Type, ViewOptions> {
-        output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
-        this.addClass({}, "card-header");
-
-        output.printTag("h4", { class: "sort-handle" }, (output) => {
-            output.printText(options.label);
-            if (options.deletable) {
-                output.printButton({ buttonText: "x", class: "close" }, (ev: Event) => {
-                    var elt = (ev.target as HTMLElement).parentElement;
-                    if (elt) elt.parentElement.remove();
-                });
-            }
-        });
-
-        output.printStartTag("div", { class: "card-block" });
-
-        var innerView = this.evalContext.getViewForExpr(data, type, mapView, output.isEditMode(), {});
-        innerView.render(output);
-
-        output.printEndTag(); // card-block
-        output.printEndTag(); // card
-
-        return innerView;
-    }
-
-    getMapEntriesIndex(element: HTMLElement): string[] {
-        throw new Error('Method not implemented.');
     }
 
     printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {

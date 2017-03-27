@@ -8,7 +8,6 @@ import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
-import { MapView } from "./views/MapView";
 import { DynamicView } from "./views/DynamicView";
 
 
@@ -104,10 +103,6 @@ export class Output {
 
 	printArrayEntry(arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
 		return this.evalContext.theme.printArrayEntry(this, arrayView, options, data, type)
-	}
-
-	printMapEntry(mapView: MapView, options: ArrayEntryOptions, data: any, type: Type): AnyView {
-		return this.evalContext.theme.printMapEntry(this, mapView, options, data, type)
 	}
 
 	printInput(options: InputOptions, data: any, type: Type) {

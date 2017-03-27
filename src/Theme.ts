@@ -4,7 +4,6 @@ import { Eval } from "./Eval";
 import { View, ViewOrElement, AnyView } from "./View";
 import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
-import { MapView } from "./views/MapView";
 
 
 export abstract class Theme {
@@ -24,11 +23,6 @@ export abstract class Theme {
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
             options: ArrayEntryOptions, data: any, type: Type): AnyView;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
-
-
-      abstract printMapEntry(output: Output, mapView: MapView,
-            options: MapEntryOptions, data: any, type: Type): AnyView;
-      abstract getMapEntriesIndex(element: HTMLElement): string[];
 
       abstract printInput(output: Output, options: InputOptions, data: any, type: Type);
       abstract printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void);

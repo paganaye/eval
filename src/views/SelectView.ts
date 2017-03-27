@@ -1,10 +1,10 @@
 import { View } from '../View';
-import { Type, EnumEntry, EnumDefinition } from '../Types';
+import { Type, EnumEntry, EnumType } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
 import { SelectOptions, ViewOptions } from "../Theme";
 
-export class SelectView extends View<string, EnumDefinition, SelectOptions> {
+export class SelectView extends View<string, EnumType, SelectOptions> {
 
     build(): void {
         if (typeof this.data !== 'string') this.data = JSON.stringify(this.data);

@@ -14,16 +14,16 @@ export interface ValidationResult {
    message?: string;
 }
 
-export interface NumberDefinition extends TypeDefinition<number> {
-   type: "number";
+export interface NumberType extends TypeDefinition<number> {
+   kind: "number";
    defaultValue?: number
    minimalValue?: number;
    maximalValue?: number;
    nbDecimals?: number;
 }
 
-export interface StringDefinition extends TypeDefinition<string> {
-   type: "string";
+export interface StringType extends TypeDefinition<string> {
+   kind: "string";
    defaultValue?: string;
    minimalLength?: number;
    maximalLength?: number;
@@ -33,8 +33,8 @@ export interface StringDefinition extends TypeDefinition<string> {
    rows?: number;
 }
 
-export interface BooleanDefinition extends TypeDefinition<boolean> {
-   type: "boolean";
+export interface BooleanType extends TypeDefinition<boolean> {
+   kind: "boolean";
    defaultValue?: boolean;
 }
 
@@ -43,12 +43,12 @@ export interface Property {
    type: Type;
 }
 export interface ObjectDefinition extends TypeDefinition<object> {
-   type: "object";
+   kind: "object";
    properties: Property[];
 }
 
-export interface ArrayDefinition<T> extends TypeDefinition<T[]> {
-   type: "array";
+export interface ArrayType<T> extends TypeDefinition<T[]> {
+   kind: "array";
    entryType: Type;
    minimumCount?: number;
    maximumCount?: number;
@@ -56,14 +56,8 @@ export interface ArrayDefinition<T> extends TypeDefinition<T[]> {
    canReorder?: boolean;
 }
 
-export interface MapDefinition extends TypeDefinition<object> {
-   type: "map";
-   entryType: Type;
-   key: StringDefinition | EnumDefinition;
-}
-
-export interface EnumDefinition extends TypeDefinition<string> {
-   type: "select";
+export interface EnumType extends TypeDefinition<string> {
+   kind: "enum";
    defaultValue?: string;
    entries: EnumEntry[];
    multiple?: boolean;
@@ -75,8 +69,8 @@ export interface EnumEntry {
    label?: string
 }
 
-export interface DynamicDefinition extends TypeDefinition<any> {
-   type: "dynamic";
+export interface DynamicType extends TypeDefinition<any> {
+   kind: "dynamic";
    entries: DynamicEntry[];
 }
 
@@ -93,21 +87,21 @@ export interface TypedObject {
    [otherFields: string]: any;
 }
 
-export type Type = NumberDefinition | StringDefinition | BooleanDefinition
-   | EnumDefinition | ObjectDefinition | ArrayDefinition<any> | MapDefinition | DynamicDefinition;
+export type Type = NumberType | StringType | BooleanType
+   | EnumType | ObjectDefinition | ArrayType<any> | DynamicType;
 
 export type TypeOrString = Type | string;
 
 // Removed those. They are now in string definitions
 //  | ColorDefinition | DateDefinition | DatetimeLocalDefinition
 //  | EmaiDefinition | MonthDefinition | RangeDefinition | TelDefinition
-//  | TextDefinition | TimeDefinition
-//  | UrlDefinition | WeekDefinition | ExternalDefinition
+//  | TextDefinition | TimeDefinition 
+//  | UrlDefinition | WeekDefinition | ExternalDefinition | MapType
 
 var x: Property[] =
    [
-      { "name": "address", "type": { "rows": 4, "type": "string" } },
-      { "name": "firstName", "type": { "type": "string" } },
+      { "name": "address", "type": { "rows": 4, "kind": "string" } },
+      { "name": "firstName", "type": { "kind": "string" } },
       {
          "name": "history", "type": {
             "entryType": {
@@ -117,22 +111,22 @@ var x: Property[] =
                      "label": "Order",
                      "type": {
                         "properties": [
-                           { "name": "date", "type": { "type": "string" } },
+                           { "name": "date", "type": { "kind": "string" } },
                            {
                               "name": "lines", "type": {
                                  "entryType": {
                                     "properties": [
-                                       { "name": "price", "type": { "type": "number" } },
-                                       { "name": "product", "type": { "type": "string" } }
+                                       { "name": "price", "type": { "kind": "number" } },
+                                       { "name": "product", "type": { "kind": "string" } }
                                     ],
-                                    "type": "object"
+                                    "kind": "object"
                                  },
-                                 "type": "array"
+                                 "kind": "array"
                               }
                            },
-                           { "name": "total", "type": { "type": "number" } }
+                           { "name": "total", "type": { "kind": "number" } }
                         ],
-                        "type": "object"
+                        "kind": "object"
                      }
                   },
                   {
@@ -140,29 +134,29 @@ var x: Property[] =
                      "label": "Message",
                      "type": {
                         "properties": [
-                           { "name": "text", "type": { "type": "string" } }
+                           { "name": "text", "type": { "kind": "string" } }
                         ],
-                        "type": "object"
+                        "kind": "object"
                      }
                   }
                ],
-               "type": "dynamic"
+               "kind": "dynamic"
             },
-            "type": "array"
+            "kind": "array"
          }
       },
-      { "name": "lastName", "type": { "type": "string" } },
+      { "name": "lastName", "type": { "kind": "string" } },
 
       {
          "name": "notes", "type": {
             "entryType": {
                "properties": [
-                  { "name": "date", "type": { "type": "string" } },
-                  { "name": "text", "type": { "type": "string" } }
+                  { "name": "date", "type": { "kind": "string" } },
+                  { "name": "text", "type": { "kind": "string" } }
                ],
-               "type": "object"
+               "kind": "object"
             },
-            "type": "array"
+            "kind": "array"
          }
       },
       {
@@ -174,7 +168,7 @@ var x: Property[] =
             }, {
                "key": "OnHold"
             }],
-            "type": "select"
+            "kind": "enum"
          }
       }
    ]

@@ -1,10 +1,10 @@
 import { View, AnyView } from '../View';
-import { Type, EnumEntry, EnumDefinition, DynamicDefinition, DynamicEntry, TypedObject } from '../Types';
+import { Type, EnumEntry, EnumType, DynamicType, DynamicEntry, TypedObject } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
 import { SelectOptions, ViewOptions, DynamicObjectOptions, PropertyOptions } from "../Theme";
 
-export class DynamicView extends View<TypedObject, DynamicDefinition, DynamicObjectOptions> {
+export class DynamicView extends View<TypedObject, DynamicType, DynamicObjectOptions> {
     innertype: Type;
     typeName: string;
     targetOutput: Output;

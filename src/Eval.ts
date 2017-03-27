@@ -1,10 +1,9 @@
-import { Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition, EnumDefinition, TypeOrString, DynamicDefinition } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectDefinition, ArrayType, EnumType, TypeOrString, DynamicType } from './Types';
 import { View, AnyView } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
 import { ObjectView } from './views/ObjectView';
 import { ArrayView } from './views/ArrayView';
-import { MapView } from './views/MapView';
 import { Print } from "./commands/Print";
 import { Hello } from "./commands/Hello";
 import { Assign } from "./commands/Assign";
@@ -28,7 +27,6 @@ import { DynamicView } from "./views/DynamicView";
 export class Eval {
 	jsonViewFactory = (parent: AnyView) => new JSONView(this, parent);
 	objectViewFactory = (parent: AnyView) => new ObjectView(this, parent);
-	mapViewFactory = (parent: AnyView) => new MapView(this, parent);
 	arrayViewFactory = (parent: AnyView) => new ArrayView(this, parent);
 	inputViewFactory = (parent: AnyView) => new InputView(this, parent);
 	selectViewFactory = (parent: AnyView) => new SelectView(this, parent);
@@ -51,7 +49,6 @@ export class Eval {
 		this.viewFactory = {
 			json: this.jsonViewFactory,
 			object: this.objectViewFactory,
-			map: this.mapViewFactory,
 			array: this.arrayViewFactory,
 			input: this.inputViewFactory,
 			select: this.selectViewFactory,
@@ -60,10 +57,10 @@ export class Eval {
 		};
 
 		this.types = {
-			boolean: { type: "boolean", view: "json", inputView: "input" },
-			string: { type: "string", view: "json", inputView: "input" },
-			number: { type: "number", view: "json", inputView: "input" },
-			object: { type: "object", properties: [], view: "object", inputView: "object" }
+			boolean: { kind: "boolean", view: "json", inputView: "input" },
+			string: { kind: "string", view: "json", inputView: "input" },
+			number: { kind: "number", view: "json", inputView: "input" },
+			object: { kind: "object", properties: [], view: "object", inputView: "object" }
 		}
 
 		this.registerCommand("print", () => new Print(this));
@@ -151,8 +148,8 @@ export class Eval {
 
 
 	getView(type: Type, parent: AnyView, editMode: boolean): AnyView {
-		var viewName = editMode ? type.inputView || type.view || type.type
-			: type.view || type.type;
+		var viewName = editMode ? type.inputView || type.view || type.kind
+			: type.view || type.kind;
 		var viewFactory = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return viewFactory(parent);
 	}
@@ -180,38 +177,38 @@ export class Eval {
 			//var y: Table;
 			switch (typeName) {
 				case "table":
-					var fieldDefinition: DynamicDefinition = {
-						type: "dynamic",
+					var fieldDefinition: DynamicType = {
+						kind: "dynamic",
 						entries: [
 							//{ key: "String", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } },
 							//{ key: "Number", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } },
 							//{ key: "Boolean", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } }
-							{ key: "String", type: { type: "object", properties: [{ name: "fieldName", type: { type: "string" } }] } },
-							{ key: "Number", type: { type: "object", properties: [{ name: "fieldName", type: { type: "string" } }] } },
-							{ key: "Boolean", type: { type: "object", properties: [{ name: "fieldName", type: { type: "string" } }] } }
+							{ key: "String", type: { kind: "object", properties: [{ name: "fieldName", type: { kind: "string" } }] } },
+							{ key: "Number", type: { kind: "object", properties: [{ name: "fieldName", type: { kind: "string" } }] } },
+							{ key: "Boolean", type: { kind: "object", properties: [{ name: "fieldName", type: { kind: "string" } }] } }
 						]
 					};
 
-					var fieldsDefinition: ArrayDefinition<any> = {
-						type: "array",
+					var fieldsDefinition: ArrayType<any> = {
+						kind: "array",
 						entryType: fieldDefinition
 					};
 
 					var tableDefinition: ObjectDefinition = {
 						properties: [
-							{ name: "tableName", type: { type: "string" } },
+							{ name: "tableName", type: { kind: "string" } },
 							{ name: "fields", type: fieldsDefinition }
 						],
-						type: "object"
+						kind: "object"
 					}
 					type = tableDefinition;
 					break;
 			}
 			if (!type) {
 				type = {
-					type: "object",
+					kind: "object",
 					properties: [
-						{ name: "id", type: { type: "string" } }
+						{ name: "id", type: { kind: "string" } }
 					]
 				};
 			}
