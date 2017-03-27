@@ -1,37 +1,37 @@
 import { View, AnyView } from '../View';
-import { Type, EnumEntry, EnumType, DynamicType, DynamicEntry, TypedObject } from '../Types';
+import { Type, EnumEntry, EnumType, DynamicType, DynamicObject, DynamicKind } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
 import { SelectOptions, ViewOptions, DynamicObjectOptions, PropertyOptions } from "../Theme";
 
-export class DynamicView extends View<TypedObject, DynamicType, DynamicObjectOptions> {
+export class DynamicView extends View<DynamicObject, DynamicType, DynamicObjectOptions> {
     innertype: Type;
-    typeName: string;
+    kind: string;
     targetOutput: Output;
-    entriesByKey: { [key: string]: DynamicEntry } = {};
+    entriesByKey: { [key: string]: DynamicKind } = {};
     view: AnyView
 
     build(): void {
-        for (var e of this.type.entries) {
+        for (var e of this.type.kinds) {
             this.entriesByKey[e.key] = e;
         }
-        var data = this.data || (this.data = { type: "object" });
-        if (!data.type) data.type = "object";
+        var data = this.data || (this.data = {} as DynamicObject);
+        if (!data._kind) data._kind = "object";
     }
 
     render(output: Output): void {
-        var enumEntries: DynamicEntry[] = this.type.entries;
+        var dynamicKinds: DynamicKind[] = this.type.kinds;
         //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 
         // var viewId: string = null;
         output.printDynamicObject({},
             (output) => {
                 if (this.options.freezeType) {
-                    output.printText(this.data.type);
+                    output.printText(this.data._kind);
                 } else {
                     var id: string = this.evalContext.nextId("select-");
-                    output.printSelect({ entries: enumEntries, id: id }, this.data.type, this.type,
-                        (typeName) => this.selectionChanged(typeName));
+                    output.printSelect({ entries: dynamicKinds, id: id }, this.data._kind, this.type,
+                        (kind) => this.selectionChanged(kind));
                 }
             },
             {
@@ -39,17 +39,17 @@ export class DynamicView extends View<TypedObject, DynamicType, DynamicObjectOpt
                 render: (output) => {
                     output.printAsync("div", { id: this.getId(), class: "dynamic-object" }, "...", (elt, output) => {
                         this.targetOutput = output;
-                        var typeName = this.data.type;
-                        this.selectionChanged(typeName);
+                        var kind = this.data._kind;
+                        this.selectionChanged(kind);
                     });
                 },
                 getParentView: () => this
             });
     }
 
-    selectionChanged(typeName: string) {
-        this.typeName = typeName;
-        var entry = this.entriesByKey[typeName];
+    selectionChanged(kind: string) {
+        this.kind = kind;
+        var entry = this.entriesByKey[kind];
         if (entry) {
             var innerView = this.evalContext.getViewForExpr(this.data, entry.type, this, this.targetOutput.isEditMode(), {});
             innerView.render(this.targetOutput);
@@ -63,8 +63,9 @@ export class DynamicView extends View<TypedObject, DynamicType, DynamicObjectOpt
         //var container = this.targetOutput.getOutputElt();
         result = this.view.getValue();
         if (typeof result === 'object') {
-            (result as TypedObject).type = this.typeName;
+            (result as DynamicObject)._kind = this.kind;
         }
         return result;
     }
 }
+    

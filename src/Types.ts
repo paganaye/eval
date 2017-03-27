@@ -15,15 +15,20 @@ export interface ValidationResult {
 }
 
 export interface NumberType extends TypeDefinition<number> {
-   kind: "number";
-   defaultValue?: number
+   _kind: "number";
+   defaultValue?: number;
    minimalValue?: number;
    maximalValue?: number;
    nbDecimals?: number;
 }
 
+export interface ConstType extends TypeDefinition<any> {
+   _kind: "const";
+   value: any;
+}
+
 export interface StringType extends TypeDefinition<string> {
-   kind: "string";
+   _kind: "string";
    defaultValue?: string;
    minimalLength?: number;
    maximalLength?: number;
@@ -34,7 +39,7 @@ export interface StringType extends TypeDefinition<string> {
 }
 
 export interface BooleanType extends TypeDefinition<boolean> {
-   kind: "boolean";
+   _kind: "boolean";
    defaultValue?: boolean;
 }
 
@@ -42,13 +47,15 @@ export interface Property {
    name: string;
    type: Type;
 }
+
+
 export interface ObjectDefinition extends TypeDefinition<object> {
-   kind: "object";
+   _kind: "object";
    properties: Property[];
 }
 
 export interface ArrayType<T> extends TypeDefinition<T[]> {
-   kind: "array";
+   _kind: "array";
    entryType: Type;
    minimumCount?: number;
    maximumCount?: number;
@@ -57,7 +64,7 @@ export interface ArrayType<T> extends TypeDefinition<T[]> {
 }
 
 export interface EnumType extends TypeDefinition<string> {
-   kind: "enum";
+   _kind: "enum";
    defaultValue?: string;
    entries: EnumEntry[];
    multiple?: boolean;
@@ -70,24 +77,23 @@ export interface EnumEntry {
 }
 
 export interface DynamicType extends TypeDefinition<any> {
-   kind: "dynamic";
-   entries: DynamicEntry[];
+   _kind: "dynamic";
+   kinds: DynamicKind[];
 }
 
-export interface DynamicEntry extends EnumEntry {
-   // group?: string;
-   // key: string
-   // label?: string
+export interface DynamicKind extends EnumEntry {
+   group?: string;
+   key: string;
+   label?: string;
    type: Type;
-   name?: string;
 }
 
-export interface TypedObject {
-   type: string;
-   [otherFields: string]: any;
+export interface DynamicObject {
+   _kind: string;
+   //[otherFields: string]: any;
 }
 
-export type Type = NumberType | StringType | BooleanType
+export type Type = NumberType | StringType | BooleanType | ConstType
    | EnumType | ObjectDefinition | ArrayType<any> | DynamicType;
 
 export type TypeOrString = Type | string;
@@ -98,78 +104,3 @@ export type TypeOrString = Type | string;
 //  | TextDefinition | TimeDefinition 
 //  | UrlDefinition | WeekDefinition | ExternalDefinition | MapType
 
-var x: Property[] =
-   [
-      { "name": "address", "type": { "rows": 4, "kind": "string" } },
-      { "name": "firstName", "type": { "kind": "string" } },
-      {
-         "name": "history", "type": {
-            "entryType": {
-               "entries": [
-                  {
-                     "key": "order",
-                     "label": "Order",
-                     "type": {
-                        "properties": [
-                           { "name": "date", "type": { "kind": "string" } },
-                           {
-                              "name": "lines", "type": {
-                                 "entryType": {
-                                    "properties": [
-                                       { "name": "price", "type": { "kind": "number" } },
-                                       { "name": "product", "type": { "kind": "string" } }
-                                    ],
-                                    "kind": "object"
-                                 },
-                                 "kind": "array"
-                              }
-                           },
-                           { "name": "total", "type": { "kind": "number" } }
-                        ],
-                        "kind": "object"
-                     }
-                  },
-                  {
-                     "key": "message",
-                     "label": "Message",
-                     "type": {
-                        "properties": [
-                           { "name": "text", "type": { "kind": "string" } }
-                        ],
-                        "kind": "object"
-                     }
-                  }
-               ],
-               "kind": "dynamic"
-            },
-            "kind": "array"
-         }
-      },
-      { "name": "lastName", "type": { "kind": "string" } },
-
-      {
-         "name": "notes", "type": {
-            "entryType": {
-               "properties": [
-                  { "name": "date", "type": { "kind": "string" } },
-                  { "name": "text", "type": { "kind": "string" } }
-               ],
-               "kind": "object"
-            },
-            "kind": "array"
-         }
-      },
-      {
-         "name": "status", "type": {
-            "entries": [{
-               "key": "Active"
-            }, {
-               "key": "Pending"
-            }, {
-               "key": "OnHold"
-            }],
-            "kind": "enum"
-         }
-      }
-   ]
-   ;

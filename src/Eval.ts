@@ -57,10 +57,10 @@ export class Eval {
 		};
 
 		this.types = {
-			boolean: { kind: "boolean", view: "json", inputView: "input" },
-			string: { kind: "string", view: "json", inputView: "input" },
-			number: { kind: "number", view: "json", inputView: "input" },
-			object: { kind: "object", properties: [], view: "object", inputView: "object" }
+			boolean: { _kind: "boolean", view: "json", inputView: "input" },
+			string: { _kind: "string", view: "json", inputView: "input" },
+			number: { _kind: "number", view: "json", inputView: "input" },
+			object: { _kind: "object", properties: [], view: "object", inputView: "object" }
 		}
 
 		this.registerCommand("print", () => new Print(this));
@@ -148,8 +148,8 @@ export class Eval {
 
 
 	getView(type: Type, parent: AnyView, editMode: boolean): AnyView {
-		var viewName = editMode ? type.inputView || type.view || type.kind
-			: type.view || type.kind;
+		var viewName = editMode ? type.inputView || type.view || type._kind
+			: type.view || type._kind;
 		var viewFactory = (editMode ? this.viewFactory[viewName] : null) || this.inputViewFactory;
 		return viewFactory(parent);
 	}
@@ -178,37 +178,54 @@ export class Eval {
 			switch (typeName) {
 				case "table":
 					var fieldDefinition: DynamicType = {
-						kind: "dynamic",
-						entries: [
-							//{ key: "String", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } },
-							//{ key: "Number", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } },
-							//{ key: "Boolean", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } }
-							{ key: "String", type: { kind: "object", properties: [{ name: "fieldName", type: { kind: "string" } }] } },
-							{ key: "Number", type: { kind: "object", properties: [{ name: "fieldName", type: { kind: "string" } }] } },
-							{ key: "Boolean", type: { kind: "object", properties: [{ name: "fieldName", type: { kind: "string" } }] } }
+						_kind: "dynamic",
+						kinds: [
+							{
+								key: "string", label: "String", type: {
+									_kind: "object", properties: [
+										{ name: "fieldName", type: { _kind: "string" } },
+										{ name: "_kind", type: { _kind: "const", value: "string" } }]
+								}
+							},
+							{
+								key: "number", label: "Number", type: {
+									_kind: "object", properties: [
+										{ name: "fieldName", type: { _kind: "string" } },
+										{ name: "minimum", type: { _kind: "number" } },
+										{ name: "maximum", type: { _kind: "number" } },
+										{ name: "_kind", type: { _kind: "const", value: "number" } }]
+								}
+							},
+							{
+								key: "boolean", label: "Boolean", type: {
+									_kind: "object", properties: [
+										{ name: "fieldName", type: { _kind: "string" } },
+										{ name: "_kind", type: { _kind: "const", value: "boolean" } }]
+								}
+							}
 						]
 					};
 
 					var fieldsDefinition: ArrayType<any> = {
-						kind: "array",
+						_kind: "array",
 						entryType: fieldDefinition
 					};
 
 					var tableDefinition: ObjectDefinition = {
 						properties: [
-							{ name: "tableName", type: { kind: "string" } },
+							{ name: "tableName", type: { _kind: "string" } },
 							{ name: "fields", type: fieldsDefinition }
 						],
-						kind: "object"
+						_kind: "object"
 					}
 					type = tableDefinition;
 					break;
 			}
 			if (!type) {
 				type = {
-					kind: "object",
+					_kind: "object",
 					properties: [
-						{ name: "id", type: { kind: "string" } }
+						{ name: "id", type: { _kind: "string" } }
 					]
 				};
 			}

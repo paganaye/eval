@@ -41,8 +41,8 @@ class App {
 		this.evalContext.registerView("roman", (parent: AnyView) => new RomanView(this.evalContext, parent));
 		this.evalContext.registerView("youtube", (parent: AnyView) => new YoutubeView(this.evalContext, parent));
 
-		this.evalContext.registerType("roman", { kind: "number", view: "roman" });
-		this.evalContext.registerType("youtube", { kind: "string", view: "youtube" });
+		this.evalContext.registerType("roman", { _kind: "number", view: "roman" });
+		this.evalContext.registerType("youtube", { _kind: "string", view: "youtube" });
 	}
 
 	initConsole() {
@@ -57,12 +57,20 @@ class App {
 		var outputElt = document.getElementById("output1") as HTMLDivElement;
 		this.evalConsole.initialize(outputElt, false);
 
-		$(window).on('hashchange', () => {
+		var onHashChange = () => {
 			this.evalConsole.processCommand(window.location.hash.substring(1));
-		});
+		};
+
+		$(window).on('hashchange', () => onHashChange());
+
+		if (window.location.hash.length <= 1) {
+			window.location.hash = "update table 1";
+		} else {
+			onHashChange();
+		}
 
 		//this.evalConsole.processCommand("update table client");
-		this.evalConsole.processCommand("update client 1");
+		//this.evalConsole.processCommand("update client 1");
 	}
 
 	// 	tests() {

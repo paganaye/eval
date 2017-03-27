@@ -1,6 +1,6 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ArrayType, EnumEntry } from "../Types";
+import { Type, ArrayType, EnumEntry, DynamicObject } from "../Types";
 import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from "../Theme";
 
 export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
@@ -42,9 +42,9 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
             });
          });
          output.printSection({ name: "array-buttons" }, (options) => {
-            if (this.entryType.kind == "dynamic") {
+            if (this.entryType._kind == "dynamic") {
                var entries: EnumEntry[] = [];
-               for (var entry of this.entryType.entries) {
+               for (var entry of this.entryType.kinds) {
                   entries.push({ key: entry.key, label: entry.label || entry.key });
                }
                output.printButtonGroup({
@@ -65,18 +65,18 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
 
    }
 
-   addOne(index: number, type: String) {
+   addOne(index: number, kind: string) {
       if (typeof index === "number") {
          var entry = this.data[index];
       } else {
          index = this.data.length;
          entry = {} as T;
-         if (type) (entry as any).type = type;
+         if (kind) (entry as DynamicObject)._kind = kind;
          this.data.push(entry);
       }
       var id = this.evalContext.nextId("entry-");
       var options: ArrayEntryOptions = { id: id, deletable: true, label: "#" + (this.views.length + 1), frozenDynamic: false };
-      if (type) options.frozenDynamic = true;
+      if (kind) options.frozenDynamic = true;
       var view = this.arrayEntriesOutput.printArrayEntry(this, options, entry, this.entryType);
 
       this.indexById[id] = this.views.length;
