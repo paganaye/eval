@@ -25,6 +25,11 @@ export abstract class Theme {
             options: ArrayEntryOptions, data: any, type: Type): AnyView;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
 
+
+      abstract printMapEntry(output: Output, mapView: MapView,
+            options: MapEntryOptions, data: any, type: Type): AnyView;
+      abstract getMapEntriesIndex(element: HTMLElement): string[];
+
       abstract printInput(output: Output, options: InputOptions, data: any, type: Type);
       abstract printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void);
       abstract printButton(output: Output, options: ButtonOptions, action: (ev: Event) => void);
@@ -48,6 +53,13 @@ export class ArrayOptions extends ViewOptions {
 }
 
 export class ArrayEntryOptions extends ViewOptions {
+      id: string;
+      label: string;
+      deletable: boolean;
+      frozenDynamic: boolean;
+}
+
+export class MapEntryOptions extends ViewOptions {
       id: string;
       label: string;
       deletable: boolean;

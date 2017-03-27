@@ -82,8 +82,8 @@ export interface DynamicEntry extends EnumEntry {
    // group?: string;
    // key: string
    // label?: string
-   name: string;
    type: Type;
+   name?: string;
 }
 
 export interface TypedObject {

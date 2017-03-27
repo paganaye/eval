@@ -106,6 +106,10 @@ export class Output {
 		return this.evalContext.theme.printArrayEntry(this, arrayView, options, data, type)
 	}
 
+	printMapEntry(mapView: MapView, options: ArrayEntryOptions, data: any, type: Type): AnyView {
+		return this.evalContext.theme.printMapEntry(this, mapView, options, data, type)
+	}
+
 	printInput(options: InputOptions, data: any, type: Type) {
 		this.evalContext.theme.printInput(this, options, data, type)
 	}

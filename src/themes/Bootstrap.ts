@@ -1,4 +1,4 @@
-import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, DynamicObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, DynamicObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, MapEntryOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -10,6 +10,7 @@ import { DynamicView } from "../views/DynamicView";
 
 
 export class Bootstrap extends Theme {
+
     classPrefix = "evl-";
 
     constructor(evalContext: Eval, private addScripts: boolean = true) {
@@ -65,9 +66,36 @@ export class Bootstrap extends Theme {
         output.printEndTag();
     }
 
+    printMapEntry(output: Output, mapView: MapView, options: MapEntryOptions, data: any, type: Type): View<any, Type, ViewOptions> {
+        output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
+        this.addClass({}, "card-header");
+
+        output.printTag("h4", { class: "sort-handle" }, (output) => {
+            output.printText(options.label);
+            if (options.deletable) {
+                output.printButton({ buttonText: "x", class: "close" }, (ev: Event) => {
+                    var elt = (ev.target as HTMLElement).parentElement;
+                    if (elt) elt.parentElement.remove();
+                });
+            }
+        });
+
+        output.printStartTag("div", { class: "card-block" });
+
+        var innerView = this.evalContext.getViewForExpr(data, type, mapView, output.isEditMode(), {});
+        innerView.render(output);
+
+        output.printEndTag(); // card-block
+        output.printEndTag(); // card
+
+        return innerView;
+    }
+
+    getMapEntriesIndex(element: HTMLElement): string[] {
+        throw new Error('Method not implemented.');
+    }
 
     printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
-
         output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
         this.addClass({}, "card-header");
 

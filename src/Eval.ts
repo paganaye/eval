@@ -1,4 +1,4 @@
-import { Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition, EnumDefinition, TypeOrString } from './Types';
+import { Type, BooleanDefinition, StringDefinition, NumberDefinition, ObjectDefinition, ArrayDefinition, MapDefinition, EnumDefinition, TypeOrString, DynamicDefinition } from './Types';
 import { View, AnyView } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -180,33 +180,29 @@ export class Eval {
 			var type = data as Type;
 			//var y: Table;
 			switch (typeName) {
-				case "client":
-					var x: ObjectDefinition = { "displayOrder": ["firstName", "lastName", "address"], "properties": { "address": { "rows": 4, "type": "string" }, "firstName": { "type": "string" }, "lastName": { "type": "string" } }, "type": "object" };
-					// type = {
-					// 	type: "object",
-					// 	properties: {
-					// 		firstName: { type: "string" },
-					// 		lastName: { type: "string" },
-					// 		address: { type: "string", rows: 4 }
-					// 	},
-					// 	displayOrder: ["firstName", "lastName", "address"]
-					// };
-					break;
 				case "table":
-					type = {
-						type: "object",
-						properties: {
-							properties: {
-								type: "map",
-								key: { type: "string", regexp: "[a-zA-Z][a-zA-Z0-9]*" },
-								entryType: {
-									type: "object", properties: {
-										type: { type: "string", regexp: "[a-zA-Z][a-zA-Z0-9]*" }
-									}
-								}
-							}
-						}
+					var fieldDefinition: DynamicDefinition = {
+						type: "dynamic",
+						entries: [
+							{ key: "String", type: { type: "object", properties: { "fieldName": { type: "string" } } } },
+							{ key: "Number", type: { type: "object", properties: { "fieldName": { type: "string" } } } },
+							{ key: "Boolean", type: { type: "object", properties: { "fieldName": { type: "string" } } } }
+						]
 					};
+
+					var fieldsDefinition: ArrayDefinition<any> = {
+						type: "array",
+						entryType: fieldDefinition
+					};
+
+					var tableDefinition: ObjectDefinition = {
+						properties: {
+							tableName: { type: "string" },
+							fields: fieldsDefinition
+						},
+						type: "object"
+					}
+					type = tableDefinition;
 					break;
 			}
 			if (!type) {
