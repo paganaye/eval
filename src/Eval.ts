@@ -63,9 +63,8 @@ export class Eval {
 			boolean: { type: "boolean", view: "json", inputView: "input" },
 			string: { type: "string", view: "json", inputView: "input" },
 			number: { type: "number", view: "json", inputView: "input" },
-			object: { type: "object", view: "object", inputView: "object" }
+			object: { type: "object", properties: [], view: "object", inputView: "object" }
 		}
-
 
 		this.registerCommand("print", () => new Print(this));
 		this.registerCommand("hello", () => new Hello(this));
@@ -184,9 +183,12 @@ export class Eval {
 					var fieldDefinition: DynamicDefinition = {
 						type: "dynamic",
 						entries: [
-							{ key: "String", type: { type: "object", properties: { "fieldName": { type: "string" } } } },
-							{ key: "Number", type: { type: "object", properties: { "fieldName": { type: "string" } } } },
-							{ key: "Boolean", type: { type: "object", properties: { "fieldName": { type: "string" } } } }
+							//{ key: "String", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } },
+							//{ key: "Number", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } },
+							//{ key: "Boolean", type: { type: "object", properties: [{ name: "fieldName", type: "string" }] } }
+							{ key: "String", type: { type: "object", properties: [{ name: "fieldName", type: { type: "string" } }] } },
+							{ key: "Number", type: { type: "object", properties: [{ name: "fieldName", type: { type: "string" } }] } },
+							{ key: "Boolean", type: { type: "object", properties: [{ name: "fieldName", type: { type: "string" } }] } }
 						]
 					};
 
@@ -196,10 +198,10 @@ export class Eval {
 					};
 
 					var tableDefinition: ObjectDefinition = {
-						properties: {
-							tableName: { type: "string" },
-							fields: fieldsDefinition
-						},
+						properties: [
+							{ name: "tableName", type: { type: "string" } },
+							{ name: "fields", type: fieldsDefinition }
+						],
 						type: "object"
 					}
 					type = tableDefinition;
@@ -208,9 +210,9 @@ export class Eval {
 			if (!type) {
 				type = {
 					type: "object",
-					properties: {
-						id: { type: "string" }
-					}
+					properties: [
+						{ name: "id", type: { type: "string" } }
+					]
 				};
 			}
 			callback(type);

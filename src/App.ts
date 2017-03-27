@@ -41,8 +41,8 @@ class App {
 		this.evalContext.registerView("roman", (parent: AnyView) => new RomanView(this.evalContext, parent));
 		this.evalContext.registerView("youtube", (parent: AnyView) => new YoutubeView(this.evalContext, parent));
 
-		this.evalContext.registerType("roman", { type: "object", view: "roman" });
-		this.evalContext.registerType("youtube", { type: "object", view: "youtube" });
+		this.evalContext.registerType("roman", { type: "number", view: "roman" });
+		this.evalContext.registerType("youtube", { type: "string", view: "youtube" });
 	}
 
 	initConsole() {

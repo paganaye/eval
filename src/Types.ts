@@ -1,4 +1,3 @@
-
 import { View } from "./View";
 
 
@@ -39,10 +38,13 @@ export interface BooleanDefinition extends TypeDefinition<boolean> {
    defaultValue?: boolean;
 }
 
+export interface Property {
+   name: string;
+   type: Type;
+}
 export interface ObjectDefinition extends TypeDefinition<object> {
    type: "object";
-   properties?: { [key: string]: Type };
-   displayOrder?: string[];
+   properties: Property[];
 }
 
 export interface ArrayDefinition<T> extends TypeDefinition<T[]> {
@@ -101,3 +103,79 @@ export type TypeOrString = Type | string;
 //  | EmaiDefinition | MonthDefinition | RangeDefinition | TelDefinition
 //  | TextDefinition | TimeDefinition
 //  | UrlDefinition | WeekDefinition | ExternalDefinition
+
+var x: Property[] =
+   [
+      { "name": "address", "type": { "rows": 4, "type": "string" } },
+      { "name": "firstName", "type": { "type": "string" } },
+      {
+         "name": "history", "type": {
+            "entryType": {
+               "entries": [
+                  {
+                     "key": "order",
+                     "label": "Order",
+                     "type": {
+                        "properties": [
+                           { "name": "date", "type": { "type": "string" } },
+                           {
+                              "name": "lines", "type": {
+                                 "entryType": {
+                                    "properties": [
+                                       { "name": "price", "type": { "type": "number" } },
+                                       { "name": "product", "type": { "type": "string" } }
+                                    ],
+                                    "type": "object"
+                                 },
+                                 "type": "array"
+                              }
+                           },
+                           { "name": "total", "type": { "type": "number" } }
+                        ],
+                        "type": "object"
+                     }
+                  },
+                  {
+                     "key": "message",
+                     "label": "Message",
+                     "type": {
+                        "properties": [
+                           { "name": "text", "type": { "type": "string" } }
+                        ],
+                        "type": "object"
+                     }
+                  }
+               ],
+               "type": "dynamic"
+            },
+            "type": "array"
+         }
+      },
+      { "name": "lastName", "type": { "type": "string" } },
+
+      {
+         "name": "notes", "type": {
+            "entryType": {
+               "properties": [
+                  { "name": "date", "type": { "type": "string" } },
+                  { "name": "text", "type": { "type": "string" } }
+               ],
+               "type": "object"
+            },
+            "type": "array"
+         }
+      },
+      {
+         "name": "status", "type": {
+            "entries": [{
+               "key": "Active"
+            }, {
+               "key": "Pending"
+            }, {
+               "key": "OnHold"
+            }],
+            "type": "select"
+         }
+      }
+   ]
+   ;
