@@ -1,15 +1,16 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
-import { ParameterDefinition } from '../EvalFunction';
+import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Output } from "../Output";
 
 export class Alert extends Command {
    private data: string;
    private type: Type;
 
-   getParameters(): ParameterDefinition[] {
-      return [{ name: "data", type: "string" }];
+   getDescription(): CommandDescription {
+      return new CommandDescription()
+         .addParameter("data", "string");
    }
 
    run(output: Output) {
@@ -17,7 +18,7 @@ export class Alert extends Command {
    }
 
    runTests(output: Output): void {
-      
+
    }
 }
 

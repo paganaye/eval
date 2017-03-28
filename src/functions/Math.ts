@@ -1,12 +1,13 @@
-import { EvalFunction, ParameterDefinition } from '../EvalFunction';
+import { EvalFunction, ParameterDefinition, CommandDescription } from '../EvalFunction';
 // import { Type } from "../Types";
 import { Eval } from "../Eval";
 
 export class AbsFunction extends EvalFunction<Number> {
    private arg1: number;
 
-   getParameters(): ParameterDefinition[] {
-      return [{ name: "arg1", type: "number" }];
+   getDescription(): CommandDescription {
+      return new CommandDescription()
+         .addParameter("arg1", "number", "");
    }
 
    calcValue(evalContext: Eval): number {
@@ -17,8 +18,9 @@ export class AbsFunction extends EvalFunction<Number> {
 export class RoundFunction extends EvalFunction<Number> {
    private arg1: number;
 
-   getParameters(): ParameterDefinition[] {
-      return [{ name: "arg1", type: "number" }];
+   getDescription(): CommandDescription {
+      return new CommandDescription()
+         .addParameter("arg1", "number", "");
    }
 
    calcValue(evalContext: Eval): number {
@@ -29,8 +31,8 @@ export class RoundFunction extends EvalFunction<Number> {
 export class RandomFunction extends EvalFunction<Number> {
    value: Number = Math.random();
 
-   getParameters(): ParameterDefinition[] {
-      return [];
+   getDescription(): CommandDescription {
+      return new CommandDescription();
    }
 
    calcValue(evalContext: Eval) {

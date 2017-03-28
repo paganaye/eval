@@ -2,15 +2,16 @@ import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { Output } from "../Output";
+import { CommandDescription } from "EvalFunction";
 
 export class Load extends Command {
       path: string;
       type: string;
 
-      getParameters() {
-            return [
-                  { name: "path", type: "string" },
-                  { name: "type", type: "string" }];
+      getDescription(): CommandDescription {
+            return new CommandDescription()
+                  .addParameter("path", "string", "", true)
+                  .addParameter("type", "string", "", true);
       }
 
       run(output: Output) {

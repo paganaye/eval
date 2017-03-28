@@ -1,5 +1,5 @@
 import { Eval } from './Eval';
-import { EvalFunction, ParameterDefinition } from './EvalFunction';
+import { EvalFunction, ParameterDefinition, CommandDescription } from './EvalFunction';
 import { Type } from './Types';
 
 export interface Subscriber {
@@ -169,9 +169,10 @@ export class FunctionCall extends Expression<any> {
 		}
 	}
 
-	static applyParameters(evalContext: Eval, parameterDefinitions: ParameterDefinition[],
+	static applyParameters(evalContext: Eval, commandDescription: CommandDescription,
 		expressions: any, target: any, targetName) {
-		var lastParameter = parameterDefinitions[parameterDefinitions.length - 1];
+		var parameters = commandDescription.parameters || [];
+		var lastParameter = parameters[parameters.length - 1];
 		var lastParameterIsMultiple = lastParameter && lastParameter.multiple;
 		var lastParameterValue = [];
 		for (var idx in expressions) {
@@ -180,13 +181,13 @@ export class FunctionCall extends Expression<any> {
 			var parameterDefinition: ParameterDefinition;
 			if (isNumber) {
 				var idxNumber = parseInt(idx);
-				if (idxNumber >= parameterDefinitions.length
+				if (idxNumber >= parameters.length
 					&& lastParameterIsMultiple)
 					parameterDefinition = lastParameter;
 				else
-					parameterDefinition = parameterDefinitions[idx];
+					parameterDefinition = parameters[idx];
 			} else {
-				parameterDefinition = parameterDefinitions.filter(p => p.name === idx)[0];
+				parameterDefinition = parameters.filter(p => p.name === idx)[0];
 			}
 			if (!parameterDefinition) {
 				throw "Parameter " + (isNumber ? (parseInt(idx) + 1).toString() : idx) + " does not exist in " + targetName + ".";
@@ -215,7 +216,8 @@ export class FunctionCall extends Expression<any> {
 	}
 
 	calcValue(evalContext: Eval): any {
-		FunctionCall.applyParameters(evalContext, this.functionInstance.getParameters(), this.expressions, this.functionInstance, "function " + this.functionName);
+
+		FunctionCall.applyParameters(evalContext, this.functionInstance.getDescription(), this.expressions, this.functionInstance, "function " + this.functionName);
 		var result = this.functionInstance.calcValue(evalContext);
 		return result;
 	}

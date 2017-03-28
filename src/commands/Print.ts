@@ -1,15 +1,15 @@
 import { Command } from "../Command";
 import { Eval } from "../Eval";
-import { ParameterDefinition } from '../EvalFunction';
+import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Output } from "../Output";
 
 export class Print extends Command {
       private data: Expression<any>[];
 
-      getParameters(): ParameterDefinition[] {
-            return [
-                  { name: "data", type: "Expression", multiple: true }];
+      getDescription(): CommandDescription {
+            return new CommandDescription()
+                  .addParameter("data", "Expression", "", true);
       }
 
       run(output: Output) {
@@ -22,5 +22,7 @@ export class Print extends Command {
       runTests(output: Output): void {
 
       }
+
+
 }
 

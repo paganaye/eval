@@ -1,16 +1,16 @@
-import { EvalFunction, ParameterDefinition } from "../EvalFunction";
+import { EvalFunction, ParameterDefinition, CommandDescription } from "../EvalFunction";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
 
 
 export class NowFunction extends EvalFunction<number> {
 
-   getParameters(): ParameterDefinition[] {
-      return [];
+   getDescription(): CommandDescription {
+      return new CommandDescription();
    }
 
    calcValue(evalContext: Eval): number {
-      setTimeout(() => { 
+      setTimeout(() => {
          this.valueChanged();
       }, 1000);
       return new Date().getTime();

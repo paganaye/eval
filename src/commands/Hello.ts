@@ -5,14 +5,16 @@ import { Expression } from '../Expression';
 import { Output } from "../Output";
 import { View, AnyView } from "../View";
 import { ViewOptions } from "Theme";
+import { CommandDescription } from "EvalFunction";
 
 
 export class Hello extends Command {
    who: Expression<string>;
    innerView: AnyView;
 
-   getParameters() {
-      return [{ name: "who", type: "Expression" }];
+   getDescription(): CommandDescription {
+      return new CommandDescription()
+         .addParameter("who", "Expression", "");
    }
 
    run(output: Output) {

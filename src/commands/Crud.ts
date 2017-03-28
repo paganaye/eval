@@ -1,6 +1,6 @@
 import { Command } from "../Command";
 import { Eval } from "../Eval";
-import { ParameterDefinition } from '../EvalFunction';
+import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
@@ -16,10 +16,11 @@ export class Crud extends Command {
             super(evalContext);
       }
 
-      getParameters(): ParameterDefinition[] {
-            return [
-                  { name: "tableName", type: "stringOrVariableName" },
-                  { name: "recordId", type: "stringOrVariableName" }];
+      getDescription(): CommandDescription {
+            debugger;
+            return new CommandDescription()
+                  .addParameter("tableName", "stringOrVariableName", "", true)
+                  .addParameter("recordId", "stringOrVariableName", "", true);
       }
 
       run(output: Output) {

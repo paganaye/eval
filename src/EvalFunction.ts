@@ -4,9 +4,18 @@ import { Type } from './Types';
 
 export abstract class EvalFunction<T> {
    constructor(protected parent: Expression<any>) { }
-   abstract getParameters(): ParameterDefinition[];
+   abstract getDescription(): CommandDescription;
    abstract calcValue(evalContext: Eval): T;
    protected valueChanged() {
+   }
+}
+
+export class CommandDescription {
+   public parameters: ParameterDefinition[] = [];
+
+   addParameter(name: string, type: Type | String, description?: string, multiple?: boolean): CommandDescription {
+      this.parameters.push(new ParameterDefinition(name, type, description, multiple));
+      return this;
    }
 }
 

@@ -1,11 +1,11 @@
 import { Eval } from "./Eval";
 import { Expression } from './Expression';
-import { ParameterDefinition } from './EvalFunction';
+import { ParameterDefinition, CommandDescription } from './EvalFunction';
 import { Output } from "./Output";
 
 export abstract class Command {
    constructor(protected readonly evalContext: Eval) { }
-   abstract getParameters(): ParameterDefinition[];
+   abstract getDescription(): CommandDescription;
    abstract run(output: Output): void;
    abstract runTests(output: Output): void;
 }

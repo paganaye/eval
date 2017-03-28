@@ -2,6 +2,7 @@ import { Command } from "./Command";
 import { Eval } from "./Eval";
 import { Expression, FunctionCall } from './Expression';
 import { Output } from "./Output";
+import { CommandDescription } from "EvalFunction";
 
 export class CommandCall {
    private command: Command;
@@ -31,7 +32,8 @@ export class CommandCall {
    }
 
    run(output: Output) {
-      FunctionCall.applyParameters(this.evalContext, this.command.getParameters(), this.expressions, this.command, "command " + this.commandName);
+      var description = this.command.getDescription();
+      FunctionCall.applyParameters(this.evalContext, description, this.expressions, this.command, "command " + this.commandName);
       this.command.run(output)
    }
 }

@@ -1,16 +1,16 @@
 import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
-import { ParameterDefinition } from '../EvalFunction';
+import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Output } from "../Output";
 
 export class Input extends Command {
       private inputs: Expression<any>[];
 
-
-      getParameters(): ParameterDefinition[] {
-            return [{ name: "inputs", type: "Expression", multiple: true }];
+      getDescription(): CommandDescription {
+            return new CommandDescription()
+                  .addParameter("inputs", "Expression", "", true);
       }
 
       run(output: Output) {
