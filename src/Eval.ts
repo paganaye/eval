@@ -6,6 +6,7 @@ import { ObjectView } from './views/ObjectView';
 import { ArrayView } from './views/ArrayView';
 import { Print } from "./commands/Print";
 import { Hello } from "./commands/Hello";
+import { Tests } from "./commands/Tests";
 import { Assign } from "./commands/Assign";
 import { EvalFunction } from "./EvalFunction";
 import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
@@ -35,8 +36,8 @@ export class Eval {
 	private types: { [key: string]: Type } = {};
 
 	viewFactory: { [key: string]: (parent: AnyView) => AnyView } = {};
-	commands: { [key: string]: (Eval) => Command } = {};
-	functions: { [key: string]: (Eval) => EvalFunction<any> } = {};
+	commands: { [key: string]: (evalContext: Eval) => Command } = {};
+	functions: { [key: string]: (parent: Expression<any>) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
 
 
@@ -73,11 +74,13 @@ export class Eval {
 		this.registerCommand("read", () => new Crud(this, "read"));
 		this.registerCommand("update", () => new Crud(this, "update"));
 		this.registerCommand("delete", () => new Crud(this, "delete"));
+		this.registerCommand("tests", () => new Tests(this));
+		this.registerCommand("test", () => new Tests(this));
 
-		this.registerFunctions("abs", (parent) => new AbsFunction(parent));
-		this.registerFunctions("round", (parent) => new RoundFunction(parent));
-		this.registerFunctions("random", (parent) => new RandomFunction(parent));
-		this.registerFunctions("now", (parent) => new NowFunction(parent));
+		this.registerFunctions("abs", (parent: Expression<any>) => new AbsFunction(parent));
+		this.registerFunctions("round", (parent: Expression<any>) => new RoundFunction(parent));
+		this.registerFunctions("random", (parent: Expression<any>) => new RandomFunction(parent));
+		this.registerFunctions("now", (parent: Expression<any>) => new NowFunction(parent));
 
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));

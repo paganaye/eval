@@ -16,5 +16,9 @@ export class Assign extends Command {
    run(output: Output) {
       this.evalContext.setVariable(this.variableName, this.variableValue);
    }
+
+      runTests(output: Output): void {
+      
+   }
 }
 

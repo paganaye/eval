@@ -15,5 +15,9 @@ export class Alert extends Command {
    run(output: Output) {
       alert(this.data);
    }
+
+   runTests(output: Output): void {
+      
+   }
 }
 

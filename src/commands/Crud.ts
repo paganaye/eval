@@ -94,4 +94,8 @@ export class Crud extends Command {
             });
 
       }
+
+      runTests(output: Output): void {
+
+      }
 }

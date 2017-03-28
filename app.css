@@ -25,3 +25,7 @@ h1#logo {
 .panel-heading {
     background-color:orange;
 }
+
+#draggablePanelList .panel-heading {
+    cursor: move;
+}

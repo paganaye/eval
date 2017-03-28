@@ -18,5 +18,9 @@ export class Print extends Command {
                   view.render(output);
             }
       }
+
+      runTests(output: Output): void {
+
+      }
 }
 

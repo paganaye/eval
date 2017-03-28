@@ -18,6 +18,9 @@ export class Hello extends Command {
    run(output: Output) {
       this.innerView = this.evalContext.getViewForExpr(this.who, null, null, true);
       this.innerView.render(output);
+   }
+
+   runTests(output: Output): void {
 
    }
 }

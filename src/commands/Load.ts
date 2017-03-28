@@ -23,5 +23,9 @@ export class Load extends Command {
             //       })
             // });
       }
+
+      runTests(output: Output): void {
+
+      }
 }
 

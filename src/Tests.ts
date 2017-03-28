@@ -6,7 +6,10 @@ import { Output } from "./Output";
 
 export class Tests {
 	constructor(private console: EvalConsole) { }
+	public static RunTests() {
 
+	}
+	
 	public selfTests() {
 		console.log("Running tests...");
 		this.testNextChar();

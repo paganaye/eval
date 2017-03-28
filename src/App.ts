@@ -18,7 +18,8 @@ class App {
 	evalContext: Eval;
 
 
-	initialize() {
+	run() {
+
 		this.detectIncrementReload();
 		this.initEval();
 		this.initConsole();
@@ -102,5 +103,5 @@ export var app: App;
 $(function () {
 	app = new App();
 	(window as any).app = app;
-	app.initialize();
+	app.run();
 });
