@@ -17,7 +17,6 @@ export class Crud extends Command {
       }
 
       getDescription(): CommandDescription {
-            debugger;
             return new CommandDescription()
                   .addParameter("tableName", "stringOrVariableName", "", true)
                   .addParameter("recordId", "stringOrVariableName", "", true);

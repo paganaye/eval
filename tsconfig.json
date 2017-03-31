@@ -6,16 +6,17 @@
   "compilerOptions": {
     "noEmit": true,
     "module": "es6",
-    "target": "es3",
+    "target": "es6",
     "moduleResolution": "Node",
     "baseUrl": "src",
     "traceResolution": false,
-    "listFiles": true,
-    "listEmittedFiles": false,
+    "listFiles": false,
+    "listEmittedFiles": true,
     "pretty": true,
     "emitDecoratorMetadata": true,  
     "experimentalDecorators": true,
-    "types": [      
+    "outDir": "output",
+    "types": [   
     ]
   },
   "include": [

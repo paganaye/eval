@@ -7,5 +7,4 @@ export abstract class Command {
    constructor(protected readonly evalContext: Eval) { }
    abstract getDescription(): CommandDescription;
    abstract run(output: Output): void;
-   abstract runTests(output: Output): void;
 }

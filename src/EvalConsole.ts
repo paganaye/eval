@@ -1,5 +1,4 @@
 import { Parser } from "./Parser";
-import { Tests } from "./Tests";
 import { Eval } from "./Eval";
 import { app } from "./App";
 import { Output } from "./Output";

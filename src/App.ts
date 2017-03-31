@@ -4,7 +4,6 @@ import { Database } from "./Database";
 import { View, AnyView } from "./View";
 import { Output } from "./Output";
 import { Type } from "./Types";
-import { Tests } from "./Tests";
 import { Eval } from "./Eval";
 import { RomanView } from "./views/RomanView";
 import { YoutubeView } from "./views/YoutubeView";
