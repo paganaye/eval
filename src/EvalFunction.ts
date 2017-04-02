@@ -13,8 +13,12 @@ export abstract class EvalFunction<T> {
 export class CommandDescription {
    public parameters: ParameterDefinition[] = [];
 
-   addParameter(name: string, type: Type | String, description?: string, multiple?: boolean): CommandDescription {
-      this.parameters.push(new ParameterDefinition(name, type, description, multiple));
+   addParameter(name: string, type: Type | String, args?: {
+      description?: string,
+      multiple?: boolean
+   }): CommandDescription {
+      if (!args) args = {};
+      this.parameters.push(new ParameterDefinition(name, type, args.description, args.multiple));
       return this;
    }
 }

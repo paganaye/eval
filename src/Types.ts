@@ -55,7 +55,7 @@ export interface Property {
 }
 
 
-export interface ObjectDefinition extends TypeDefinition<object> {
+export interface ObjectType extends TypeDefinition<object> {
    _kind: "object";
    properties: Property[];
 }
@@ -100,7 +100,7 @@ export interface DynamicObject {
 }
 
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
-   | EnumType | ObjectDefinition | ArrayType<any> | DynamicType;
+   | EnumType | ObjectType | ArrayType<any> | DynamicType;
 
 export type TypeOrString = Type | string;
 

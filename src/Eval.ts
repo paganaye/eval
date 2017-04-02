@@ -1,4 +1,4 @@
-import { Type, BooleanType, StringType, NumberType, ObjectDefinition, ArrayType, EnumType, TypeOrString, DynamicType, DynamicKind, Property } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, DynamicType, DynamicKind, Property } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -94,7 +94,7 @@ export class Eval {
 
 		this.dynamicTypeKinds = [];
 
-		this.addType("object", null, "object", (type) => (type as ObjectDefinition).properties = []);
+		this.addType("object", null, "object", (type) => (type as ObjectType).properties = []);
 		this.addType("array", null, "array");
 		this.addType("dynamic", null, "dynamic");
 		this.addType("string", "String", "input", (type) => type.htmlType = "text");
@@ -254,7 +254,7 @@ export class Eval {
 					};
 					break;
 				case "table":
-					var fieldDefinition: ObjectDefinition = {
+					var fieldDefinition: ObjectType = {
 						_kind: "object", properties: [
 							{ name: "name", type: { _kind: "string" } },
 							{
@@ -271,7 +271,7 @@ export class Eval {
 						entryType: fieldDefinition
 					};
 
-					var tableDefinition: ObjectDefinition = {
+					var tableDefinition: ObjectType = {
 						properties: [
 							{ name: "_kind", type: { _kind: "const", value: "object" } },
 							{ name: "properties", type: fieldsDefinition }

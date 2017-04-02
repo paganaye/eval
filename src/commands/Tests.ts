@@ -88,7 +88,7 @@ export class Tests extends Command {
 
 	getDescription(): CommandDescription {
 		return new CommandDescription()
-			.addParameter("data", "Expression", "", true);
+			.addParameter("data", "Expression");
 	}
 
 	extend(destination, source) {

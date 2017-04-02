@@ -9,7 +9,7 @@ export class Print extends Command {
 
       getDescription(): CommandDescription {
             return new CommandDescription()
-                  .addParameter("data", "Expression", "", true);
+                  .addParameter("data", "Expression", { multiple: true });
       }
 
       run(output: Output) {

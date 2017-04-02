@@ -18,8 +18,8 @@ export class Crud extends Command {
 
       getDescription(): CommandDescription {
             return new CommandDescription()
-                  .addParameter("tableName", "stringOrVariableName", "", true)
-                  .addParameter("recordId", "stringOrVariableName", "", true);
+                  .addParameter("tableName", "stringOrVariableName")
+                  .addParameter("recordId", "stringOrVariableName");
       }
 
       run(output: Output) {

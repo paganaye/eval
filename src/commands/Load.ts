@@ -10,8 +10,8 @@ export class Load extends Command {
 
       getDescription(): CommandDescription {
             return new CommandDescription()
-                  .addParameter("path", "string", "", true)
-                  .addParameter("type", "string", "", true);
+                  .addParameter("path", "string")
+                  .addParameter("type", "string");
       }
 
       run(output: Output) {

@@ -1,9 +1,9 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ObjectDefinition, Property } from "../Types";
+import { Type, ObjectType, Property } from "../Types";
 import { ViewOptions } from "Theme";
 
-export class ObjectView extends View<Object, ObjectDefinition, ViewOptions> {
+export class ObjectView extends View<Object, ObjectType, ViewOptions> {
     keys: string[];
     properties: Property[];
     views: { [key: string]: AnyView } = {};

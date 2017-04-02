@@ -10,7 +10,7 @@ export class Input extends Command {
 
       getDescription(): CommandDescription {
             return new CommandDescription()
-                  .addParameter("inputs", "Expression", "", true);
+                  .addParameter("inputs", "Expression", { multiple: true });
       }
 
       run(output: Output) {

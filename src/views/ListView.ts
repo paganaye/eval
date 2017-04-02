@@ -1,10 +1,10 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { Type, NumberType, ObjectDefinition } from "../Types";
+import { Type, NumberType, ObjectType } from "../Types";
 import { ViewOptions } from "../Theme";
 
 
-export class ListView extends View<any, ObjectDefinition, ViewOptions> {
+export class ListView extends View<any, ObjectType, ViewOptions> {
    tableName: string = "dog";
 
    render(output: Output): void {
