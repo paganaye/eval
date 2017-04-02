@@ -38,11 +38,11 @@ class App {
 
 	initEval() {
 		this.evalContext = new Eval();
-		this.evalContext.registerView("roman",  (parent: AnyView) => new RomanView(this.evalContext, parent));
+		this.evalContext.registerView("roman", (parent: AnyView) => new RomanView(this.evalContext, parent));
 		this.evalContext.registerView("youtube", (parent: AnyView) => new YoutubeView(this.evalContext, parent));
 
-		this.evalContext.registerType("roman", { _kind: "number", view: "roman" });
-		this.evalContext.registerType("youtube", { _kind: "string", view: "youtube" });
+		this.evalContext.registerType("roman", { _kind: "number", printView: "roman" });
+		this.evalContext.registerType("youtube", { _kind: "string", printView: "youtube" });
 	}
 
 	initConsole() {
