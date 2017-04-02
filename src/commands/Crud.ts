@@ -32,7 +32,7 @@ export class Crud extends Command {
                                     // this should
                                     output2.setEditMode(true);
                                     output2.printForm({ buttons: ["Save"] }, (options) => {
-                                          this.innerView = this.evalContext.getViewForExpr({}, type, parentView, true);
+                                          this.innerView = this.evalContext.instantiateNewViewForExpr({}, type, parentView, true);
                                           this.innerView.render(output2);
                                           output2.render();
                                     });
@@ -40,7 +40,7 @@ export class Crud extends Command {
                                     break;
                               case "read":
                                     this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
-                                          this.innerView = this.evalContext.getViewForExpr(data, type, parentView, false);
+                                          this.innerView = this.evalContext.instantiateNewViewForExpr(data, type, parentView, false);
                                           this.innerView.render(output2);
                                           output2.render();
                                     })
@@ -50,7 +50,7 @@ export class Crud extends Command {
                                     var path = "tables/" + this.tableName + "/" + this.recordId;
                                     this.evalContext.database.on(path, (data, error) => {
                                           output2.setEditMode(true);
-                                          this.innerView = this.evalContext.getViewForExpr(data, type, parentView, true);
+                                          this.innerView = this.evalContext.instantiateNewViewForExpr(data, type, parentView, true);
                                           this.innerView.render(output2);
                                           output2.printSection({ name: "crud-update" }, (options) => {
                                                 output2.printButton({ buttonText: "Save" }, () => {

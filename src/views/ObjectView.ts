@@ -25,7 +25,6 @@ export class ObjectView extends View<Object, ObjectDefinition, ViewOptions> {
         output.printSection({ name: "object" }, (options) => {
             output.printSection({ name: "object-known-properties" }, (options) => {
                 for (var key of this.keys) {
-                    if (key==="_kind") continue;
                     var value = this.data[key];
                     this.views[key] = output.printLabelAndView(key, {}, value, this.typeByName[key], this);
                 }

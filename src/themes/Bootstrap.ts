@@ -81,7 +81,7 @@ export class Bootstrap extends Theme {
 
         output.printStartTag("div", { class: "card-block" });
 
-        var innerView = this.evalContext.getViewForExpr(data, type, arrayView, output.isEditMode(), {});
+        var innerView = this.evalContext.instantiateNewViewForExpr(data, type, arrayView, output.isEditMode(), {});
         innerView.render(output);
 
         output.printEndTag(); // card-block

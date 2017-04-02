@@ -27,6 +27,11 @@ export interface ConstType extends TypeDefinition<any> {
    value: any;
 }
 
+export interface VariableType extends TypeDefinition<any> {
+   _kind: "variable";
+   name: string;
+}
+
 export interface StringType extends TypeDefinition<string> {
    _kind: "string";
    defaultValue?: string;
@@ -93,7 +98,7 @@ export interface DynamicObject {
    //[otherFields: string]: any;
 }
 
-export type Type = NumberType | StringType | BooleanType | ConstType
+export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
    | EnumType | ObjectDefinition | ArrayType<any> | DynamicType;
 
 export type TypeOrString = Type | string;

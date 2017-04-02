@@ -1,5 +1,5 @@
 import { Output } from "./Output";
-import { Type } from "./Types";
+import { Type, ConstType } from "./Types";
 import { Expression } from './Expression';
 import { Eval } from "./Eval";
 import { ViewOptions, ElementAttributes } from "Theme";
@@ -11,8 +11,11 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     private readonly id: string;
 
     beforeBuild(data: TValue, type: TType, options: TViewOptions): void {
-        this.data = (data === undefined) ? null : data;
         this.type = type || {} as TType;
+        if (this.type._kind === "const" && !this.data) {
+            data = (this.type as ConstType).value;
+        }
+        this.data = (data === undefined) ? null : data;
         this.options = options || {} as TViewOptions;
     }
 
@@ -27,6 +30,16 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     abstract getValue(): TValue;
     getParentView(): AnyView {
         return this.parentView;
+    }
+}
+
+export class ViewFactory {
+
+    constructor(private viewName: string, private viewConstructor: (parent: AnyView) => AnyView) {
+    }
+
+    instantiateNewView(parent: AnyView) {
+        return this.viewConstructor(parent);
     }
 }
 

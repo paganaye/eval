@@ -32,8 +32,7 @@ class TestReporter implements jasmine.CustomReporter {
 	//suiteStarted
 	//suiteStarted is invoked when a describe starts to run
 	suiteStarted?(result: jasmine.CustomReporterResult): void {
-		//the result contains some meta data about the suite itself.
-		var mark = result.p
+		//the result contains some meta data about the suite itself.		
 		this.output.printTag("h" + this.level, {}, result.description);
 	}
 

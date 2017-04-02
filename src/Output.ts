@@ -74,15 +74,20 @@ export class Output {
 	printLabelAndView(key: string | ((output: Output) => void), options: PropertyOptions, data: any, type: Type, parentView: AnyView): AnyView {
 		var view: AnyView;
 
-		view = this.evalContext.getViewForExpr(data, type, parentView, this.editMode, options);
+		view = this.evalContext.instantiateNewViewForExpr(data, type, parentView, this.editMode, options);
 
 		this.printProperty(options,
 			(output, options) => {
-				if (typeof key === "string") {
-					this.html.push(Output.escapeHtml(key));
-				}
-				else {
-					key(output);
+				switch(typeof key) {
+					case "string":
+						this.html.push(Output.escapeHtml(key));
+						break;
+					case "function":
+						(key as any)(output);
+						break;
+					default:
+						// ignore?
+						break;
 				}
 			},
 			view);
