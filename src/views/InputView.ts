@@ -13,28 +13,16 @@ export class InputView extends View<any, any, InputOptions> {
         console.log("inputView::render", this.getId(), this.data, this.type);
         this.kind = (this.type && this.type._kind) || "string";
 
-        switch (this.kind) {
-            case "const":
-                output.printText(JSON.stringify(this.type.value));
-                break;
-            default:
-                output.printInput({ id: this.getId() }, this.data, this.type);
-                break;
-        }
+        output.printInput({ id: this.getId() }, this.data, this.type);
 
     }
 
     getValue(): any {
-        switch (this.kind) {
-            case "const":
-                return this.type.value;
-            default:
-                var elt = document.getElementById(this.getId());
-                if (elt) {
-                    return (elt as HTMLInputElement).value;
-                } else {
-                    return "HTML Element " + this.getId() + " not found.";
-                }
+        var elt = document.getElementById(this.getId());
+        if (elt) {
+            return (elt as HTMLInputElement).value;
+        } else {
+            return "HTML Element " + this.getId() + " not found.";
         }
     }
 }

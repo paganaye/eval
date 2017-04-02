@@ -1,4 +1,4 @@
-import { Type, BooleanType, StringType, NumberType, ObjectDefinition, ArrayType, EnumType, TypeOrString, DynamicType } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectDefinition, ArrayType, EnumType, TypeOrString, DynamicType, DynamicKind } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -39,6 +39,7 @@ export class Eval {
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
 	functions: { [key: string]: (parent: Expression<any>) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
+	dynamicKinds: DynamicKind[];
 
 
 	database: Database;
@@ -53,20 +54,8 @@ export class Eval {
 			array: this.arrayViewFactory,
 			input: this.inputViewFactory,
 			select: this.selectViewFactory,
-			enum: this.selectViewFactory,
-			dynamic: this.dynamicViewFactory,
-			const: this.jsonViewFactory,
-			string: this.inputViewFactory,
-			number: this.inputViewFactory,
-			boolean: this.inputViewFactory
+			dynamic: this.dynamicViewFactory
 		};
-
-		this.types = {
-			boolean: { _kind: "boolean", view: "json", inputView: "input" },
-			string: { _kind: "string", view: "json", inputView: "input" },
-			number: { _kind: "number", view: "json", inputView: "input" },
-			object: { _kind: "object", properties: [], view: "object", inputView: "object" },
-		}
 
 		this.registerCommand("print", () => new Print(this));
 		this.registerCommand("hello", () => new Hello(this));
@@ -86,8 +75,45 @@ export class Eval {
 		this.registerFunctions("random", (parent: Expression<any>) => new RandomFunction(parent));
 		this.registerFunctions("now", (parent: Expression<any>) => new NowFunction(parent));
 
+		this.dynamicKinds = [];
+
+		this.types = {
+			object: { _kind: "object", properties: [], printView: "object", editView: "object" },
+		}
+
+		this.addWellKnownType("boolean", "Boolean", "input", "checkbox");
+		this.addWellKnownType("string", "String", "input", "text");
+		this.addWellKnownType("number", "Number", "input");
+		this.addWellKnownType("color", "Color", "input");
+		this.addWellKnownType("datetime", "Date and time", "input");
+		this.addWellKnownType("date", "Date", "input");
+		this.addWellKnownType("time", "Time", "input");
+		this.addWellKnownType("month", "Month and Year", "input");
+		this.addWellKnownType("week", "Week", "input");
+		this.addWellKnownType("password", "Password", "input");
+		this.addWellKnownType("range", "Range", "input");
+		this.addWellKnownType("tel", "Telephone number", "input");
+		this.addWellKnownType("url", "URL", "input");
+
+
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
+
+
+	}
+
+	addWellKnownType(key: string, label: string, editView: string, htmlType?: string, printView?: string): void {
+
+		var type = { _kind: key, editView: editView, printView: printView || editView } as Type;
+		this.registerType(key, type);
+
+		var dynamicKind: DynamicKind = {
+			key: key, label: label, type: {
+				_kind: "object", properties: [
+					{ name: "type", type: { _kind: "const", value: { _kind: key, htmlType: htmlType || key } } }]
+			}
+		}
+		this.dynamicKinds.push(dynamicKind);
 	}
 
 	nextId(prefix: string) {
@@ -146,28 +172,33 @@ export class Eval {
 	getTypeDef(data: any, type: TypeOrString): Type {
 		if (typeof type == "string") type = this.types[type];
 		if (!type) type = this.types[typeof data] || this.types['object'];
-
-		// if (type.type == "dynamic") {
-		// 	type.type = data ? (data.type || "object") : "object";
-		// }
+		if (!type.printView) {
+			// inherits from base type
+			var baseType = this.types[type._kind];
+			if (baseType!=type){
+				for (var prop in baseType) {
+					if (!type.hasOwnProperty(prop)) type[prop] = baseType[prop];
+				}
+			}
+		}
 		return type;
 	}
 
 
-	instantiateNewView(type: Type, parent: AnyView, editMode: boolean): AnyView {
-		var viewName = (editMode ? type.inputView || type.view : type.view) || type._kind;
-		var viewFactory = this.viewFactories[viewName] || this.jsonViewFactory;
-		return viewFactory.instantiateNewView(parent);
-	}
 
 	instantiateNewViewForExpr(expr: any, type: Type, parent: AnyView, editMode: boolean, options?: ViewOptions): AnyView {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!options) options = {};
-		var view: AnyView = this.instantiateNewView(typeDef, parent, editMode)
+
+		var viewName = (editMode ? type.editView : type.printView) || type._kind;
+		var viewFactory = this.viewFactories[viewName] || this.jsonViewFactory;
+		var view = viewFactory.instantiateNewView(parent);
+
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
 		if (!options) options = {};
+
 		view.beforeBuild(actualValue, typeDef, options);
 		this.theme.prepareViewBeforeBuild(view);
 		view.build();
@@ -181,6 +212,8 @@ export class Eval {
 		this.database.on("tables/table/" + typeName, (data, error) => {
 			var type = data as Type;
 			//var y: Table;
+
+
 			switch (typeName) {
 				case "table":
 					var fieldDefinition: ObjectDefinition = {
@@ -189,28 +222,7 @@ export class Eval {
 							{
 								name: "type", type: {
 									_kind: "dynamic",
-									kinds: [
-										{
-											key: "string", label: "String", type: {
-												_kind: "object", properties: [
-													{ name: "type", type: { _kind: "const", value: { _kind: "string" } } }]
-											}
-										},
-										{
-											key: "number", label: "Number", type: {
-												_kind: "object", properties: [
-													{ name: "type", type: { _kind: "const", value: { _kind: "number" } } },
-													{ name: "minimumValue", type: { _kind: "number" } },
-													{ name: "maximumValue", type: { _kind: "number" } }]
-											}
-										},
-										{
-											key: "boolean", label: "Boolean", type: {
-												_kind: "object", properties: [
-													{ name: "type", type: { _kind: "const", value: { _kind: "boolean" } } }]
-											}
-										}
-									]
+									kinds: this.dynamicKinds
 								}
 							}
 						]

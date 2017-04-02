@@ -3,9 +3,10 @@ import { View } from "./View";
 
 export interface TypeDefinition<T> {
    validate?: (value: T) => ValidationResult;
-   view?: string;
-   inputView?: string;
+   editView?: string;
+   printView?: string;
    mandatory?: boolean;
+   htmlType?: string;
 }
 
 export interface ValidationResult {

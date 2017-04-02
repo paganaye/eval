@@ -79,6 +79,7 @@ export class SectionOptions extends ViewOptions {
 
 export class InputOptions extends ViewOptions {
       id: string;
+      inputType: string;
 }
 
 export class SelectOptions extends ViewOptions {
