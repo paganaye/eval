@@ -16,13 +16,6 @@ export class CategoryView extends View<string, EnumType, CategoryOptions> {
     render(output: Output): void {
         output.printAsync("div", {}, "...", (elt, output) => {
             this.evalContext.database.on("tables/category/Country", (data, error) => {
-                // var enumEntries: EnumEntry[] = [
-                //     { group: "g1", key: "k1", label: "l1" },
-                //     { group: "g1", key: "k2", label: "l2" },
-                //     { group: "g2", key: "k3", label: "l3" }
-                // ];
-                debugger;
-
                 if (data.entries) {
                     output.printSelect(
                         { entries: data.entries, id: this.getId() },
