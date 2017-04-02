@@ -183,30 +183,34 @@ export class Eval {
 			//var y: Table;
 			switch (typeName) {
 				case "table":
-					var fieldDefinition: DynamicType = {
-						_kind: "dynamic",
-						kinds: [
+					var fieldDefinition: ObjectDefinition = {
+						_kind: "object", properties: [
+							{ name: "name", type: { _kind: "string" } },
 							{
-								key: "string", label: "String", type: {
-									_kind: "object", properties: [
-										{ name: "name", type: { _kind: "string" } },
-										{ name: "type", type: { _kind: "const", value: { _kind: "string" } } }]
-								}
-							},
-							{
-								key: "number", label: "Number", type: {
-									_kind: "object", properties: [
-										{ name: "name", type: { _kind: "string" } },
-										{ name: "minimum", type: { _kind: "number" } },
-										{ name: "maximum", type: { _kind: "number" } },
-										{ name: "type", type: { _kind: "const", value: { _kind: "number" } } }]
-								}
-							},
-							{
-								key: "boolean", label: "Boolean", type: {
-									_kind: "object", properties: [
-										{ name: "name", type: { _kind: "string" } },
-										{ name: "type", type: { _kind: "const", value: { _kind: "boolean" } } }]
+								name: "type", type: {
+									_kind: "dynamic",
+									kinds: [
+										{
+											key: "string", label: "String", type: {
+												_kind: "object", properties: [
+													{ name: "type", type: { _kind: "const", value: { _kind: "string" } } }]
+											}
+										},
+										{
+											key: "number", label: "Number", type: {
+												_kind: "object", properties: [
+													{ name: "type", type: { _kind: "const", value: { _kind: "number" } } },
+													{ name: "minimumValue", type: { _kind: "number" } },
+													{ name: "maximumValue", type: { _kind: "number" } }]
+											}
+										},
+										{
+											key: "boolean", label: "Boolean", type: {
+												_kind: "object", properties: [
+													{ name: "type", type: { _kind: "const", value: { _kind: "boolean" } } }]
+											}
+										}
+									]
 								}
 							}
 						]
@@ -219,8 +223,7 @@ export class Eval {
 
 					var tableDefinition: ObjectDefinition = {
 						properties: [
-							{ name: "_kind", type: { _kind: "string" } },
-							{ name: "tableName", type: { _kind: "variable", name: "tableName" } },
+							{ name: "_kind", type: { _kind: "const", value: "object" } },
 							{ name: "properties", type: fieldsDefinition }
 						],
 						_kind: "object"
@@ -267,3 +270,4 @@ export class Eval {
 		$('head').append(themeoutput.toString());
 	}
 }
+

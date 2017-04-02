@@ -256,7 +256,8 @@ export class Bootstrap extends Theme {
     prepareViewBeforeBuild(view: AnyView): void {
         if (view instanceof DynamicView) {
             // not sure about this
-            view.options.freezeType = true;
+            // at all
+            // view.options.freezeType = true;
         }
     }
 }

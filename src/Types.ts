@@ -108,4 +108,3 @@ export type TypeOrString = Type | string;
 //  | EmaiDefinition | MonthDefinition | RangeDefinition | TelDefinition
 //  | TextDefinition | TimeDefinition 
 //  | UrlDefinition | WeekDefinition | ExternalDefinition | MapType
-
