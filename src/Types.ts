@@ -76,6 +76,15 @@ export interface EnumType extends TypeDefinition<string> {
    multiple?: boolean;
 }
 
+export interface CategoryType extends TypeDefinition<string> {
+   _kind: "enum";
+   defaultValue?: string;
+   entries: EnumEntry[];
+   multiple?: boolean;
+   categoryName: string;
+}
+
+
 export interface EnumEntry {
    group?: string;
    key: string

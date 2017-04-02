@@ -90,6 +90,7 @@ export class SelectOptions extends ViewOptions {
 export class CategoryOptions extends ViewOptions {
       path: string;
       id: string;
+      categoryName: string;
 }
 
 export class ListOptions extends ViewOptions {
