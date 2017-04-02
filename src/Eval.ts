@@ -1,4 +1,4 @@
-import { Type, BooleanType, StringType, NumberType, ObjectDefinition, ArrayType, EnumType, TypeOrString, DynamicType, DynamicKind } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectDefinition, ArrayType, EnumType, TypeOrString, DynamicType, DynamicKind, Property } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -39,7 +39,7 @@ export class Eval {
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
 	functions: { [key: string]: (parent: Expression<any>) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
-	dynamicKinds: DynamicKind[];
+	dynamicTypeKinds: DynamicKind[];
 
 
 	database: Database;
@@ -75,45 +75,62 @@ export class Eval {
 		this.registerFunctions("random", (parent: Expression<any>) => new RandomFunction(parent));
 		this.registerFunctions("now", (parent: Expression<any>) => new NowFunction(parent));
 
-		this.dynamicKinds = [];
+		this.dynamicTypeKinds = [];
 
 		this.types = {
 			object: { _kind: "object", properties: [], printView: "object", editView: "object" },
 		}
 
-		this.addWellKnownType("boolean", "Boolean", "input", "checkbox");
-		this.addWellKnownType("string", "String", "input", "text");
-		this.addWellKnownType("number", "Number", "input");
-		this.addWellKnownType("color", "Color", "input");
-		this.addWellKnownType("datetime", "Date and time", "input");
-		this.addWellKnownType("date", "Date", "input");
-		this.addWellKnownType("time", "Time", "input");
-		this.addWellKnownType("month", "Month and Year", "input");
-		this.addWellKnownType("week", "Week", "input");
-		this.addWellKnownType("password", "Password", "input");
-		this.addWellKnownType("range", "Range", "input");
-		this.addWellKnownType("tel", "Telephone number", "input");
-		this.addWellKnownType("url", "URL", "input");
+		this.addType("string", "String", "input", (type) => type.htmlType = "text");
+		this.addType("number", "Number", "input");
+		this.addType("boolean", "Boolean", "input", (type) => type.htmlType = "checkbox");
+		this.addType("select", "Select", "select", (type, addProperty) => {
+			(type as EnumType).entries = [];
+			var enumType: ObjectDefinition = {
+				_kind: "object", properties: [
+					{ name: "group", type: { _kind: "string" } },
+					{ name: "key", type: { _kind: "string" } },
+					{ name: "label", type: { _kind: "string" } },
+				]
+			};
+			addProperty({ name: "entries", type: { _kind: "array", entryType: enumType } });
+		});
 
+		this.addType("tel", "Telephone number", "input");
+		this.addType("url", "URL", "input");
+		this.addType("datetime", "Date and time", "input");
+		this.addType("date", "Date", "input");
+		this.addType("time", "Time", "input");
+		this.addType("month", "Month and Year", "input");
+		this.addType("week", "Week", "input");
+		this.addType("color", "Color", "input");
+		this.addType("range", "Range", "input");
+		this.addType("password", "Password", "input");
 
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
 
-
 	}
 
-	addWellKnownType(key: string, label: string, editView: string, htmlType?: string, printView?: string): void {
+	addType(key: string, label: string, view: string, typeCallback?: (type: Type, addProperty: (property: Property) => void) => void): void {
 
-		var type = { _kind: key, editView: editView, printView: printView || editView } as Type;
+		var type = { _kind: key, editView: view, printView: view } as Type;
+
 		this.registerType(key, type);
+		var properties: Property[] = [
+			{ name: "type", type: { _kind: "const", value: type } }
+		];
 
 		var dynamicKind: DynamicKind = {
 			key: key, label: label, type: {
-				_kind: "object", properties: [
-					{ name: "type", type: { _kind: "const", value: { _kind: key, htmlType: htmlType || key } } }]
+				_kind: "object", properties: properties
 			}
 		}
-		this.dynamicKinds.push(dynamicKind);
+		this.dynamicTypeKinds.push(dynamicKind);
+
+		if (typeCallback) typeCallback(type, (property) => {
+			properties.push(property)
+		});
 	}
 
 	nextId(prefix: string) {
@@ -175,7 +192,7 @@ export class Eval {
 		if (!type.printView) {
 			// inherits from base type
 			var baseType = this.types[type._kind];
-			if (baseType!=type){
+			if (baseType != type) {
 				for (var prop in baseType) {
 					if (!type.hasOwnProperty(prop)) type[prop] = baseType[prop];
 				}
@@ -222,7 +239,7 @@ export class Eval {
 							{
 								name: "type", type: {
 									_kind: "dynamic",
-									kinds: this.dynamicKinds
+									kinds: this.dynamicTypeKinds
 								}
 							}
 						]
