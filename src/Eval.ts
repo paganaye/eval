@@ -23,6 +23,8 @@ import { Theme, ViewOptions } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
 import { DynamicView } from "./views/DynamicView";
+import { ListView } from "./views/ListView";
+import { CategoryView } from "./views/CategoryView";
 
 
 export class Eval {
@@ -31,7 +33,9 @@ export class Eval {
 	arrayViewFactory = new ViewFactory("array", (parent: AnyView) => new ArrayView(this, parent));
 	inputViewFactory = new ViewFactory("input", (parent: AnyView) => new InputView(this, parent));
 	selectViewFactory = new ViewFactory("select", (parent: AnyView) => new SelectView(this, parent));
+	categoryViewFactory = new ViewFactory("selectCategory", (parent: AnyView) => new CategoryView(this, parent));
 	dynamicViewFactory = new ViewFactory("dynamic", (parent: AnyView) => new DynamicView(this, parent));
+	listViewFactory = new ViewFactory("list", (parent: AnyView) => new ListView(this, parent));
 
 	private types: { [key: string]: Type } = {};
 
@@ -46,6 +50,17 @@ export class Eval {
 	theme: Theme;
 	private idCounter: { [key: string]: number } = {};
 
+	arrayOfEnum: ArrayType<any> = {
+		_kind: "array", entryType: {
+			_kind: "object", properties: [
+				{ name: "group", type: { _kind: "string" } },
+				{ name: "key", type: { _kind: "string" } },
+				{ name: "label", type: { _kind: "string" } },
+			]
+		}
+	};
+
+
 	constructor() {
 
 		this.viewFactories = {
@@ -54,7 +69,9 @@ export class Eval {
 			array: this.arrayViewFactory,
 			input: this.inputViewFactory,
 			select: this.selectViewFactory,
-			dynamic: this.dynamicViewFactory
+			category: this.categoryViewFactory,
+			dynamic: this.dynamicViewFactory,
+			list: this.listViewFactory
 		};
 
 		this.registerCommand("print", () => new Print(this));
@@ -77,25 +94,19 @@ export class Eval {
 
 		this.dynamicTypeKinds = [];
 
-		this.types = {
-			object: { _kind: "object", properties: [], printView: "object", editView: "object" },
-		}
-
+		this.addType("object", null, "object", (type) => (type as ObjectDefinition).properties = []);
+		this.addType("array", null, "array");
+		this.addType("dynamic", null, "dynamic");
 		this.addType("string", "String", "input", (type) => type.htmlType = "text");
 		this.addType("number", "Number", "input");
 		this.addType("boolean", "Boolean", "input", (type) => type.htmlType = "checkbox");
 		this.addType("select", "Select", "select", (type, addProperty) => {
 			(type as EnumType).entries = [];
-			var enumType: ObjectDefinition = {
-				_kind: "object", properties: [
-					{ name: "group", type: { _kind: "string" } },
-					{ name: "key", type: { _kind: "string" } },
-					{ name: "label", type: { _kind: "string" } },
-				]
-			};
-			addProperty({ name: "entries", type: { _kind: "array", entryType: enumType } });
+			addProperty({ name: "entries", type: this.arrayOfEnum });
 		});
-
+		this.addType("category", "Category", "category", (type, addProperty) => {
+			addProperty({ name: "categoryName", type: { _kind: "string" } });
+		});
 		this.addType("tel", "Telephone number", "input");
 		this.addType("url", "URL", "input");
 		this.addType("datetime", "Date and time", "input");
@@ -106,6 +117,7 @@ export class Eval {
 		this.addType("color", "Color", "input");
 		this.addType("range", "Range", "input");
 		this.addType("password", "Password", "input");
+		this.addType("list", "List", "list", (type) => type.htmlType = "table");
 
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
@@ -120,13 +132,14 @@ export class Eval {
 		var properties: Property[] = [
 			{ name: "type", type: { _kind: "const", value: type } }
 		];
-
-		var dynamicKind: DynamicKind = {
-			key: key, label: label, type: {
-				_kind: "object", properties: properties
+		if (label != null) {
+			var dynamicKind: DynamicKind = {
+				key: key, label: label, type: {
+					_kind: "object", properties: properties
+				}
 			}
+			this.dynamicTypeKinds.push(dynamicKind);
 		}
-		this.dynamicTypeKinds.push(dynamicKind);
 
 		if (typeCallback) typeCallback(type, (property) => {
 			properties.push(property)
@@ -207,7 +220,7 @@ export class Eval {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!options) options = {};
 
-		var viewName = (editMode ? type.editView : type.printView) || type._kind;
+		var viewName = (editMode ? typeDef.editView : typeDef.printView) || typeDef._kind;
 		var viewFactory = this.viewFactories[viewName] || this.jsonViewFactory;
 		var view = viewFactory.instantiateNewView(parent);
 
@@ -232,6 +245,14 @@ export class Eval {
 
 
 			switch (typeName) {
+				case "category":
+					type = {
+						_kind: "object", properties: [
+							{ name: "description", type: { _kind: "string" } },
+							{ name: "entries", type: this.arrayOfEnum }
+						]
+					};
+					break;
 				case "table":
 					var fieldDefinition: ObjectDefinition = {
 						_kind: "object", properties: [

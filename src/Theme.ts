@@ -87,6 +87,14 @@ export class SelectOptions extends ViewOptions {
       id: string;
 }
 
+export class CategoryOptions extends ViewOptions {
+      path: string;
+      id: string;
+}
+
+export class ListOptions extends ViewOptions {
+}
+
 export class DynamicObjectOptions extends ViewOptions {
       freezeType: boolean;
       entries: EnumEntry[];
