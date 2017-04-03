@@ -3,14 +3,13 @@ import { Output } from "../Output";
 import { Type } from "../Types";
 import { ViewOptions, ElementAttributes } from "Theme";
 
-interface IYoutubeSource {
+interface IYoutube {
     video?: string;
     width?: number;
     height?: number;
 }
 
-export class YoutubeView extends View<any, Type, ViewOptions> {
-    data: any;
+export class YoutubeView extends View<IYoutube, Type, ViewOptions> {
     options: ViewOptions;
     attributes2: ElementAttributes;
 
@@ -19,11 +18,11 @@ export class YoutubeView extends View<any, Type, ViewOptions> {
         this.attributes2 = {
             frameBorder: "0",
             allowFullscreen: "true",
-            width: ((data as IYoutubeSource).width || 560).toString(),
-            height: ((data as IYoutubeSource).height || 315).toString(),
+            width: (data.width || 560).toString(),
+            height: (data.height || 315).toString(),
             src: "https://www.youtube.com/embed/" + ((typeof data == "string")
                 ? (data as string)
-                : (data as IYoutubeSource).video)
+                : data.video)
         };
     }
 

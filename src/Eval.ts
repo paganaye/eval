@@ -23,9 +23,9 @@ import { Theme, ViewOptions } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
 import { DynamicView } from "./views/DynamicView";
-import { ListView } from "./views/ListView";
+import { LinkView } from "./views/LinkView";
 import { CategoryView } from "./views/CategoryView";
-
+import { ParagraphView } from "./views/ParagraphView"
 
 export class Eval {
 	jsonViewFactory = new ViewFactory("json", (parent: AnyView) => new JSONView(this, parent));
@@ -35,7 +35,8 @@ export class Eval {
 	selectViewFactory = new ViewFactory("select", (parent: AnyView) => new SelectView(this, parent));
 	categoryViewFactory = new ViewFactory("selectCategory", (parent: AnyView) => new CategoryView(this, parent));
 	dynamicViewFactory = new ViewFactory("dynamic", (parent: AnyView) => new DynamicView(this, parent));
-	listViewFactory = new ViewFactory("list", (parent: AnyView) => new ListView(this, parent));
+	linkViewFactory = new ViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
+	paragraphViewFactory = new ViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
 
 	private types: { [key: string]: Type } = {};
 
@@ -71,7 +72,8 @@ export class Eval {
 			select: this.selectViewFactory,
 			category: this.categoryViewFactory,
 			dynamic: this.dynamicViewFactory,
-			list: this.listViewFactory
+			link: this.linkViewFactory,
+			paragraph: this.paragraphViewFactory
 		};
 
 		this.registerCommand("print", () => new Print(this));
@@ -117,8 +119,11 @@ export class Eval {
 		this.addType("color", "Color", "input");
 		this.addType("range", "Range", "input");
 		this.addType("password", "Password", "input");
-		this.addType("list", "List", "list", (type) => type.htmlType = "table");
-
+		this.addType("link", "Link", "link", (type) => type.htmlType = "table");
+		this.addType("paragraph", "Paragraphs", "paragraph",(type)=>{
+			type.editView="object";
+		});
+		this.addType("array", "Array", "array");
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
 

@@ -16,7 +16,7 @@ export class DynamicView extends View<DynamicObject, DynamicType, DynamicObjectO
             this.entriesByKey[e.key] = e;
         }
         var data = this.data || (this.data = {} as DynamicObject);
-        if (!data._kind) data._kind = "object";
+        if (!data._kind) data._kind = "string";
     }
 
     render(output: Output): void {
