@@ -25,7 +25,7 @@ import { SelectView } from "./views/SelectView";
 import { DynamicView } from "./views/DynamicView";
 import { LinkView } from "./views/LinkView";
 import { CategoryView } from "./views/CategoryView";
-import { ParagraphView } from "./views/ParagraphView"
+import { ParagraphView, IParagraph } from "./views/ParagraphView"
 
 export class Eval {
 	jsonViewFactory = new ViewFactory("json", (parent: AnyView) => new JSONView(this, parent));
@@ -120,8 +120,17 @@ export class Eval {
 		this.addType("range", "Range", "input");
 		this.addType("password", "Password", "input");
 		this.addType("link", "Link", "link", (type) => type.htmlType = "table");
-		this.addType("paragraph", "Paragraphs", "paragraph",(type)=>{
-			type.editView="object";
+		this.addType("paragraph", "Paragraphs", "paragraph", (type) => {
+			type.editView = "object";
+			(type as ObjectType).properties = [
+				{ name: "title", type: { _kind: "string" } },
+				{ name: "content", type: { _kind: "string" } },
+				{
+					name: "children",
+					type: { _kind: "array", entryType: type }
+				}
+			];
+			return
 		});
 		this.addType("array", "Array", "array");
 		this.database = new Database(this);

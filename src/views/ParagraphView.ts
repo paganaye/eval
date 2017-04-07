@@ -4,7 +4,7 @@ import { Type, NumberType } from "../Types";
 import { ViewOptions } from "Theme";
 
 
-interface IParagraph {
+export interface IParagraph {
     title: string;
     content: string;
     children: IParagraph[];
