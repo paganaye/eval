@@ -17,6 +17,7 @@ export class InputView extends View<any, any, InputOptions> {
 
     }
 
+    
     getValue(): any {
         var elt = document.getElementById(this.getId());
         if (elt) {

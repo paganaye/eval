@@ -51,7 +51,7 @@ export class DynamicView extends View<DynamicObject, DynamicType, DynamicObjectO
         this.kind = kind;
         var entry = this.entriesByKey[kind];
         if (entry) {
-            var innerView = this.evalContext.instantiateNewViewForExpr(this.data, entry.type, this, this.targetOutput.isEditMode(), {});
+            var innerView = this.evalContext.instantiate(this.data, entry.type, this, this.targetOutput.isEditMode(), {});
             innerView.render(this.targetOutput);
             this.view = innerView;
             this.targetOutput.render();

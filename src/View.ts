@@ -10,6 +10,11 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     public options: TViewOptions; // runtime extra stuff
     private readonly id: string;
 
+    constructor(protected evalContext: Eval, private parentView: AnyView) {
+        var prefix = ((this as object).constructor as any).name;
+        this.id = evalContext.nextId(prefix);
+    }
+
     beforeBuild(data: TValue, type: TType, options: TViewOptions): void {
         this.type = type || {} as TType;
         if (this.type._kind === "const" && !this.data) {
@@ -17,12 +22,12 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
         }
         this.data = (data === undefined) ? null : data;
         this.options = options || {} as TViewOptions;
+        debugger;
     }
 
-    constructor(protected evalContext: Eval, private parentView: AnyView) {
-        var prefix = ((this as object).constructor as any).name;
-        this.id = evalContext.nextId(prefix);
+    afterBuild(): void {
     }
+
 
     getId(): string { return this.id; }
     build(): void { } // overridable

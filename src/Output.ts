@@ -6,7 +6,7 @@ import { Type, EnumEntry } from './Types';
 import { View, ViewOrElement, AnyView } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions } from "./Theme";
+import { FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, GroupOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { DynamicView } from "./views/DynamicView";
 
@@ -74,11 +74,11 @@ export class Output {
 	printLabelAndView(key: string | ((output: Output) => void), options: PropertyOptions, data: any, type: Type, parentView: AnyView): AnyView {
 		var view: AnyView;
 
-		view = this.evalContext.instantiateNewViewForExpr(data, type, parentView, this.editMode, options);
+		view = this.evalContext.instantiate(data, type, parentView, this.editMode, options);
 
 		this.printProperty(options,
 			(output, options) => {
-				switch(typeof key) {
+				switch (typeof key) {
 					case "string":
 						this.html.push(Output.escapeHtml(key));
 						break;
@@ -134,9 +134,14 @@ export class Output {
 		this.evalContext.theme.printPage(this, options, printContent)
 	}
 
+	printGroup(options: GroupOptions, printContent: (options: ViewOptions) => void) {
+		this.evalContext.theme.printGroup(this, options, printContent)
+	}
+
 	printSection(options: SectionOptions, printContent: (options: ViewOptions) => void) {
 		this.evalContext.theme.printSection(this, options, printContent)
 	}
+
 
 	printText(text: string) {
 		this.html.push(Output.escapeHtml(text));

@@ -18,7 +18,7 @@ export class Hello extends Command {
    }
 
    run(output: Output) {
-      this.innerView = this.evalContext.instantiateNewViewForExpr(this.who, null, null, true);
+      this.innerView = this.evalContext.instantiate(this.who, null, null, true);
       this.innerView.render(output);
    }
 

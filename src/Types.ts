@@ -52,6 +52,7 @@ export interface BooleanType extends TypeDefinition<boolean> {
 export interface Property {
    name: string;
    type: Type;
+   group?: string;
 }
 
 
@@ -59,6 +60,13 @@ export interface ObjectType extends TypeDefinition<object> {
    _kind: "object";
    properties: Property[];
 }
+
+export interface Group {
+   defaultValue?: string;
+   entries: EnumEntry[];
+   multiple?: boolean;
+}
+
 
 export interface ArrayType<T> extends TypeDefinition<T[]> {
    _kind: "array";

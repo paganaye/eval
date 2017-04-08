@@ -53,7 +53,8 @@ export class Eval {
 
 	arrayOfEnum: ArrayType<any> = {
 		_kind: "array", entryType: {
-			_kind: "object", properties: [
+			_kind: "object",
+			properties: [
 				{ name: "group", type: { _kind: "string" } },
 				{ name: "key", type: { _kind: "string" } },
 				{ name: "label", type: { _kind: "string" } },
@@ -99,7 +100,16 @@ export class Eval {
 		this.addType("object", null, "object", (type) => (type as ObjectType).properties = []);
 		this.addType("array", null, "array");
 		this.addType("dynamic", null, "dynamic");
-		this.addType("string", "String", "input", (type) => type.htmlType = "text");
+		this.addType("string", "String", "input", (type, addProperty) => {
+			type.htmlType = "text";
+			addProperty({ name: "defaultValue", type: { _kind: "string" } });
+			addProperty({ name: "minimalLength", type: { _kind: "number" } });
+			addProperty({ name: "maximalLength", type: { _kind: "number" } });
+			addProperty({ name: "regexp", type: { _kind: "string" } });
+			addProperty({ name: "regexpMessage", type: { _kind: "string" } });
+			addProperty({ name: "cols", type: { _kind: "number" } });
+			addProperty({ name: "rows", type: { _kind: "number" } });
+		});
 		this.addType("number", "Number", "input");
 		this.addType("boolean", "Boolean", "input", (type) => type.htmlType = "checkbox");
 		this.addType("select", "Select", "select", (type, addProperty) => {
@@ -149,7 +159,8 @@ export class Eval {
 		if (label != null) {
 			var dynamicKind: DynamicKind = {
 				key: key, label: label, type: {
-					_kind: "object", properties: properties
+					_kind: "object",
+					properties: properties
 				}
 			}
 			this.dynamicTypeKinds.push(dynamicKind);
@@ -229,8 +240,7 @@ export class Eval {
 	}
 
 
-
-	instantiateNewViewForExpr(expr: any, type: Type, parent: AnyView, editMode: boolean, options?: ViewOptions): AnyView {
+	instantiate(expr: any, type: Type, parent: AnyView, editMode: boolean, options?: ViewOptions): AnyView {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!options) options = {};
 
@@ -261,7 +271,8 @@ export class Eval {
 			switch (typeName) {
 				case "category":
 					type = {
-						_kind: "object", properties: [
+						_kind: "object",
+						properties: [
 							{ name: "description", type: { _kind: "string" } },
 							{ name: "entries", type: this.arrayOfEnum }
 						]
@@ -269,7 +280,9 @@ export class Eval {
 					break;
 				case "table":
 					var fieldDefinition: ObjectType = {
-						_kind: "object", properties: [
+						_kind: "object",
+						properties: [
+							{ name: "group", type: { _kind: "string" } },
 							{ name: "name", type: { _kind: "string" } },
 							{
 								name: "type", type: {

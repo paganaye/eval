@@ -17,7 +17,8 @@
     "experimentalDecorators": true,
     "outDir": "output",
     "types": [   
-    ]
+    ],
+    "sourceMap": true
   },
   "include": [
      "src/**/*"

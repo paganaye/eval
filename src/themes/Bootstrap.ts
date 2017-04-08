@@ -1,4 +1,4 @@
-import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, DynamicObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, MapEntryOptions } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, DynamicObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, MapEntryOptions, GroupOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -81,7 +81,7 @@ export class Bootstrap extends Theme {
 
         output.printStartTag("div", { class: "card-block" });
 
-        var innerView = this.evalContext.instantiateNewViewForExpr(data, type, arrayView, output.isEditMode(), {});
+        var innerView = this.evalContext.instantiate(data, type, arrayView, output.isEditMode(), {});
         innerView.render(output);
 
         output.printEndTag(); // card-block
@@ -123,6 +123,13 @@ export class Bootstrap extends Theme {
         document.title = options.title;
     }
 
+    printGroup(output: Output, options: GroupOptions, printContent: (output: Output, options: ViewOptions) => void) {
+        output.printStartTag("div", { class: "group" });
+        output.printHTML("<p>hello</p>")
+        printContent(output, {});
+        output.printEndTag();
+    }
+    
     printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void) {
         this.addClass({}, options.name);
         var attributes: ElementAttributes = { class: this.classPrefix + options.name };
@@ -132,6 +139,7 @@ export class Bootstrap extends Theme {
             case "map-properties":
             case "dynamic-control":
             case "crud-update":
+            case "object-group":
                 output.printStartTag("div", attributes);
                 printContent({});
                 output.printEndTag();

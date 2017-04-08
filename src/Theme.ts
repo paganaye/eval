@@ -13,6 +13,7 @@ export abstract class Theme {
 
       abstract printForm(output: Output, options: FormOptions, printContent: (options: ViewOptions) => void);
       abstract printPage(output: Output, options: PageOptions, printContent: (options: ViewOptions) => void);
+      abstract printGroup(output: Output, options: GroupOptions, printContent: (options: ViewOptions) => void);
       abstract printProperty(output: Output, options: PropertyOptions,
             printKey: string | ((output: Output, options: PropertyOptions) => void), view: ViewOrElement);
       abstract printDynamicObject(output: Output, options: PropertyOptions,
@@ -70,6 +71,10 @@ export class FormOptions extends ViewOptions {
 }
 
 export class PageOptions extends ViewOptions {
+      title?: string;
+}
+
+export class GroupOptions extends ViewOptions {
       title?: string;
 }
 
