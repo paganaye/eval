@@ -1,7 +1,7 @@
 import { Output } from "./Output";
 import { EnumEntry, Type } from "./Types";
 import { Eval } from "./Eval";
-import { View, ViewOrElement, AnyView } from "./View";
+import { View, AnyView } from "./View";
 import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
 
@@ -11,10 +11,10 @@ export abstract class Theme {
       abstract initialize(output: Output): void;
       abstract prepareViewBeforeBuild(view: AnyView): void;
 
-      abstract printForm(output: Output, options: FormOptions, printContent: (options: ViewOptions) => void);
-      abstract printPage(output: Output, options: PageOptions, printContent: (options: ViewOptions) => void);
-      abstract printGroup(output: Output, options: GroupOptions, printContent: (options: ViewOptions) => void);
-      abstract printProperty(output: Output, options: PropertyOptions, view: ViewOrElement);
+      abstract printForm(output: Output, options: FormOptions, printContent: (options: ViewOptions) => void): void;
+      abstract printPage(output: Output, options: PageOptions, printContent: (options: ViewOptions) => void): void;
+      abstract printGroup(output: Output, options: GroupOptions, printContent: (options: ViewOptions) => void): void;
+      abstract printProperty(output: Output, options: PropertyOptions, view: AnyView): void;
 
       abstract printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void);
 
@@ -22,10 +22,19 @@ export abstract class Theme {
             options: ArrayEntryOptions, data: any, type: Type): AnyView;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
 
-      abstract printInput(output: Output, options: InputOptions, data: any, type: Type);
-      abstract printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void);
-      abstract printButton(output: Output, options: ButtonOptions, action: (ev: Event) => void);
-      abstract printButtonGroup(output: Output, options: ButtonGroupOptions, action: (ev: Event, text: string) => void);
+      abstract printInput(output: Output, options: InputOptions, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void;
+      abstract printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void): void;
+      abstract printButton(output: Output, options: ButtonOptions, action: (ev: Event) => void): void;
+      abstract printButtonGroup(output: Output, options: ButtonGroupOptions, action: (ev: Event, text: string) => void): void;
+
+      abstract refreshView(view: AnyView, refreshOptions: RefreshOptions): void;
+}
+
+export interface RefreshOptions {
+      valueChanged?: boolean;
+      validationStatusChanged?: boolean;
+      validationTextChanged?: boolean;
+      descriptionChanged?: boolean;
 }
 
 export type ElementAttributes = { [key: string]: string };

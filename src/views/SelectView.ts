@@ -13,7 +13,7 @@ export class SelectView extends View<string, EnumType, SelectOptions> {
         this.selectedOption = this.data;
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
         var enumEntries: EnumEntry[] = this.type.entries;
 
         output.printSelect(

@@ -7,6 +7,7 @@ export interface TypeDefinition<T> {
    printView?: string;
    mandatory?: boolean;
    htmlType?: string;
+   description?: string;
 }
 
 export interface ValidationResult {

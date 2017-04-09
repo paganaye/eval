@@ -8,7 +8,6 @@ import { Print } from "./commands/Print";
 import { Hello } from "./commands/Hello";
 import { Tests } from "./commands/Tests";
 import { Assign } from "./commands/Assign";
-import { EvalFunction } from "./EvalFunction";
 import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
 import { NowFunction } from './functions/Time';
 import { Alert } from "./commands/Alert";
@@ -26,6 +25,7 @@ import { VariantView } from "./views/VariantView";
 import { LinkView } from "./views/LinkView";
 import { CategoryView } from "./views/CategoryView";
 import { ParagraphView, IParagraph } from "./views/ParagraphView"
+import { EvalFunction } from "./EvalFunction";
 
 export class Eval {
 	jsonViewFactory = new ViewFactory("json", (parent: AnyView) => new JSONView(this, parent));
@@ -282,7 +282,7 @@ export class Eval {
 					var fieldDefinition: ObjectType = {
 						_kind: "object",
 						properties: [
-							{ name: "group", type: { _kind: "string" } },
+							{ name: "group", type: { _kind: "string", description: "Each group is displayed on its own tab." } },
 							{ name: "name", type: { _kind: "string" } },
 							{
 								name: "type", type: {

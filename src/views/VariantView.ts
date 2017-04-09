@@ -19,7 +19,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         if (!data._kind) data._kind = "string";
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
         var variantKinds: VariantKind[] = this.type.kinds;
         //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 
@@ -52,7 +52,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
             var innerView = this.evalContext.instantiate(this.data, entry.type, this, this.targetOutput.isEditMode(), {});
             innerView.render(this.targetOutput);
             this.innerView = innerView;
-            this.targetOutput.render();
+            this.targetOutput.domReplace();
         }
     }
 

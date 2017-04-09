@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberType } from "../Types";
-import { ViewOptions } from "Theme";
+import { ViewOptions } from "../Theme";
 
 export class RomanView extends View<number, NumberType, ViewOptions> {
     result: string;
@@ -28,7 +28,7 @@ export class RomanView extends View<number, NumberType, ViewOptions> {
         }
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
         output.printText(this.result);
     }
 

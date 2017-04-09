@@ -1,7 +1,7 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type, ObjectType, Property } from "../Types";
-import { ViewOptions } from "Theme";
+import { ViewOptions } from "../Theme";
 
 export class ObjectView extends View<Object, ObjectType, ViewOptions> {
     keys: string[];
@@ -31,7 +31,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
         if (!this.data) this.data = {};
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
 
         output.printSection({ name: "object" }, (options) => {
             output.printSection({ name: "object-known-properties" }, (options) => {

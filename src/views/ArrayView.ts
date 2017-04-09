@@ -20,7 +20,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       this.entryType = this.type.entryType
    }
 
-   render(output: Output): void {
+   internalRender(output: Output): void {
       output.printSection({ name: "array" }, (options) => {
          output.printAsync("div", { class: "array-entries" }, "...", (elt, output) => {
             //    printContent(output, { class: "gosh" });
@@ -32,7 +32,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
                }
             }
 
-            this.arrayEntriesOutput.render();
+            this.arrayEntriesOutput.domReplace();
 
 
             var Sortable = (window as any).Sortable;
@@ -52,12 +52,12 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
                   entries: entries
                }, (ev, str) => {
                   this.addOne(null, str);
-                  this.arrayEntriesOutput.append();
+                  this.arrayEntriesOutput.domAppend();
                });
             } else {
                output.printButton({ buttonText: "+" }, (ev: Event) => {
                   this.addOne(null, null);
-                  this.arrayEntriesOutput.append();
+                  this.arrayEntriesOutput.domAppend();
                });
             }
          });

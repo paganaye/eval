@@ -153,7 +153,7 @@ export class Tests extends Command {
 			}
 			this.testReporter.setOutput(output);
 			this.jasmineEnvironment.execute();
-			output.render();
+			output.domReplace();
 		})
 		//this.runTestSuite(this.evalContext);
 

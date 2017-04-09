@@ -5,7 +5,7 @@ import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
 import { View, AnyView } from "../View";
-import { ViewOptions } from "Theme";
+import { ViewOptions } from "../Theme";
 
 export class Crud extends Command {
       private tableName: string;
@@ -37,7 +37,7 @@ export class Crud extends Command {
                                     output2.printForm({ buttons: ["Save"] }, (options) => {
                                           this.innerView = this.evalContext.instantiate({}, type, parentView, true);
                                           this.innerView.render(output2);
-                                          output2.render();
+                                          output2.domReplace();
                                     });
                                     location.hash = ("create " + this.tableName);
                                     break;
@@ -45,7 +45,7 @@ export class Crud extends Command {
                                     this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
                                           this.innerView = this.evalContext.instantiate(data, type, parentView, false);
                                           this.innerView.render(output2);
-                                          output2.render();
+                                          output2.domReplace();
                                     })
                                     location.hash = ("read " + this.tableName + " " + this.recordId);
                                     break;
@@ -74,7 +74,7 @@ export class Crud extends Command {
                                                       alert("saving..." + JSON.stringify(data));
                                                 });
                                           });
-                                          output2.render();
+                                          output2.domReplace();
                                     })
                                     location.hash = ("update " + this.tableName + " " + this.recordId);
 
@@ -88,7 +88,7 @@ export class Crud extends Command {
                                     //             res.off();
                                     //       })
                                     // });
-                                    output2.render();
+                                    output2.domReplace();
                                     break;
                               default:
                                     throw "unknown command " + this.commandName;

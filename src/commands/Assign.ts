@@ -2,7 +2,7 @@ import { Command } from "../Command";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { Output } from "../Output";
-import { CommandDescription } from "EvalFunction";
+import { CommandDescription } from "../EvalFunction";
 
 export class Assign extends Command {
       variableName: string;

@@ -13,7 +13,7 @@ export class CategoryView extends View<string, CategoryType, CategoryOptions> {
         this.selectedOption = this.data;
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
         output.printAsync("div", {}, "...", (elt, output) => {
             this.evalContext.database.on("tables/category/" + (this.type as CategoryType).categoryName,
                 (data, error) => {
@@ -24,7 +24,7 @@ export class CategoryView extends View<string, CategoryType, CategoryOptions> {
                                 this.selectedOption = a;
                             });
                     }
-                    output.render();
+                    output.domReplace();
                 });
         });
     }

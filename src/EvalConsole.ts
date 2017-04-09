@@ -20,7 +20,7 @@ export class EvalConsole {
       var res = this.parser.parseCommand(commandString)
       var output = new Output(this.evalContext, this.outputElement)
       this.evalContext.theme.printPage(output, { title: commandString }, () => res.run(output));
-      output.render();
+      output.domReplace();
     } catch (error) {
       console.error(error);
     }

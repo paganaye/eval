@@ -6,8 +6,7 @@ export abstract class EvalFunction<T> {
    constructor(protected parent: Expression<any>) { }
    abstract getDescription(): CommandDescription;
    abstract calcValue(evalContext: Eval): T;
-   protected valueChanged() {
-   }
+   protected valueChanged() { }
 }
 
 export class CommandDescription {

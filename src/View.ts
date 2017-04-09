@@ -2,17 +2,29 @@ import { Output } from "./Output";
 import { Type, ConstType } from "./Types";
 import { Expression } from './Expression';
 import { Eval } from "./Eval";
-import { ViewOptions, ElementAttributes } from "Theme";
+import { ViewOptions, ElementAttributes } from "./Theme";
 
-export abstract class View<TValue, TType extends Type, TViewOptions extends ViewOptions> implements ViewOrElement {
+export abstract class View<TValue, TType extends Type, TViewOptions extends ViewOptions> {
     protected data: TValue; // stored data
     protected type: TType; // stored type
     public options: TViewOptions; // runtime extra stuff
     private readonly id: string;
+    protected abstract internalRender(output: Output): void;
+    abstract getValue(): TValue;
+    private rendered = false
+
+    private validationStatus: ValidationStatus = ValidationStatus.none;
+    private validationText: string;
+    private description: string;
 
     constructor(protected evalContext: Eval, private parentView: AnyView) {
         var prefix = ((this as object).constructor as any).name;
         this.id = evalContext.nextId(prefix);
+    }
+
+    public render(output: Output): void {
+        this.internalRender(output);
+        this.rendered = true;
     }
 
     beforeBuild(data: TValue, type: TType, options: TViewOptions): void {
@@ -24,32 +36,55 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
         this.options = options || {} as TViewOptions;
     }
 
-    afterBuild(): void {
-    }
-
-
-    getId(): string { return this.id; }
-    build(): void { } // overridable
-    abstract render(output: Output): void;
-    abstract getValue(): TValue;
     getParentView(): AnyView {
         return this.parentView;
     }
 
+    getId(): string { return this.id; }
+    build(): void { } // overridable
+
+    validate(newValue: TValue): void {
+        alert("todo:validate");
+    }
+
     getValidationStatus(): ValidationStatus {
-        return ValidationStatus.success;
+        return this.validationStatus;
+    }
+
+    setValidationStatus(newStatus: ValidationStatus): void {
+        if (this.validationStatus == newStatus) return;
+        this.validationStatus = newStatus;
+        if (this.rendered) {
+            this.evalContext.theme.refreshView(this, { validationStatusChanged: true });
+        }
     }
 
     getValidationText(): string {
-        return null;
+        return this.validationText;
     }
 
-    getExampleText(): string {
-        return null;
+    setValidationText(newValidationText: string): void {
+        if (this.validationText == newValidationText) return;
+        this.validationText = newValidationText;
+        if (this.rendered) {
+            this.evalContext.theme.refreshView(this, { validationTextChanged: true });
+        }
+    }
+
+    getDescription(): string {
+        return this.description;
+    }
+
+    setDescription(newDescription: string) {
+        if (this.description == newDescription) return;
+        this.description = newDescription;
+        if (this.rendered) {
+            this.evalContext.theme.refreshView(this, { descriptionChanged: true });
+        }
     }
 }
 
-const enum ValidationStatus {
+export const enum ValidationStatus {
     none,
     success,
     warning,
@@ -67,10 +102,3 @@ export class ViewFactory {
 }
 
 export type AnyView = View<any, Type, ViewOptions>;
-
-export interface ViewOrElement {
-    getId(): string;
-    render(output: Output): void;
-    getParentView(): AnyView;
-    getValidationStatus(): ValidationStatus;
-}

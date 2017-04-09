@@ -3,7 +3,7 @@ import { YoutubeView } from "./views/YoutubeView";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
 import { Type, EnumEntry } from './Types';
-import { View, ViewOrElement, AnyView } from "./View";
+import { View, AnyView } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, GroupOptions } from "./Theme";
@@ -14,7 +14,7 @@ import { VariantView } from "./views/VariantView";
 export class Output {
 	public html: String[] = [];
 	private editMode: boolean;
-	private afterRenderCallbacks: ((elt: HTMLElement) => void)[] = [];
+	private afterDomCreatedCallbacks: ((elt: HTMLElement) => void)[] = [];
 
 	constructor(private evalContext: Eval, private elt?: HTMLElement, private parentOutput?: Output) {
 		this.editMode = (parentOutput && parentOutput.editMode) || false;
@@ -81,7 +81,7 @@ export class Output {
 		return view;
 	}
 
-	printProperty(options: PropertyOptions, view: ViewOrElement) {
+	printProperty(options: PropertyOptions, view: AnyView) {
 		if (!options) options = {};
 		this.evalContext.theme.printProperty(this, options, view);
 	}
@@ -91,8 +91,8 @@ export class Output {
 		return this.evalContext.theme.printArrayEntry(this, arrayView, options, data, type)
 	}
 
-	printInput(options: InputOptions, data: any, type: Type) {
-		this.evalContext.theme.printInput(this, options, data, type)
+	printInput(options: InputOptions, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
+		this.evalContext.theme.printInput(this, options, data, type, callback)
 	}
 
 	printSelect(options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
@@ -132,15 +132,15 @@ export class Output {
 		return this.html.join("");
 	}
 
-	render(): void {
+	domReplace(): void {
 		var htmlText = this.toString();
 
 		this.elt.innerHTML = htmlText;
 		this.html = [];
-		this.raiseAfterRender();
+		this.raiseAfterDomCreated();
 	}
 
-	append(): void {
+	domAppend(): void {
 		var htmlText = this.toString();
 		var tmpDiv = document.createElement('div');
 		tmpDiv.innerHTML = htmlText;
@@ -149,15 +149,15 @@ export class Output {
 			this.elt.appendChild(tmpDiv.firstChild);
 		}
 		this.html = [];
-		this.raiseAfterRender();
+		this.raiseAfterDomCreated();
 	}
 
-	private raiseAfterRender() {
-		for (var x in this.afterRenderCallbacks) {
-			var callback = this.afterRenderCallbacks[x];
+	private raiseAfterDomCreated() {
+		for (var x in this.afterDomCreatedCallbacks) {
+			var callback = this.afterDomCreatedCallbacks[x];
 			callback(this.elt);
 		}
-		this.afterRenderCallbacks = [];
+		this.afterDomCreatedCallbacks = [];
 	}
 
 	static selfClosing = {
@@ -218,7 +218,7 @@ export class Output {
 		}
 		var elt = document.getElementById(id);
 
-		this.afterRenderCallbacks.push(() => {
+		this.afterDomCreatedCallbacks.push(() => {
 			var elt = document.getElementById(id);
 			if (elt) {
 				var output = new Output(this.evalContext, elt, this);

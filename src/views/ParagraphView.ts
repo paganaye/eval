@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberType } from "../Types";
-import { ViewOptions } from "Theme";
+import { ViewOptions } from "../Theme";
 
 
 export interface IParagraph {
@@ -22,7 +22,7 @@ export class ParagraphView extends View<IParagraph, Type, ViewOptions> {
         }
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
         this.renderParagraph(output, this.data, 1);
     }
 

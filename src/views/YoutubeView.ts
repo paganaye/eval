@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ViewOptions, ElementAttributes } from "Theme";
+import { ViewOptions, ElementAttributes } from "../Theme";
 
 interface IYoutube {
     video?: string;
@@ -26,7 +26,7 @@ export class YoutubeView extends View<IYoutube, Type, ViewOptions> {
         };
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
         output.printTag("iframe", this.attributes2);
     }
 

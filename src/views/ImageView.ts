@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ViewOptions, ElementAttributes } from "Theme";
+import { ViewOptions, ElementAttributes } from "../Theme";
 
 interface ImageSource {
     src?: string;
@@ -22,7 +22,7 @@ export class ImageView extends View<ImageSource, any, ViewOptions> {
             : data.src);
     }
 
-    render(output: Output): void {
+    internalRender(output: Output): void {
         output.printTag("img", {});
     }
 

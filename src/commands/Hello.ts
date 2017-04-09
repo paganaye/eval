@@ -4,8 +4,8 @@ import { Eval } from "../Eval";
 import { Expression } from '../Expression';
 import { Output } from "../Output";
 import { View, AnyView } from "../View";
-import { ViewOptions } from "Theme";
-import { CommandDescription } from "EvalFunction";
+import { ViewOptions } from "../Theme";
+import { CommandDescription } from "../EvalFunction";
 
 
 export class Hello extends Command {
