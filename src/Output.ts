@@ -8,7 +8,7 @@ import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, GroupOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
-import { DynamicView } from "./views/DynamicView";
+import { VariantView } from "./views/VariantView";
 
 
 export class Output {
@@ -71,40 +71,21 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printLabelAndView(key: string | ((output: Output) => void), options: PropertyOptions, data: any, type: Type, parentView: AnyView): AnyView {
+	printLabelAndView(options: PropertyOptions, data: any, type: Type, parentView: AnyView): AnyView {
 		var view: AnyView;
 
 		view = this.evalContext.instantiate(data, type, parentView, this.editMode, options);
 
 		this.printProperty(options,
-			(output, options) => {
-				switch (typeof key) {
-					case "string":
-						this.html.push(Output.escapeHtml(key));
-						break;
-					case "function":
-						(key as any)(output);
-						break;
-					default:
-						// ignore?
-						break;
-				}
-			},
 			view);
 		return view;
 	}
 
-	printProperty(options: PropertyOptions,
-		printKey: string | ((output: Output, options: PropertyOptions) => void), view: ViewOrElement) {
+	printProperty(options: PropertyOptions, view: ViewOrElement) {
 		if (!options) options = {};
-		this.evalContext.theme.printProperty(this, options, printKey, view);
+		this.evalContext.theme.printProperty(this, options, view);
 	}
 
-	printDynamicObject(options: PropertyOptions,
-		printKey: string | ((output: Output, options: PropertyOptions) => void), view: ViewOrElement) {
-		if (!options) options = {};
-		this.evalContext.theme.printDynamicObject(this, options, printKey, view);
-	}
 
 	printArrayEntry(arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
 		return this.evalContext.theme.printArrayEntry(this, arrayView, options, data, type)

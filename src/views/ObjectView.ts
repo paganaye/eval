@@ -39,7 +39,8 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                     output.printSection({ name: "object-group" }, (options) => {
                         for (var key of group) {
                             var value = this.data[key];
-                            this.views[key] = output.printLabelAndView(key, {}, value, this.typeByName[key], this);
+
+                            this.views[key] = output.printLabelAndView({ label: key }, value, this.typeByName[key], this);
                         }
                     });
                 }
@@ -49,7 +50,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                     if (key === "_kind") continue;
                     var value = this.data[key];
                     if (this.typeByName[key] !== undefined) continue;
-                    this.views[key] = output.printLabelAndView(key, {}, value, null, this);
+                    this.views[key] = output.printLabelAndView({ label: key }, value, null, this);
                 }
             });
         });

@@ -1,11 +1,11 @@
-import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, DynamicObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, MapEntryOptions, GroupOptions } from "../Theme";
+import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, VariantObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, MapEntryOptions, GroupOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
 import { View, ViewOrElement, AnyView } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
-import { DynamicView } from "../views/DynamicView";
+import { VariantView } from "../views/VariantView";
 
 
 export class Bootstrap extends Theme {
@@ -32,19 +32,16 @@ export class Bootstrap extends Theme {
         }
     }
 
-    printProperty(output: Output, options: PropertyOptions,
-        printKey: string | ((output: Output, options: ViewOptions) => void), view: ViewOrElement) {
+    printProperty(output: Output, options: PropertyOptions, view: ViewOrElement) {
 
         output.printStartTag("div", { class: "form-group row has-warning" });
 
         output.printTag("label", { class: "col-lg-2 col-form-label", for: view.getId() },
-            typeof printKey === "string"
-                ? printKey
-                : (output) => (printKey as ((output: Output, options: ViewOptions) => void))(output, options));
-
+            options.printLabel ? (o) => options.printLabel(o, options) : options.label);
 
         output.printStartTag("div", { class: "col-lg-10" });
         view.render(output);
+        var validationStatus = view.getValidationStatus();
         output.printHTML('<div class="form-control-feedback">Shucks, check the formatting of that and try again.</div>');
         output.printHTML('<small class="form-text text-muted">Example help text that remains unchanged.</small>');
 
@@ -67,21 +64,18 @@ export class Bootstrap extends Theme {
         //   <input type="text" class="form-control form-control-warning" id="inputWarning1">
     }
 
-    printDynamicObject(output: Output, options: PropertyOptions,
-        printKey: string | ((output: Output, options: ViewOptions) => void), view: ViewOrElement) {
-        var parentView = view.getParentView();
-        if (parentView instanceof ArrayView) {
+    // printVariantProperty(output: Output, options: PropertyOptions, view: ViewOrElement) {
+    //     var parentView = view.getParentView();
+    //     if (parentView instanceof ArrayView) {
 
-        }
-        output.printStartTag("div", { class: "evl-dynamic-type" });
-        output.printTag("label", { class: "", for: view.getId() },
-            typeof printKey === "string"
-                ? printKey
-                : (output) => (printKey as ((output: Output, options: ViewOptions) => void))(output, options));
-        output.printEndTag();
-        view.render(output);
-        output.printEndTag();
-    }
+    //     }
+    //     output.printStartTag("div", { class: "evl-variant-type" });
+    //     output.printTag("label", { class: "col-lg-2 col-form-label", for: view.getId() },
+    //         options.printLabel ? (o) => options.printLabel(o, options) : options.label);
+    //     output.printEndTag();
+    //     view.render(output);
+    //     output.printEndTag();
+    // }
 
     printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
         output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
@@ -155,7 +149,7 @@ export class Bootstrap extends Theme {
             case "object":
             case "array-buttons":
             case "map-properties":
-            case "dynamic-control":
+            case "variant-control":
             case "crud-update":
             case "object-group":
                 output.printStartTag("div", attributes);
@@ -306,7 +300,7 @@ export class Bootstrap extends Theme {
     }
 
     prepareViewBeforeBuild(view: AnyView): void {
-        if (view instanceof DynamicView) {
+        if (view instanceof VariantView) {
             // not sure about this
             // at all
             // view.options.freezeType = true;

@@ -1,4 +1,4 @@
-import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, DynamicType, DynamicKind, Property } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, VariantType, VariantKind, Property } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -22,7 +22,7 @@ import { Crud } from './commands/Crud';
 import { Theme, ViewOptions } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
-import { DynamicView } from "./views/DynamicView";
+import { VariantView } from "./views/VariantView";
 import { LinkView } from "./views/LinkView";
 import { CategoryView } from "./views/CategoryView";
 import { ParagraphView, IParagraph } from "./views/ParagraphView"
@@ -34,7 +34,7 @@ export class Eval {
 	inputViewFactory = new ViewFactory("input", (parent: AnyView) => new InputView(this, parent));
 	selectViewFactory = new ViewFactory("select", (parent: AnyView) => new SelectView(this, parent));
 	categoryViewFactory = new ViewFactory("selectCategory", (parent: AnyView) => new CategoryView(this, parent));
-	dynamicViewFactory = new ViewFactory("dynamic", (parent: AnyView) => new DynamicView(this, parent));
+	variantViewFactory = new ViewFactory("variant", (parent: AnyView) => new VariantView(this, parent));
 	linkViewFactory = new ViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
 	paragraphViewFactory = new ViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
 
@@ -44,7 +44,7 @@ export class Eval {
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
 	functions: { [key: string]: (parent: Expression<any>) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
-	dynamicTypeKinds: DynamicKind[];
+	variantKinds: VariantKind[];
 
 
 	database: Database;
@@ -72,7 +72,7 @@ export class Eval {
 			input: this.inputViewFactory,
 			select: this.selectViewFactory,
 			category: this.categoryViewFactory,
-			dynamic: this.dynamicViewFactory,
+			variant: this.variantViewFactory,
 			link: this.linkViewFactory,
 			paragraph: this.paragraphViewFactory
 		};
@@ -95,11 +95,11 @@ export class Eval {
 		this.registerFunctions("random", (parent: Expression<any>) => new RandomFunction(parent));
 		this.registerFunctions("now", (parent: Expression<any>) => new NowFunction(parent));
 
-		this.dynamicTypeKinds = [];
+		this.variantKinds = [];
 
 		this.addType("object", null, "object", (type) => (type as ObjectType).properties = []);
 		this.addType("array", null, "array");
-		this.addType("dynamic", null, "dynamic");
+		this.addType("variant", null, "variant");
 		this.addType("string", "String", "input", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
@@ -157,13 +157,13 @@ export class Eval {
 			{ name: "type", type: { _kind: "const", value: type } }
 		];
 		if (label != null) {
-			var dynamicKind: DynamicKind = {
+			var variantKind: VariantKind = {
 				key: key, label: label, type: {
 					_kind: "object",
 					properties: properties
 				}
 			}
-			this.dynamicTypeKinds.push(dynamicKind);
+			this.variantKinds.push(variantKind);
 		}
 
 		if (typeCallback) typeCallback(type, (property) => {
@@ -286,8 +286,8 @@ export class Eval {
 							{ name: "name", type: { _kind: "string" } },
 							{
 								name: "type", type: {
-									_kind: "dynamic",
-									kinds: this.dynamicTypeKinds
+									_kind: "variant",
+									kinds: this.variantKinds
 								}
 							}
 						]

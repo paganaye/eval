@@ -72,4 +72,5 @@ export interface ViewOrElement {
     getId(): string;
     render(output: Output): void;
     getParentView(): AnyView;
+    getValidationStatus(): ValidationStatus;
 }

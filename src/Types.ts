@@ -99,25 +99,25 @@ export interface EnumEntry {
    label?: string
 }
 
-export interface DynamicType extends TypeDefinition<any> {
-   _kind: "dynamic";
-   kinds: DynamicKind[];
+export interface VariantType extends TypeDefinition<any> {
+   _kind: "variant";
+   kinds: VariantKind[];
 }
 
-export interface DynamicKind extends EnumEntry {
+export interface VariantKind extends EnumEntry {
    group?: string;
    key: string;
    label?: string;
    type: Type;
 }
 
-export interface DynamicObject {
+export interface VariantObject {
    _kind: string;
    //[otherFields: string]: any;
 }
 
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
-   | EnumType | ObjectType | ArrayType<any> | DynamicType;
+   | EnumType | ObjectType | ArrayType<any> | VariantType;
 
 export type TypeOrString = Type | string;
 

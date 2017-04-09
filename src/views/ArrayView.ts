@@ -1,6 +1,6 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ArrayType, EnumEntry, DynamicObject } from "../Types";
+import { Type, ArrayType, EnumEntry, VariantObject } from "../Types";
 import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from "../Theme";
 
 export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
@@ -42,7 +42,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
             });
          });
          output.printSection({ name: "array-buttons" }, (options) => {
-            if (this.entryType._kind == "dynamic") {
+            if (this.entryType._kind == "variant") {
                var entries: EnumEntry[] = [];
                for (var entry of this.entryType.kinds) {
                   entries.push({ key: entry.key, label: entry.label || entry.key });
@@ -71,7 +71,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       } else {
          index = this.data.length;
          entry = {} as T;
-         if (kind) (entry as DynamicObject)._kind = kind;
+         if (kind) (entry as VariantObject)._kind = kind;
          this.data.push(entry);
       }
       var id = this.evalContext.nextId("entry-");

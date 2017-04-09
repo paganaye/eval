@@ -14,10 +14,7 @@ export abstract class Theme {
       abstract printForm(output: Output, options: FormOptions, printContent: (options: ViewOptions) => void);
       abstract printPage(output: Output, options: PageOptions, printContent: (options: ViewOptions) => void);
       abstract printGroup(output: Output, options: GroupOptions, printContent: (options: ViewOptions) => void);
-      abstract printProperty(output: Output, options: PropertyOptions,
-            printKey: string | ((output: Output, options: PropertyOptions) => void), view: ViewOrElement);
-      abstract printDynamicObject(output: Output, options: PropertyOptions,
-            printKey: string | ((output: Output, options: PropertyOptions) => void), view: ViewOrElement);
+      abstract printProperty(output: Output, options: PropertyOptions, view: ViewOrElement);
 
       abstract printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void);
 
@@ -37,7 +34,8 @@ export class ViewOptions {
 }
 
 export class PropertyOptions extends ViewOptions {
-            
+      printLabel?: ((output: Output, options: ViewOptions) => void);
+      label?: string;
 }
 
 export class ArrayOptions extends ViewOptions {
@@ -99,7 +97,7 @@ export class CategoryOptions extends ViewOptions {
 export class ListOptions extends ViewOptions {
 }
 
-export class DynamicObjectOptions extends ViewOptions {
+export class VariantObjectOptions extends ViewOptions {
       freezeType: boolean;
       entries: EnumEntry[];
       id: string;
