@@ -22,7 +22,6 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
         }
         this.data = (data === undefined) ? null : data;
         this.options = options || {} as TViewOptions;
-        debugger;
     }
 
     afterBuild(): void {
@@ -36,6 +35,25 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     getParentView(): AnyView {
         return this.parentView;
     }
+
+    getValidationStatus(): ValidationStatus {
+        return ValidationStatus.success;
+    }
+
+    getValidationText(): string {
+        return null;
+    }
+
+    getExampleText(): string {
+        return null;
+    }
+}
+
+const enum ValidationStatus {
+    none,
+    success,
+    warning,
+    danger
 }
 
 export class ViewFactory {

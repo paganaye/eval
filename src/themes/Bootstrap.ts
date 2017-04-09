@@ -35,18 +35,36 @@ export class Bootstrap extends Theme {
     printProperty(output: Output, options: PropertyOptions,
         printKey: string | ((output: Output, options: ViewOptions) => void), view: ViewOrElement) {
 
-        output.printStartTag("div", { class: "form-group row" });
+        output.printStartTag("div", { class: "form-group row has-warning" });
 
-        output.printTag("label", { class: "col-sm-2 col-form-label", for: view.getId() },
+        output.printTag("label", { class: "col-lg-2 col-form-label", for: view.getId() },
             typeof printKey === "string"
                 ? printKey
                 : (output) => (printKey as ((output: Output, options: ViewOptions) => void))(output, options));
 
 
-        output.printStartTag("div", { class: "col-sm-10" });
+        output.printStartTag("div", { class: "col-lg-10" });
         view.render(output);
-        output.printEndTag(); // col-sm-10;
+        output.printHTML('<div class="form-control-feedback">Shucks, check the formatting of that and try again.</div>');
+        output.printHTML('<small class="form-text text-muted">Example help text that remains unchanged.</small>');
+
+        output.printEndTag(); // col-lg-10;
         output.printEndTag(); // row
+
+        // getValidationStatus(): ValidationStatus {
+        //     return ValidationStatus.success;
+        // }
+
+        // getValidationText(): string {
+        //     return null;
+        // }
+
+        // getExampleText(): string {
+        //     return null;
+        // }
+
+        //   <label class="form-control-label" for="inputWarning1">Input with warning</label>
+        //   <input type="text" class="form-control form-control-warning" id="inputWarning1">
     }
 
     printDynamicObject(output: Output, options: PropertyOptions,
@@ -129,7 +147,7 @@ export class Bootstrap extends Theme {
         printContent(output, {});
         output.printEndTag();
     }
-    
+
     printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void) {
         this.addClass({}, options.name);
         var attributes: ElementAttributes = { class: this.classPrefix + options.name };

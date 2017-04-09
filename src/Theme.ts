@@ -34,12 +34,10 @@ export abstract class Theme {
 export type ElementAttributes = { [key: string]: string };
 
 export class ViewOptions {
-      //id?: string;
-      //css?: CssAttributes;
 }
 
 export class PropertyOptions extends ViewOptions {
-      //labelCssAttributes?: CssAttributes;
+            
 }
 
 export class ArrayOptions extends ViewOptions {
