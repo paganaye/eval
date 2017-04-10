@@ -54,7 +54,7 @@ export class Eval {
 	passwordViewFactory = this.addViewFactory("password", (parent: AnyView) => new PasswordInputView(this, parent));
 
 	selectViewFactory = this.addViewFactory("select", (parent: AnyView) => new SelectView(this, parent));
-	categoryViewFactory = this.addViewFactory("selectCategory", (parent: AnyView) => new CategoryView(this, parent));
+	categoryViewFactory = this.addViewFactory("category", (parent: AnyView) => new CategoryView(this, parent));
 	variantViewFactory = this.addViewFactory("variant", (parent: AnyView) => new VariantView(this, parent));
 	linkViewFactory = this.addViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
@@ -115,40 +115,44 @@ export class Eval {
 
 		this.variantKinds = [];
 
-		this.addType("object", null, "object", (type) => (type as ObjectType).properties = []);
-		this.addType("array", null, "array");
-		this.addType("variant", null, "variant");
-		this.addType("string", "String", "string", (type, addProperty) => {
+		this.addType("object", null, (type) => (type as ObjectType).properties = []);
+		this.addType("array", null);
+		this.addType("variant", null);
+		this.addType("string", "String", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
 			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ name: "maximalLength", type: { _kind: "number" } });
-			addProperty({ name: "regexp", type: { _kind: "string" } });
-			addProperty({ name: "regexpMessage", type: { _kind: "string" } });
 			addProperty({ name: "cols", type: { _kind: "number" } });
 			addProperty({ name: "rows", type: { _kind: "number" } });
 		});
-		this.addType("number", "Number", "number");
-		this.addType("boolean", "Boolean", "boolean", (type) => type.htmlType = "checkbox");
-		this.addType("select", "Select", "select", (type, addProperty) => {
+		this.addType("number", "Number", (type, addProperty) => {
+			type.htmlType = "text";
+			addProperty({ name: "defaultValue", type: { _kind: "string" } });
+			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
+			addProperty({ name: "cols", type: { _kind: "number" } });
+			addProperty({ name: "rows", type: { _kind: "number" } });
+		});
+
+		this.addType("boolean", "Boolean", (type) => type.htmlType = "checkbox");
+		this.addType("select", "Select", (type, addProperty) => {
 			(type as EnumType).entries = [];
 			addProperty({ name: "entries", type: this.arrayOfEnum });
 		});
-		this.addType("category", "Category", "category", (type, addProperty) => {
+		this.addType("category", "Category", (type, addProperty) => {
 			addProperty({ name: "categoryName", type: { _kind: "string" } });
 		});
-		this.addType("tel", "Telephone number", "tel");
-		this.addType("url", "URL", "url");
-		this.addType("datetime", "Date and time", "datetime");
-		this.addType("date", "Date", "date");
-		this.addType("time", "Time", "time");
-		this.addType("month", "Month and Year", "month");
-		this.addType("week", "Week", "week");
-		this.addType("color", "Color", "color");
-		this.addType("range", "Range", "range");
-		this.addType("password", "Password", "password");
-		this.addType("link", "Link", "link", (type) => type.htmlType = "table");
-		this.addType("paragraph", "Paragraphs", "paragraph", (type) => {
+		this.addType("tel", "Telephone number");
+		this.addType("url", "URL");
+		this.addType("datetime", "Date and time");
+		this.addType("date", "Date");
+		this.addType("time", "Time");
+		this.addType("month", "Month and Year");
+		this.addType("week", "Week");
+		this.addType("color", "Color");
+		this.addType("range", "Range");
+		this.addType("password", "Password");
+		this.addType("link", "Link", (type) => type.htmlType = "table");
+		this.addType("paragraph", "Paragraphs", (type) => {
 			type.editView = "object";
 			(type as ObjectType).properties = [
 				{ name: "title", type: { _kind: "string" } },
@@ -160,15 +164,17 @@ export class Eval {
 			];
 			return
 		});
-		this.addType("array", "Array", "array");
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
 
 	}
 
-	addType(key: string, label: string, view: string, typeCallback?: (type: Type, addProperty: (property: Property) => void) => void): void {
+	addType(key: string, label: string, typeCallback?: (type: Type, addProperty: (property: Property) => void) => void): void {
 
-		var type = { _kind: key, editView: view, printView: view } as Type;
+		var type = { _kind: key, editView: key, printView: key } as Type;
+		if (this.types[key]) {
+			console.warn("type " + key + " is already declared.");
+		}
 
 		this.registerType(key, type);
 		var properties: Property[] = [
