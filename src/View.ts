@@ -43,10 +43,6 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     getId(): string { return this.id; }
     build(): void { } // overridable
 
-    validate(newValue: TValue): void {
-        alert("todo:validate");
-    }
-
     getValidationStatus(): ValidationStatus {
         return this.validationStatus;
     }
@@ -94,6 +90,7 @@ export const enum ValidationStatus {
 export class ViewFactory {
 
     constructor(private viewName: string, private viewConstructor: (parent: AnyView) => AnyView) {
+
     }
 
     instantiateNewView(parent: AnyView) {

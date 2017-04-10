@@ -300,7 +300,6 @@ export class Bootstrap extends Theme {
 	}
 
 	refreshView(view: AnyView, refreshOptions: RefreshOptions): void {
-		alert("something change")
 		if (refreshOptions.validationTextChanged) {
 			var elt = document.getElementById(view.getId() + "-validation");
 			elt.innerText = view.getValidationText();

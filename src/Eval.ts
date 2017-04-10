@@ -13,7 +13,7 @@ import { NowFunction } from './functions/Time';
 import { Alert } from "./commands/Alert";
 import { Expression } from './Expression';
 import { Output } from './Output';
-import { InputView } from './views/InputView';
+import { NumberInputView, StringInputView, BooleanInputView, TelInputView, UrlInputView, DateTimeInputView, DateInputView, MonthInputView, TimeInputView, WeekInputView, ColorInputView, RangeInputView, PasswordInputView } from './views/InputView';
 import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Database } from './Database';
@@ -28,19 +28,39 @@ import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
 
 export class Eval {
-	jsonViewFactory = new ViewFactory("json", (parent: AnyView) => new JSONView(this, parent));
-	objectViewFactory = new ViewFactory("object", (parent: AnyView) => new ObjectView(this, parent));
-	arrayViewFactory = new ViewFactory("array", (parent: AnyView) => new ArrayView(this, parent));
-	inputViewFactory = new ViewFactory("input", (parent: AnyView) => new InputView(this, parent));
-	selectViewFactory = new ViewFactory("select", (parent: AnyView) => new SelectView(this, parent));
-	categoryViewFactory = new ViewFactory("selectCategory", (parent: AnyView) => new CategoryView(this, parent));
-	variantViewFactory = new ViewFactory("variant", (parent: AnyView) => new VariantView(this, parent));
-	linkViewFactory = new ViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
-	paragraphViewFactory = new ViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
+
+	viewFactories: { [key: string]: ViewFactory } = {};
+
+	addViewFactory(viewName: string, viewConstructor: (parent: AnyView) => AnyView): ViewFactory {
+		return (this.viewFactories[viewName] = new ViewFactory(viewName, viewConstructor));
+	}
+
+	jsonViewFactory = this.addViewFactory("json", (parent: AnyView) => new JSONView(this, parent));
+	objectViewFactory = this.addViewFactory("object", (parent: AnyView) => new ObjectView(this, parent));
+	arrayViewFactory = this.addViewFactory("array", (parent: AnyView) => new ArrayView(this, parent));
+
+	numberInputViewFactory = this.addViewFactory("number", (parent: AnyView) => new NumberInputView(this, parent));
+	stringInputViewFactory = this.addViewFactory("string", (parent: AnyView) => new StringInputView(this, parent));
+	booleanInputViewFactory = this.addViewFactory("boolean", (parent: AnyView) => new BooleanInputView(this, parent));
+	telInputViewFactory = this.addViewFactory("tel", (parent: AnyView) => new TelInputView(this, parent));
+	urlViewFactory = this.addViewFactory("url", (parent: AnyView) => new UrlInputView(this, parent));
+	datetimeViewFactory = this.addViewFactory("datetime", (parent: AnyView) => new DateTimeInputView(this, parent));
+	dateViewFactory = this.addViewFactory("date", (parent: AnyView) => new DateInputView(this, parent));
+	timeViewFactory = this.addViewFactory("time", (parent: AnyView) => new TimeInputView(this, parent));
+	monthViewFactory = this.addViewFactory("month", (parent: AnyView) => new MonthInputView(this, parent));
+	weekViewFactory = this.addViewFactory("week", (parent: AnyView) => new WeekInputView(this, parent));
+	colorViewFactory = this.addViewFactory("color", (parent: AnyView) => new ColorInputView(this, parent));
+	rangeViewFactory = this.addViewFactory("range", (parent: AnyView) => new RangeInputView(this, parent));
+	passwordViewFactory = this.addViewFactory("password", (parent: AnyView) => new PasswordInputView(this, parent));
+
+	selectViewFactory = this.addViewFactory("select", (parent: AnyView) => new SelectView(this, parent));
+	categoryViewFactory = this.addViewFactory("selectCategory", (parent: AnyView) => new CategoryView(this, parent));
+	variantViewFactory = this.addViewFactory("variant", (parent: AnyView) => new VariantView(this, parent));
+	linkViewFactory = this.addViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
+	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
 
 	private types: { [key: string]: Type } = {};
 
-	viewFactories: { [key: string]: ViewFactory } = {};
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
 	functions: { [key: string]: (parent: Expression<any>) => EvalFunction<any> } = {};
 	variables: { [key: string]: any } = {};
@@ -62,20 +82,18 @@ export class Eval {
 		}
 	};
 
+	arrayOfValidationRegexp: ArrayType<any> = {
+		_kind: "array", entryType: {
+			_kind: "object",
+			properties: [
+				{ name: "regexp", type: { _kind: "string" } },
+				{ name: "message", type: { _kind: "string" } }
+			]
+		}
+	};
+
 
 	constructor() {
-
-		this.viewFactories = {
-			json: this.jsonViewFactory,
-			object: this.objectViewFactory,
-			array: this.arrayViewFactory,
-			input: this.inputViewFactory,
-			select: this.selectViewFactory,
-			category: this.categoryViewFactory,
-			variant: this.variantViewFactory,
-			link: this.linkViewFactory,
-			paragraph: this.paragraphViewFactory
-		};
 
 		this.registerCommand("print", () => new Print(this));
 		this.registerCommand("hello", () => new Hello(this));
@@ -100,18 +118,18 @@ export class Eval {
 		this.addType("object", null, "object", (type) => (type as ObjectType).properties = []);
 		this.addType("array", null, "array");
 		this.addType("variant", null, "variant");
-		this.addType("string", "String", "input", (type, addProperty) => {
+		this.addType("string", "String", "string", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
-			addProperty({ name: "minimalLength", type: { _kind: "number" } });
+			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
 			addProperty({ name: "maximalLength", type: { _kind: "number" } });
 			addProperty({ name: "regexp", type: { _kind: "string" } });
 			addProperty({ name: "regexpMessage", type: { _kind: "string" } });
 			addProperty({ name: "cols", type: { _kind: "number" } });
 			addProperty({ name: "rows", type: { _kind: "number" } });
 		});
-		this.addType("number", "Number", "input");
-		this.addType("boolean", "Boolean", "input", (type) => type.htmlType = "checkbox");
+		this.addType("number", "Number", "number");
+		this.addType("boolean", "Boolean", "boolean", (type) => type.htmlType = "checkbox");
 		this.addType("select", "Select", "select", (type, addProperty) => {
 			(type as EnumType).entries = [];
 			addProperty({ name: "entries", type: this.arrayOfEnum });
@@ -119,16 +137,16 @@ export class Eval {
 		this.addType("category", "Category", "category", (type, addProperty) => {
 			addProperty({ name: "categoryName", type: { _kind: "string" } });
 		});
-		this.addType("tel", "Telephone number", "input");
-		this.addType("url", "URL", "input");
-		this.addType("datetime", "Date and time", "input");
-		this.addType("date", "Date", "input");
-		this.addType("time", "Time", "input");
-		this.addType("month", "Month and Year", "input");
-		this.addType("week", "Week", "input");
-		this.addType("color", "Color", "input");
-		this.addType("range", "Range", "input");
-		this.addType("password", "Password", "input");
+		this.addType("tel", "Telephone number", "tel");
+		this.addType("url", "URL", "url");
+		this.addType("datetime", "Date and time", "datetime");
+		this.addType("date", "Date", "date");
+		this.addType("time", "Time", "time");
+		this.addType("month", "Month and Year", "month");
+		this.addType("week", "Week", "week");
+		this.addType("color", "Color", "color");
+		this.addType("range", "Range", "range");
+		this.addType("password", "Password", "password");
 		this.addType("link", "Link", "link", (type) => type.htmlType = "table");
 		this.addType("paragraph", "Paragraphs", "paragraph", (type) => {
 			type.editView = "object";

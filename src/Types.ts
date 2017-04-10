@@ -37,12 +37,14 @@ export interface VariableType extends TypeDefinition<any> {
 export interface StringType extends TypeDefinition<string> {
    _kind: "string";
    defaultValue?: string;
-   minimalLength?: number;
-   maximalLength?: number;
-   regexp?: string;
-   regexpMessage?: string;
+   validation?: ValidationRegexp[];
    cols?: number;
    rows?: number;
+}
+
+export interface ValidationRegexp {
+   regexp: string;
+   message: string;   
 }
 
 export interface BooleanType extends TypeDefinition<boolean> {
