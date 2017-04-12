@@ -19,9 +19,9 @@ export interface ValidationResult {
 export interface NumberType extends TypeDefinition<number> {
    _kind: "number";
    defaultValue?: number;
-   minimalValue?: number;
-   maximalValue?: number;
-   nbDecimals?: number;
+   minimum?: number;
+   maximum?: number;
+   decimals?: number;
 }
 
 export interface ConstType extends TypeDefinition<any> {

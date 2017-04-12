@@ -128,8 +128,8 @@ export class Eval {
 		this.addType("number", "Number", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
-			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ name: "cols", type: { _kind: "number" } });
+			addProperty({ name: "minimum", type: { _kind: "number" } });
+			addProperty({ name: "maximum", type: { _kind: "number" } });
 			addProperty({ name: "rows", type: { _kind: "number" } });
 		});
 

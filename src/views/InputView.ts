@@ -16,18 +16,21 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
         this.inputId = this.evalContext.nextId(this.getTag());
         this.setDescription(this.type.description);
         output.printInput({ id: this.inputId }, this.data, this.type, (elt) => {
+            debugger;
             this.elt = document.getElementById(this.inputId) as HTMLInputElement;
             this.elt.oninput = (e) => this.onInput(e);
+            this.validate();
         });
     }
 
     onInput(e: Event) {
-        this.validate(this.getValue());
+        this.validate();
     }
 
     protected abstract onValidate(value: TValue);
 
-    protected validate(value: TValue) {
+    protected validate() {
+        var value: TValue = this.getValue();
         this.setValidationText(null)
         this.setValidationStatus(ValidationStatus.none);
         this.onValidate(value);
@@ -80,19 +83,19 @@ export class NumberInputView extends BaseInputView<number, NumberType> {
     getTag() { return "number-input"; }
 
     onValidate(value: number) {
-        if (typeof this.type.minimalValue === 'number' && typeof this.type.maximalValue === 'number') {
-            if (value < this.type.minimalValue || value > this.type.maximalValue) {
-                this.addValidationMessage(ValidationStatus.danger, "Should be between " + this.type.minimalValue + " and " + this.type.maximalValue);
+        if (typeof this.type.minimum === 'number' && typeof this.type.maximum === 'number') {
+            if (value < this.type.minimum || value > this.type.maximum) {
+                this.addValidationMessage(ValidationStatus.danger, "Should be between " + this.type.minimum + " and " + this.type.maximum);
             }
         }
-        else if (typeof this.type.minimalValue === 'number') {
-            if (value < this.type.minimalValue) {
-                this.addValidationMessage(ValidationStatus.danger, "Should be bigger or equal to " + this.type.minimalValue);
+        else if (typeof this.type.minimum === 'number') {
+            if (value < this.type.minimum) {
+                this.addValidationMessage(ValidationStatus.danger, "Should be bigger or equal to " + this.type.minimum);
             }
         }
-        else if (typeof this.type.maximalValue === 'number') {
-            if (value < this.type.minimalValue || value > this.type.maximalValue) {
-                this.addValidationMessage(ValidationStatus.danger, "Should be less or equal to " + this.type.maximalValue);
+        else if (typeof this.type.maximum === 'number') {
+            if (value < this.type.minimum || value > this.type.maximum) {
+                this.addValidationMessage(ValidationStatus.danger, "Should be less or equal to " + this.type.maximum);
             }
         }
     }

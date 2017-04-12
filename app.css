@@ -29,3 +29,7 @@ h1#logo {
 #draggablePanelList .panel-heading {
     cursor: move;
 }
+
+input[type="color"] {
+    padding: 3px;
+}
