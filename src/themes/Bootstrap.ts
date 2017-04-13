@@ -138,11 +138,44 @@ export class Bootstrap extends Theme {
 		var attributes: ElementAttributes = { class: this.classPrefix + options.name };
 		switch (options.name) {
 			case "object":
+				var headers: { key: string, label: string }[] = [];
+
+				output.printAsync("ul", { class: "nav nav-tabs", role: "tablist" }, "", (elt, output) => {
+					for (var h of headers) {
+						output.printHTML('<li class="nav-item">');
+						var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
+						if (h.label === "Default") this.addClass(headerAttributes, "active");
+						output.printTag('a', headerAttributes, h.label);
+						output.printHTML('</li>');
+					}
+					output.domReplace();
+				});
+
+				/*<!-- Tab panes -->*/
+				this.addClass(attributes, "tab-content");
+				output.printStartTag("div", attributes);
+				printContent({
+					addHeaderCallback: (key, label) => {
+						headers.push({ key: key, label: label });
+					}
+				});
+				output.printEndTag();
+				break;
 			case "array-buttons":
 			case "map-properties":
 			case "variant-control":
 			case "crud-update":
-			case "object-group":
+			case "property-group":
+				var id = this.evalContext.nextId("tab");
+				if (options.addHeaderCallback) {
+					options.addHeaderCallback(id, options.title);
+				}
+				this.addClass(attributes, "tab-pane");
+				if (options.title === "Default") {
+					this.addClass(attributes, "active");
+				}
+				attributes.role = "tabpanel";
+				attributes.id = id;
 				output.printStartTag("div", attributes);
 				printContent({});
 				output.printEndTag();

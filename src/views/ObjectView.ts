@@ -9,21 +9,21 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
     views: { [key: string]: AnyView } = {};
     typeByName: { [key: string]: Type } = {};
     groupByName: { [key: string]: string[] };
-    groups: string[];
+    groupNames: string[];
     build(): void {
         this.properties = (this.type.properties) || [];
         this.keys = [];
         this.groupByName = {};
-        this.groups = [];
+        this.groupNames = [];
         this.typeByName = {};
         for (var p of this.properties) {
             this.keys.push(p.name);
-            var groupName = p.group || "";
-            var group = this.groupByName[group];
+            var groupName = p.group || "Default";
+            var group = this.groupByName[groupName];
             if (!group) {
                 group = [];
                 this.groupByName[groupName] = group;
-                this.groups.push(group);
+                this.groupNames.push(groupName);
             }
             group.push(p.name);
             this.typeByName[p.name] = p.type;
@@ -34,25 +34,29 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
     internalRender(output: Output): void {
 
         output.printSection({ name: "object" }, (options) => {
-            output.printSection({ name: "object-known-properties" }, (options) => {
-                for (var group of this.groups) {
-                    output.printSection({ name: "object-group" }, (options) => {
-                        for (var key of group) {
-                            var value = this.data[key];
-
-                            this.views[key] = output.printLabelAndView({ label: key }, value, this.typeByName[key], this);
-                        }
-                    });
-                }
-            })
-            output.printSection({ name: "object-orphans" }, (options) => {
-                for (var key in this.data) {
-                    if (key === "_kind") continue;
-                    var value = this.data[key];
-                    if (this.typeByName[key] !== undefined) continue;
-                    this.views[key] = output.printLabelAndView({ label: key }, value, null, this);
-                }
-            });
+            for (var groupName of this.groupNames) {
+                var group = this.groupByName[groupName];
+                output.printSection({ addHeaderCallback: options.addHeaderCallback, name: "property-group", title: groupName }, (options) => {
+                    for (var key of group) {
+                        var value = this.data[key];
+                        this.views[key] = output.printLabelAndView({ label: key }, value, this.typeByName[key], this);
+                    }
+                });
+            }
+            var orphans = [];
+            for (var key in this.data) {
+                if (key === "_kind") continue;
+                if (this.typeByName[key] !== undefined) continue;
+                orphans.push[key];
+            }
+            if (orphans.length) {
+                output.printSection({ name: "property-group", orphans: true }, (options) => {
+                    for (var key of orphans) {
+                        var value = this.data[key];
+                        this.views[key] = output.printLabelAndView({ label: key }, value, null, this);
+                    }
+                });
+            }
         });
     }
 

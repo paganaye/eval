@@ -16,7 +16,6 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
         this.inputId = this.evalContext.nextId(this.getTag());
         this.setDescription(this.type.description);
         output.printInput({ id: this.inputId }, this.data, this.type, (elt) => {
-            debugger;
             this.elt = document.getElementById(this.inputId) as HTMLInputElement;
             this.elt.oninput = (e) => this.onInput(e);
             this.validate();
@@ -50,13 +49,15 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
         }
     }
 
-    getValue(): TValue {
+    getValueString(): string {
         if (this.elt && this.elt instanceof HTMLInputElement) {
-            return this.elt.value as any as TValue;
+            return this.elt.value;
         } else {
             throw "HTML Input " + this.inputId + " not found.";
         }
     }
+
+    abstract getValue(): TValue;
 }
 
 export class StringInputView extends BaseInputView<string, StringType> {
@@ -76,6 +77,10 @@ export class StringInputView extends BaseInputView<string, StringType> {
                 }
             }
         }
+    }
+
+    getValue(): string {
+        return this.getValueString();
     }
 }
 
@@ -99,6 +104,10 @@ export class NumberInputView extends BaseInputView<number, NumberType> {
             }
         }
     }
+
+    getValue(): number {
+        return parseInt(this.getValueString(), 10);
+    }
 }
 
 export class BooleanInputView extends BaseInputView<boolean, BooleanType> {
@@ -106,6 +115,10 @@ export class BooleanInputView extends BaseInputView<boolean, BooleanType> {
 
     onValidate(value: boolean) {
 
+    }
+
+    getValue(): boolean {
+        return !!(this.getValueString());
     }
 }
 

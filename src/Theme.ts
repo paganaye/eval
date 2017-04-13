@@ -40,6 +40,7 @@ export interface RefreshOptions {
 export type ElementAttributes = { [key: string]: string };
 
 export class ViewOptions {
+      addHeaderCallback?: (key: string, label: string) => void;
 }
 
 export class PropertyOptions extends ViewOptions {
@@ -85,6 +86,8 @@ export class GroupOptions extends ViewOptions {
 
 export class SectionOptions extends ViewOptions {
       name: string;
+      title?: string;
+      orphans?: boolean;
 }
 
 export class InputOptions extends ViewOptions {

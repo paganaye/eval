@@ -1,4 +1,3 @@
-import "jquery";
 import { EvalConsole } from "./EvalConsole";
 import { Database } from "./Database";
 import { View, AnyView } from "./View";
@@ -15,7 +14,6 @@ class App {
 	database: Database;
 	reload: number;
 	evalContext: Eval;
-
 
 	run() {
 
@@ -64,7 +62,7 @@ class App {
 		$(window).on('hashchange', () => onHashChange());
 
 		if (window.location.hash.length <= 1) {
-			window.location.hash = "update table 1";
+			window.location.hash = "update dog one";
 		} else {
 			onHashChange();
 		}
@@ -98,6 +96,7 @@ class App {
 }
 
 export var app: App;
+var $: any = (window as any).$;
 
 $(function () {
 	app = new App();
