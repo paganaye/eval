@@ -141,14 +141,18 @@ export class Bootstrap extends Theme {
 				var headers: { key: string, label: string }[] = [];
 
 				output.printAsync("ul", { class: "nav nav-tabs", role: "tablist" }, "", (elt, output) => {
-					for (var h of headers) {
-						output.printHTML('<li class="nav-item">');
-						var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
-						if (h.label === "Default") this.addClass(headerAttributes, "active");
-						output.printTag('a', headerAttributes, h.label);
-						output.printHTML('</li>');
+					if (headers.length > 1) {
+						for (var h of headers) {
+							output.printHTML('<li class="nav-item">');
+							var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
+							if (h.label === "Default") this.addClass(headerAttributes, "active");
+							output.printTag('a', headerAttributes, h.label);
+							output.printHTML('</li>');
+						}
+						output.domReplace();
+					} else {
+						elt.remove();
 					}
-					output.domReplace();
 				});
 
 				/*<!-- Tab panes -->*/
