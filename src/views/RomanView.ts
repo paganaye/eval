@@ -28,7 +28,7 @@ export class RomanView extends View<number, NumberType, ViewOptions> {
         }
     }
 
-    internalRender(output: Output): void {
+    onRender(output: Output): void {
         output.printText(this.result);
     }
 

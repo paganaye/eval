@@ -31,7 +31,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
         if (!this.data) this.data = {};
     }
 
-    internalRender(output: Output): void {
+    onRender(output: Output): void {
 
         output.printSection({ name: "object" }, (options) => {
             for (var groupName of this.groupNames) {

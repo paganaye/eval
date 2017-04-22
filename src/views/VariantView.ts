@@ -19,7 +19,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         if (!data._kind) data._kind = "string";
     }
 
-    internalRender(output: Output): void {
+    onRender(output: Output): void {
         var variantKinds: VariantKind[] = this.type.kinds;
         //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 

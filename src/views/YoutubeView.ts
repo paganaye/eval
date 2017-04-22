@@ -26,7 +26,7 @@ export class YoutubeView extends View<IYoutube, Type, ViewOptions> {
         };
     }
 
-    internalRender(output: Output): void {
+    onRender(output: Output): void {
         output.printTag("iframe", this.attributes2);
     }
 

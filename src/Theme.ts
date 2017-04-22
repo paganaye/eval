@@ -58,6 +58,7 @@ export class ArrayEntryOptions extends ViewOptions {
       label: string;
       deletable: boolean;
       frozenDynamic: boolean;
+      entriesElementId: string;
 }
 
 export class MapEntryOptions extends ViewOptions {

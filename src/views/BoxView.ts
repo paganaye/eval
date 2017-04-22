@@ -8,7 +8,7 @@ export class BoxView extends View<any, Type, ViewOptions> {
    build(): void {
    }
 
-   internalRender(output: Output): void {
+   onRender(output: Output): void {
       output.printStartTag("span", {});
       output.printText("Todo");
       output.printEndTag();

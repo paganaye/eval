@@ -10,6 +10,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
    entryType: Type;
    indexById: { [key: string]: number };
    arrayEntriesOutput: Output;
+   entriesElementId: string;
 
    build(): void {
       if (!Array.isArray(this.data)) {
@@ -18,11 +19,15 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       this.views = [];
       this.indexById = {};
       this.entryType = this.type.entryType
+      this.entriesElementId = this.evalContext.nextId("entries");
+
    }
 
-   internalRender(output: Output): void {
+   onRender(output: Output): void {
       output.printSection({ name: "array" }, (options) => {
-         output.printAsync("div", { class: "array-entries" }, "...", (elt, output) => {
+
+
+         output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...", (elt, output) => {
             //    printContent(output, { class: "gosh" });
             this.arrayEntriesOutput = output;
 
@@ -42,6 +47,50 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
             });
          });
          output.printSection({ name: "array-buttons" }, (options) => {
+
+            // output.printHTML('<nav aria-label="Page navigation">');
+            // output.printHTML('  <ul class="pagination">');
+            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">Previous</a></li>');
+            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">1</a></li>');
+            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">2</a></li>');
+            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">3</a></li>');
+            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">4</a></li>');
+            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">5</a></li>');
+            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">Next</a></li>');
+            // output.printHTML('  </ul>');
+            // output.printHTML('</nav>');
+            // output.printHTML('<table class="table">');
+            // output.printHTML('  <thead>');
+            // output.printHTML('    <tr>');
+            // output.printHTML('      <th>#</th>');
+            // output.printHTML('      <th>First Name</th>');
+            // output.printHTML('      <th>Last Name</th>');
+            // output.printHTML('      <th>Username</th>');
+            // output.printHTML('    </tr>');
+            // output.printHTML('  </thead>');
+            // output.printHTML('  <tbody>');
+            // output.printHTML('    <tr>');
+            // output.printHTML('      <th scope="row">1</th>');
+            // output.printHTML('      <td>Mark</td>');
+            // output.printHTML('      <td>Otto</td>');
+            // output.printHTML('      <td>@mdo</td>');
+            // output.printHTML('    </tr>');
+            // output.printHTML('    <tr>');
+            // output.printHTML('      <th scope="row">2</th>');
+            // output.printHTML('      <td>Jacob</td>');
+            // output.printHTML('      <td>Thornton</td>');
+            // output.printHTML('      <td>@fat</td>');
+            // output.printHTML('    </tr>');
+            // output.printHTML('    <tr>');
+            // output.printHTML('      <th scope="row">3</th>');
+            // output.printHTML('      <td>Larry</td>');
+            // output.printHTML('      <td>the Bird</td>');
+            // output.printHTML('      <td>@twitter</td>');
+            // output.printHTML('    </tr>');
+            // output.printHTML('  </tbody>');
+            // output.printHTML('</table>');
+
+
             if (this.entryType._kind == "variant") {
                var entries: EnumEntry[] = [];
                for (var entry of this.entryType.kinds) {
@@ -75,7 +124,10 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
          this.data.push(entry);
       }
       var id = this.evalContext.nextId("entry-");
-      var options: ArrayEntryOptions = { id: id, deletable: true, label: "#" + (this.views.length + 1), frozenDynamic: false };
+      var options: ArrayEntryOptions = {
+         id: id, deletable: true, label: "#" + (this.views.length + 1), frozenDynamic: false,
+         entriesElementId: this.entriesElementId
+      };
       if (kind) options.frozenDynamic = true;
       var view = this.arrayEntriesOutput.printArrayEntry(this, options, entry, this.entryType);
 

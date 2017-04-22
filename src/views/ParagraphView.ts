@@ -22,7 +22,7 @@ export class ParagraphView extends View<IParagraph, Type, ViewOptions> {
         }
     }
 
-    internalRender(output: Output): void {
+    onRender(output: Output): void {
         this.renderParagraph(output, this.data, 1);
     }
 

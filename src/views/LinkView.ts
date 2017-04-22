@@ -7,7 +7,7 @@ import { ViewOptions } from "../Theme";
 export class LinkView extends View<any, ObjectType, ViewOptions> {
    tableName: string = "dog";
 
-   internalRender(output: Output): void {
+   onRender(output: Output): void {
       //  for simplicity we make the id of the input element identical to the id of the view.
       if (this.data == null) this.data = "";
       console.log("inputView::render", this.getId(), this.data, this.type);

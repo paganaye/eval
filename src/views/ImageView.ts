@@ -22,7 +22,7 @@ export class ImageView extends View<ImageSource, any, ViewOptions> {
             : data.src);
     }
 
-    internalRender(output: Output): void {
+    onRender(output: Output): void {
         output.printTag("img", {});
     }
 

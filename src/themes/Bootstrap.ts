@@ -71,8 +71,14 @@ export class Bootstrap extends Theme {
 	printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
 		output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
 		this.addClass({}, "card-header");
+		this.addClass({}, "collapsed");
 
-		output.printTag("h4", { class: "sort-handle" }, (output) => {
+		var id = this.evalContext.nextId("div");
+		var accordionId = options.entriesElementId
+		output.printTag("a", {
+			href: "#" + id, class: "sort-handle collabsible-title", "data-toggle": "collapse",
+			"data-parent": "#" + accordionId
+		}, (output) => {
 			output.printText(options.label);
 			if (options.deletable) {
 				output.printButton({ buttonText: "x", class: "close" }, (ev: Event) => {
@@ -81,8 +87,7 @@ export class Bootstrap extends Theme {
 				});
 			}
 		});
-
-		output.printStartTag("div", { class: "card-block" });
+		output.printStartTag("div", { class: "card-block collapse", id: id });
 
 		var innerView = this.evalContext.instantiate(data, type, arrayView, output.isEditMode(), {});
 		innerView.render(output);
@@ -138,6 +143,10 @@ export class Bootstrap extends Theme {
 		var attributes: ElementAttributes = { class: this.classPrefix + options.name };
 		switch (options.name) {
 			case "object":
+				// output.printStartTag("div", {});
+				// output.printHTML("...hi...")
+				// output.printEndTag();
+				output.printStartTag("div", { class: "object-body" });
 				var headers: { key: string, label: string }[] = [];
 
 				output.printAsync("ul", { class: "nav nav-tabs", role: "tablist" }, "", (elt, output) => {
@@ -163,6 +172,7 @@ export class Bootstrap extends Theme {
 						headers.push({ key: key, label: label });
 					}
 				});
+				output.printEndTag();
 				output.printEndTag();
 				break;
 			case "array-buttons":

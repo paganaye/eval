@@ -16,7 +16,7 @@ export class JSONView extends View<any, any, ViewOptions> {
       }
    }
 
-   internalRender(output: Output): void {
+   onRender(output: Output): void {
       output.printStartTag("span", {});
       output.printText(this.text);
       output.printEndTag();

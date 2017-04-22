@@ -9,7 +9,7 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     protected type: TType; // stored type
     public options: TViewOptions; // runtime extra stuff
     private readonly id: string;
-    protected abstract internalRender(output: Output): void;
+    protected abstract onRender(output: Output): void;
     abstract getValue(): TValue;
     private rendered = false
 
@@ -23,7 +23,7 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends View
     }
 
     public render(output: Output): void {
-        this.internalRender(output);
+        this.onRender(output);
         this.rendered = true;
     }
 
