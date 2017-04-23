@@ -22,6 +22,11 @@ Then we can edit our first user
         holidayLeft 25
     
 
+What next?
+
+We need an array of requests. This doesn't exist yet.
+
+
 
 
 

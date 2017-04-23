@@ -116,7 +116,7 @@ export class Eval {
 		this.variantKinds = [];
 
 		this.addType("object", null, (type) => (type as ObjectType).properties = []);
-		this.addType("array", null);
+		//this.addType("array", null);
 		this.addType("variant", null);
 		this.addType("string", "String", (type, addProperty) => {
 			type.htmlType = "text";
@@ -152,17 +152,27 @@ export class Eval {
 		this.addType("range", "Range");
 		this.addType("password", "Password");
 		this.addType("link", "Link", (type) => type.htmlType = "table");
-		this.addType("paragraph", "Paragraphs", (type) => {
-			type.editView = "object";
-			(type as ObjectType).properties = [
-				{ name: "title", type: { _kind: "string" } },
-				{ name: "content", type: { _kind: "string" } },
-				{
-					name: "children",
-					type: { _kind: "array", entryType: type }
-				}
-			];
-			return
+		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {
+		// 	type.editView = "object";
+		// 	(type as ObjectType).properties = [
+		// 		{ name: "title", type: { _kind: "string" } },
+		// 		{ name: "content", type: { _kind: "string" } },
+		// 		{
+		// 			name: "children",
+		// 			type: { _kind: "array", entryType: type }
+		// 		}
+		// 	];
+		// });
+		this.addType("array", "Array", (type, addProperty) => {
+			type.editView = "array";
+			var arrayType = (type as ArrayType<object>);
+			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
+			entryType._kind = "object";
+			addProperty({ name: "entryType", type: { _kind: "array", entryType: this.getNewFieldDefinition() } });
+			addProperty({ group: "validation", name: "minimumCount", type: { _kind: "number" } });
+			addProperty({ group: "validation", name: "maximumCount", type: { _kind: "number" } });
+			addProperty({ group: "validation", name: "canAddOrDelete", type: { _kind: "boolean" } });
+			addProperty({ group: "validation", name: "canReorder", type: { _kind: "boolean" } });
 		});
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
@@ -280,6 +290,21 @@ export class Eval {
 		return view;
 	}
 
+	getNewFieldDefinition(): ObjectType {
+		return {
+			_kind: "object",
+			properties: [
+				{ name: "name", type: { _kind: "string" } },
+				{
+					name: "type", type: {
+						_kind: "variant",
+						kinds: this.variantKinds
+					}
+				},
+				{ group: "advanced", name: "group", type: { _kind: "string", description: "Each group is displayed on its own tab." } }
+			]
+		};
+	}
 
 
 	getTableType(typeName: string, callback: (type: Type) => void): void {
@@ -300,23 +325,9 @@ export class Eval {
 					};
 					break;
 				case "table":
-					var fieldDefinition: ObjectType = {
-						_kind: "object",
-						properties: [
-							{ name: "name", type: { _kind: "string" } },
-							{
-								name: "type", type: {
-									_kind: "variant",
-									kinds: this.variantKinds
-								}
-							},
-							{ group: "advanced", name: "group", type: { _kind: "string", description: "Each group is displayed on its own tab." } }
-						]
-					};
-
 					var fieldsDefinition: ArrayType<any> = {
 						_kind: "array",
-						entryType: fieldDefinition
+						entryType: this.getNewFieldDefinition()
 					};
 
 					var tableDefinition: ObjectType = {

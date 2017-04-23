@@ -56,30 +56,32 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                 if (this.typeByName[key] !== undefined) continue;
                 orphans.push[key];
             }
-            output.printSection({ name: "property-groups" }, (options) => {
-                var first = true;
-                for (var groupName of this.groupNames) {
-                    var group = this.groupByName[groupName];
-                    output.printSection({
-                        addHeaderCallback: options.addHeaderCallback, name: "property-group",
-                        active: first, title: groupName
-                    }, (options) => {
-                        for (var key of group) {
-                            var value = this.data[key];
-                            this.views[key] = output.printLabelAndView({ label: key }, value, this.typeByName[key], this);
-                        }
-                    });
-                    if (first) first = false;
-                }
-                if (orphans.length) {
-                    output.printSection({ name: "property-group", orphans: true }, (options) => {
-                        for (var key of orphans) {
-                            var value = this.data[key];
-                            this.views[key] = output.printLabelAndView({ label: key }, value, null, this);
-                        }
-                    });
-                }
-            });
+            if (this.groupNames.length || orphans.length) {
+                output.printSection({ name: "property-groups" }, (options) => {
+                    var first = true;
+                    for (var groupName of this.groupNames) {
+                        var group = this.groupByName[groupName];
+                        output.printSection({
+                            addHeaderCallback: options.addHeaderCallback, name: "property-group",
+                            active: first, title: groupName
+                        }, (options) => {
+                            for (var key of group) {
+                                var value = this.data[key];
+                                this.views[key] = output.printLabelAndView({ label: key }, value, this.typeByName[key], this);
+                            }
+                        });
+                        if (first) first = false;
+                    }
+                    if (orphans.length) {
+                        output.printSection({ name: "property-group", orphans: true }, (options) => {
+                            for (var key of orphans) {
+                                var value = this.data[key];
+                                this.views[key] = output.printLabelAndView({ label: key }, value, null, this);
+                            }
+                        });
+                    }
+                });
+            }
         });
     }
 
