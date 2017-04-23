@@ -32,8 +32,10 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
             this.arrayEntriesOutput = output;
 
             if (Array.isArray(this.data)) {
+               var firstActive = true;
                for (var index = 0; index < this.data.length; index++) {
-                  this.addOne(index, null)
+                  this.addOne(index, null, firstActive);
+                  firstActive = false;
                }
             }
 
@@ -100,12 +102,12 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
                   buttonText: "Add",
                   entries: entries
                }, (ev, str) => {
-                  this.addOne(null, str);
+                  this.addOne(null, str, true);
                   this.arrayEntriesOutput.domAppend();
                });
             } else {
                output.printButton({ buttonText: "+" }, (ev: Event) => {
-                  this.addOne(null, null);
+                  this.addOne(null, null, true);
                   this.arrayEntriesOutput.domAppend();
                });
             }
@@ -114,7 +116,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
 
    }
 
-   addOne(index: number, kind: string) {
+   addOne(index: number, kind: string, active: boolean) {
       if (typeof index === "number") {
          var entry = this.data[index];
       } else {
@@ -123,10 +125,11 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
          if (kind) (entry as VariantObject)._kind = kind;
          this.data.push(entry);
       }
-      var id = this.evalContext.nextId("entry-");
+      var id = this.evalContext.nextId("entry");
       var options: ArrayEntryOptions = {
          id: id, deletable: true, label: "#" + (this.views.length + 1), frozenDynamic: false,
-         entriesElementId: this.entriesElementId
+         entriesElementId: this.entriesElementId,
+         active: active
       };
       if (kind) options.frozenDynamic = true;
       var view = this.arrayEntriesOutput.printArrayEntry(this, options, entry, this.entryType);
@@ -146,7 +149,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
          var value: any;
          if (view) {
             value = view.getValue();
-         } else value = this.data[index];         
+         } else value = this.data[index];
          result.push(this.evalContext.fixValue(value));
       }
       return result;

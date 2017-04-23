@@ -73,10 +73,9 @@ export class Bootstrap extends Theme {
 		this.addClass({}, "card-header");
 		this.addClass({}, "collapsed");
 
-		var id = this.evalContext.nextId("div");
 		var accordionId = options.entriesElementId
 		output.printTag("a", {
-			href: "#" + id, class: "sort-handle collabsible-title", "data-toggle": "collapse",
+			href: "#" + options.id + "-content", class: "sort-handle collabsible-title", "data-toggle": "collapse",
 			"data-parent": "#" + accordionId
 		}, (output) => {
 			output.printText(options.label);
@@ -87,12 +86,22 @@ export class Bootstrap extends Theme {
 				});
 			}
 		});
-		output.printStartTag("div", { class: "card-block collapse", id: id });
-
+		var contentAttributes = { class: "card-block collapse", id: options.id + "-content" };
 		var innerView = this.evalContext.instantiate(data, type, arrayView, output.isEditMode(), {});
-		innerView.render(output);
 
-		output.printEndTag(); // card-block
+		output.printAsync("div", contentAttributes, "...", (elt, output) => {
+			var $: any = window["$"];
+			innerView.render(output);
+			output.domReplace();
+			if (options.active) {
+				//this.addClass(contentAttributes, "show");
+				$(elt).collapse("show");
+				$(elt).siblings().collapse("hide");
+			}
+		})
+		// output.printStartTag("div", contentAttributes);
+		//output.printEndTag(); // card-block
+
 		output.printEndTag(); // card
 
 		return innerView;

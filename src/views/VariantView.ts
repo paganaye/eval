@@ -16,7 +16,9 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
             this.entriesByKey[e.key] = e;
         }
         var data = this.data;
-        this.kind = (typeof data === "object" ? data._kind || "object" : typeof (data));
+        if (data === null) data = { _kind: "object" };
+        this.kind = (typeof data === "object" ? data._kind || "object" : typeof data);
+        if (!this.entriesByKey[this.kind]) this.kind = this.type.kinds[0].key;
     }
 
     onRender(output: Output): void {
@@ -30,12 +32,12 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         //     options.label = this.data._kind;
         // } else {
         //     options.printLabel = (output) => {
-        //         var id: string = this.evalContext.nextId("select-");
+        //         var id: string = this.evalContext.nextId("select");
         //         output.printSelect({ entries: variantKinds, id: id }, this.data._kind, this.type,
         //             (kind) => this.selectionChanged(kind));
         //     };
         // }
-        var id: string = this.evalContext.nextId("select-");
+        var id: string = this.evalContext.nextId("select");
 
         output.printSection({ name: "variant-select-container" }, (options) => {
             output.printSelect({ entries: variantKinds, id: id }, this.kind, this.type,
