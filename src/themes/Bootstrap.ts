@@ -142,7 +142,7 @@ export class Bootstrap extends Theme {
 		this.addClass({}, options.name);
 		var attributes: ElementAttributes = { class: this.classPrefix + options.name };
 		switch (options.name) {
-			case "object":
+			case "property-groups":
 				// output.printStartTag("div", {});
 				// output.printHTML("...hi...")
 				// output.printEndTag();
@@ -151,10 +151,14 @@ export class Bootstrap extends Theme {
 
 				output.printAsync("ul", { class: "nav nav-tabs", role: "tablist" }, "", (elt, output) => {
 					if (headers.length > 1) {
+						var first = true;
 						for (var h of headers) {
 							output.printHTML('<li class="nav-item">');
 							var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
-							if (h.label === "Default") this.addClass(headerAttributes, "active");
+							if (first) {
+								this.addClass(headerAttributes, "active");
+								first = false;
+							}
 							output.printTag('a', headerAttributes, h.label);
 							output.printHTML('</li>');
 						}
@@ -179,20 +183,31 @@ export class Bootstrap extends Theme {
 			case "map-properties":
 			case "variant-control":
 			case "crud-update":
-			case "property-group":
-				var id = this.evalContext.nextId("tab");
-				if (options.addHeaderCallback) {
-					options.addHeaderCallback(id, options.title);
-				}
-				this.addClass(attributes, "tab-pane");
-				if (options.title === "Default") {
-					this.addClass(attributes, "active");
-				}
-				attributes.role = "tabpanel";
-				attributes.id = id;
 				output.printStartTag("div", attributes);
 				printContent({});
 				output.printEndTag();
+				break;
+			case "property-group":
+				if (options.title) {
+					var id = this.evalContext.nextId("tab");
+					if (options.addHeaderCallback) {
+						options.addHeaderCallback(id, options.title);
+					}
+					this.addClass(attributes, "tab-pane");
+					if (options.active) {
+						this.addClass(attributes, "active");
+					}
+					attributes.role = "tabpanel";
+					attributes.id = id;
+					output.printStartTag("div", attributes);
+					printContent({});
+					output.printEndTag();
+				} else {
+					output.printStartTag("div", attributes);
+					printContent({});
+					output.printEndTag();
+					output.printHTML("<hr/>");
+				}
 				break;
 
 			case "array-entries":

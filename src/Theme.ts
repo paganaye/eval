@@ -89,6 +89,7 @@ export class SectionOptions extends ViewOptions {
       name: string;
       title?: string;
       orphans?: boolean;
+      active?: boolean;
 }
 
 export class InputOptions extends ViewOptions {

@@ -368,6 +368,7 @@ export class Eval {
 		themeoutput.printHTML(themeStart);
 		this.theme.initialize(themeoutput);
 		themeoutput.printHTML(themeEnd);
+		var $ = window['$'];
 		$('head').append(themeoutput.toString());
 	}
 }
