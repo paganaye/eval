@@ -4,7 +4,9 @@ import { Type, ObjectType, Property } from "../Types";
 import { ViewOptions } from "../Theme";
 
 export class ObjectView extends View<Object, ObjectType, ViewOptions> {
-    keys: string[];
+    allKeys: string[];
+    typedKeys: string[];
+    untypedKeys: string[];
     properties: Property[];
     views: { [key: string]: AnyView } = {};
     typeByName: { [key: string]: Type } = {};
@@ -14,14 +16,17 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
 
     build(): void {
         this.properties = (this.type.properties) || [];
-        this.keys = [];
+        this.allKeys = [];
+        this.typedKeys = [];
+        this.untypedKeys = [];
         this.groupByName = {};
         this.groupNames = [];
         this.typeByName = {};
         this.mainProperties = [];
 
         for (var p of this.properties) {
-            this.keys.push(p.name);
+            this.allKeys.push(p.name);
+            this.typedKeys.push(p.name);
             var groupName = p.group;
             if (groupName) {
                 var group = this.groupByName[groupName];
@@ -37,6 +42,13 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
             this.typeByName[p.name] = p.type;
         }
         if (!this.data) this.data = {};
+
+        for (var key in this.data) {
+            if (key === "_kind") continue;
+            if (this.typeByName[key] !== undefined) continue;
+            this.allKeys.push(key);
+            this.untypedKeys.push(key);
+        }
     }
 
     onRender(output: Output): void {
@@ -50,13 +62,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                     }
                 });
             }
-            var orphans = [];
-            for (var key in this.data) {
-                if (key === "_kind") continue;
-                if (this.typeByName[key] !== undefined) continue;
-                orphans.push(key);
-            }
-            if (this.groupNames.length || orphans.length) {
+            if (this.groupNames.length || this.untypedKeys.length) {
                 output.printSection({ name: "property-groups" }, (options) => {
                     var first = true;
                     for (var groupName of this.groupNames) {
@@ -72,9 +78,9 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                         });
                         if (first) first = false;
                     }
-                    if (orphans.length) {
+                    if (this.untypedKeys.length) {
                         output.printSection({ name: "property-group", orphans: true }, (options) => {
-                            for (var key of orphans) {
+                            for (var key of this.untypedKeys) {
                                 var value = this.data[key];
                                 this.views[key] = output.printLabelAndView({ label: key }, value, null, this);
                             }
@@ -88,7 +94,8 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
     getValue(): any {
         var result = {};
         var value: any;
-        for (var key of this.keys) {
+        for (var key of this.allKeys) {
+            // and we overwrite with whatever was edited.
             var view = this.views[key];
             if (view) {
                 value = view.getValue();
