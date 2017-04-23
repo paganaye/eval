@@ -85,11 +85,13 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
 
     getValue(): any {
         var result = {};
+        var value: any;
         for (var key of this.keys) {
             var view = this.views[key];
             if (view) {
-                result[key] = view.getValue();
-            } else result[key] = this.data[key];
+                value = view.getValue();
+            } else value = this.data[key];
+            result[key] = this.evalContext.fixValue(value);
         }
         return result;
     }

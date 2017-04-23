@@ -143,9 +143,11 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       for (var key of entryKeys) {
          var index = this.indexById[key];
          var view = this.views[index];
+         var value: any;
          if (view) {
-            result.push(view.getValue());
-         } else result.push(this.data[index]);
+            value = view.getValue();
+         } else value = this.data[index];         
+         result.push(this.evalContext.fixValue(value));
       }
       return result;
    }

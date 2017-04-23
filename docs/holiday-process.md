@@ -66,7 +66,9 @@ We'll detail about that as we go along.
 # Think again
 This should be the "wiki" of web-app.
 
-`define table HolidayRequest ( DateFrom:"date"  DateTo:"date" NbDays:"integer" status:("enum" ))
+`define table HolidayRequest ( DateFrom:"date"  DateTo:"date"  
+NbDays:"integer" status:("enum" ))`
+
 `define field holidayRequest.status`
 
 `define field user.holidaysLeft`

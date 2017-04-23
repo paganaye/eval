@@ -121,16 +121,16 @@ export class Eval {
 		this.addType("string", "String", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
-			addProperty({ group:"display", name: "cols", type: { _kind: "number" } });
-			addProperty({ group:"display", name: "rows", type: { _kind: "number" } });
-			addProperty({ group:"validation", name: "validation", type: this.arrayOfValidationRegexp });
+			addProperty({ group: "display", name: "cols", type: { _kind: "number" } });
+			addProperty({ group: "display", name: "rows", type: { _kind: "number" } });
+			addProperty({ group: "validation", name: "validation", type: this.arrayOfValidationRegexp });
 		});
 		this.addType("number", "Number", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
-			addProperty({ group:"display", name: "rows", type: { _kind: "number" } });
-			addProperty({ group:"validation", name: "minimum", type: { _kind: "number" } });
-			addProperty({ group:"validation", name: "maximum", type: { _kind: "number" } });
+			addProperty({ group: "display", name: "rows", type: { _kind: "number" } });
+			addProperty({ group: "validation", name: "minimum", type: { _kind: "number" } });
+			addProperty({ group: "validation", name: "maximum", type: { _kind: "number" } });
 		});
 
 		this.addType("boolean", "Boolean", (type) => type.htmlType = "checkbox");
@@ -367,6 +367,18 @@ export class Eval {
 		themeoutput.printHTML(themeEnd);
 		var $ = window['$'];
 		$('head').append(themeoutput.toString());
+	}
+
+	public fixValue(value: any): any {
+		switch (typeof (value)) {
+			case "number":
+				if (isNaN(value)) return null;
+				break;
+			default:
+				if (!value) return null;
+				break;
+		}
+		return value;
 	}
 }
 
