@@ -54,7 +54,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
             for (var key in this.data) {
                 if (key === "_kind") continue;
                 if (this.typeByName[key] !== undefined) continue;
-                orphans.push[key];
+                orphans.push(key);
             }
             if (this.groupNames.length || orphans.length) {
                 output.printSection({ name: "property-groups" }, (options) => {

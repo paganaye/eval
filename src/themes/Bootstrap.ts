@@ -230,6 +230,10 @@ export class Bootstrap extends Theme {
 		}
 	}
 
+	inputTypes = {
+		boolean: "checkbox"
+	}
+
 	htmlInputType = {
 		"button": "Defines a clickable button (mostly used with a JavaScript to activate a script)",
 		"checkbox": "Defines a checkbox",
@@ -262,9 +266,15 @@ export class Bootstrap extends Theme {
 			attributes.readonly = "readonly";
 		}
 		attributes.id = options.id;
-		attributes.type = (this.htmlInputType[type._kind])
-			? type._kind : "text";
 
+		attributes.type = this.inputTypes[type._kind] ||
+			(this.htmlInputType[type._kind] ? type._kind : "text");
+		if (attributes.type === "checkbox" && data) {
+			attributes.checked = "checked";
+		}
+		// if (typeof data !== "string") {
+		// 	attributes.value = JSON.stringify(data);
+		// }
 		output.printAsync("input", attributes, "", (elt, output) => {
 			callback(elt as HTMLInputElement);
 		});

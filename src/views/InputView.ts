@@ -14,7 +14,8 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
         this.kind = (this.type && this.type._kind) || "string";
         this.inputId = this.evalContext.nextId(this.getTag());
         this.setDescription(this.type.description);
-        output.printInput({ id: this.inputId }, this.data, this.type, (elt) => {
+        var dataType = this.type;
+        output.printInput({ id: this.inputId }, this.data, dataType, (elt) => {
             this.elt = document.getElementById(this.inputId) as HTMLInputElement;
             this.elt.oninput = (e) => this.onInput(e);
             this.validate();
