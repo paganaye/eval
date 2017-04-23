@@ -4,9 +4,9 @@ I have made some progress on the JSON display area.
 
 I am wondering how hard it would be to make a holiday request website using the current framework and fix as I go along.
 
-First I need users.
+First I need employees.
 
-    #update table user
+    #update table employees
         name string
         holidayUsed number defaultValue 0
         holidayPending number defaultValue 0

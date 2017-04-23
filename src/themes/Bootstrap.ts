@@ -188,6 +188,14 @@ export class Bootstrap extends Theme {
 				printContent({});
 				output.printEndTag();
 				break;
+
+			case "variant-select-container":
+				this.addClass(attributes, "form-group");
+				output.printStartTag("div", attributes);
+				printContent({});
+				output.printEndTag();
+				break;
+
 			case "property-group":
 				if (options.title) {
 					var id = this.evalContext.nextId("tab");
