@@ -324,6 +324,17 @@ export class Eval {
 						]
 					};
 					break;
+				case "lenient":
+					type = {
+						_kind: "variant",
+						kinds: [
+							{ key: "number", type: { _kind: "number" } },
+							{ key: "boolean", type: { _kind: "boolean" } },
+							{ key: "string", type: { _kind: "string" } },
+							{ key: "object", type: { _kind: "object", properties: [] } }
+						]
+					}
+					break;
 				case "table":
 					var fieldsDefinition: ArrayType<any> = {
 						_kind: "array",
