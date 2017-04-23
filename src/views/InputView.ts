@@ -11,7 +11,6 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
 
     onRender(output: Output): void {
         if (this.data == null) this.data = "" as any;
-        console.log("inputView::render", this.getId(), this.data, this.type);
         this.kind = (this.type && this.type._kind) || "string";
         this.inputId = this.evalContext.nextId(this.getTag());
         this.setDescription(this.type.description);

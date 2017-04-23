@@ -182,6 +182,7 @@ export class Bootstrap extends Theme {
 			case "array-buttons":
 			case "map-properties":
 			case "variant-control":
+			case "object-properties":
 			case "crud-update":
 				output.printStartTag("div", attributes);
 				printContent({});
@@ -210,11 +211,11 @@ export class Bootstrap extends Theme {
 				}
 				break;
 
-			case "array-entries":
-			case "nodiv":
+			// case "array-entries":
+			// case "nodiv":
 			case "array":
-			case "object-known-properties":
-			case "object-orphans":
+			// case "object-orphans":
+			case "object":
 				// no tag for those but we pass the options along
 				printContent(options);
 				break;
