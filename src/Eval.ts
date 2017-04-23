@@ -121,16 +121,16 @@ export class Eval {
 		this.addType("string", "String", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
-			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ name: "cols", type: { _kind: "number" } });
-			addProperty({ name: "rows", type: { _kind: "number" } });
+			addProperty({ group:"display", name: "cols", type: { _kind: "number" } });
+			addProperty({ group:"display", name: "rows", type: { _kind: "number" } });
+			addProperty({ group:"validation", name: "validation", type: this.arrayOfValidationRegexp });
 		});
 		this.addType("number", "Number", (type, addProperty) => {
 			type.htmlType = "text";
 			addProperty({ name: "defaultValue", type: { _kind: "string" } });
-			addProperty({ name: "minimum", type: { _kind: "number" } });
-			addProperty({ name: "maximum", type: { _kind: "number" } });
-			addProperty({ name: "rows", type: { _kind: "number" } });
+			addProperty({ group:"display", name: "rows", type: { _kind: "number" } });
+			addProperty({ group:"validation", name: "minimum", type: { _kind: "number" } });
+			addProperty({ group:"validation", name: "maximum", type: { _kind: "number" } });
 		});
 
 		this.addType("boolean", "Boolean", (type) => type.htmlType = "checkbox");
@@ -198,9 +198,6 @@ export class Eval {
 	nextId(prefix: string) {
 		var counter = this.idCounter[prefix] = (this.idCounter[prefix] || 0) + 1;
 		var result = prefix + counter;
-		if (result == "div2111") {
-			debugger;
-		}
 		return result;
 	}
 
@@ -306,14 +303,14 @@ export class Eval {
 					var fieldDefinition: ObjectType = {
 						_kind: "object",
 						properties: [
-							{ name: "group", type: { _kind: "string", description: "Each group is displayed on its own tab." } },
 							{ name: "name", type: { _kind: "string" } },
 							{
 								name: "type", type: {
 									_kind: "variant",
 									kinds: this.variantKinds
 								}
-							}
+							},
+							{ group: "advanced", name: "group", type: { _kind: "string", description: "Each group is displayed on its own tab." } }
 						]
 					};
 

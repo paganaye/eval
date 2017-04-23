@@ -43,13 +43,18 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
 
         output.printSection({ name: "object" }, (options) => {
             if (this.mainProperties.length) {
-                debugger;
-                output.printSection({ addHeaderCallback: options.addHeaderCallback, name: "opbject-properties" }, (options) => {
+                output.printSection({ addHeaderCallback: options.addHeaderCallback, name: "object-properties" }, (options) => {
                     for (var key of this.mainProperties) {
                         var value = this.data[key];
                         this.views[key] = output.printLabelAndView({ label: key }, value, this.typeByName[key], this);
                     }
                 });
+            }
+            var orphans = [];
+            for (var key in this.data) {
+                if (key === "_kind") continue;
+                if (this.typeByName[key] !== undefined) continue;
+                orphans.push[key];
             }
             output.printSection({ name: "property-groups" }, (options) => {
                 var first = true;
@@ -65,12 +70,6 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                         }
                     });
                     if (first) first = false;
-                }
-                var orphans = [];
-                for (var key in this.data) {
-                    if (key === "_kind") continue;
-                    if (this.typeByName[key] !== undefined) continue;
-                    orphans.push[key];
                 }
                 if (orphans.length) {
                     output.printSection({ name: "property-group", orphans: true }, (options) => {
