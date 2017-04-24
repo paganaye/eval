@@ -202,7 +202,7 @@ export class Eval {
 				key: key,
 				label: label,
 				group: group,
-				properties: properties
+				type: { _kind: "object", properties: properties }
 			}
 			this.variantKinds.push(variantKind);
 		}
@@ -341,10 +341,10 @@ export class Eval {
 					type = {
 						_kind: "variant",
 						kinds: [
-							{ key: "number" },
-							{ key: "boolean" },
-							{ key: "string" },
-							{ key: "object" }
+							{ key: "number", type: { _kind: "number" } },
+							{ key: "boolean", type: { _kind: "boolean" } },
+							{ key: "string", type: { _kind: "string" } },
+							{ key: "object", type: { _kind: "object", properties: [] } }
 						]
 					}
 					break;

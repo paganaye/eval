@@ -44,7 +44,7 @@ export interface StringType extends TypeDefinition<string> {
 
 export interface ValidationRegexp {
    regexp: string;
-   message: string;   
+   message: string;
 }
 
 export interface BooleanType extends TypeDefinition<boolean> {
@@ -110,7 +110,7 @@ export interface VariantKind extends EnumEntry {
    group?: string;
    key: string;
    label?: string;
-   properties?: Property[]
+   type?: Type;
 }
 
 export interface VariantObject {

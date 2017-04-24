@@ -55,7 +55,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         var entry = this.entriesByKey[kind];
         if (entry) {
             var innerView = this.evalContext.instantiate(this.data,
-                { _kind: "object", properties: entry.properties },
+                entry.type,
                 this, this.targetOutput.isEditMode(), {});
             innerView.render(this.targetOutput);
             this.innerView = innerView;
