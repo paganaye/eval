@@ -116,43 +116,58 @@ export class Eval {
 
 		this.variantKinds = [];
 
-		this.addType("object", null, (type) => (type as ObjectType).properties = []);
+		this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
 		//this.addType("array", null);
-		this.addType("variant", null);
-		this.addType("string", "String", (type, addProperty) => {
+		this.addType("variant", null, null);
+		this.addType("string", "standard", "String", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "string", tab: "value" } });
 			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
 			addProperty({ name: "cols", type: { _kind: "number", tab: "display" } });
 			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
-		this.addType("number", "Number", (type, addProperty) => {
+		this.addType("number", "standard", "Number", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "number", tab: "value" } });
 			addProperty({ name: "minimum", type: { _kind: "number", tab: "value" } });
 			addProperty({ name: "maximum", type: { _kind: "number", tab: "value" } });
 			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
 
-		this.addType("boolean", "Boolean", (type, addProperty) => {
+		this.addType("boolean", "standard", "Boolean", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "boolean", tab: "value" } });
 		});
-		this.addType("select", "Select", (type, addProperty) => {
+
+		this.addType("color", "html5", "Color");
+		this.addType("date", "html5", "Date");
+		this.addType("datetime", "html5", "Date and time");
+		this.addType("month", "html5", "Month and Year");
+		this.addType("password", "html5", "Password");
+		this.addType("range", "html5", "Range");
+		this.addType("tel", "html5", "Telephone number");
+		this.addType("time", "html5", "Time");
+		this.addType("url", "html5", "URL");
+		this.addType("week", "html5", "Week");
+
+		this.addType("select", "advanced", "Select", (type, addProperty) => {
 			(type as EnumType).entries = [];
 			addProperty({ name: "entries", type: this.arrayOfEnum });
 		});
-		this.addType("category", "Category", (type, addProperty) => {
+
+		this.addType("array", "advanced", "Array", (type, addProperty) => {
+			type.editView = "array";
+			var arrayType = (type as ArrayType<object>);
+			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
+			entryType._kind = "object";
+			addProperty({ name: "entryType", type: { _kind: "array", entryType: this.getNewFieldDefinition() } });
+			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "values" } });
+			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "values" } });
+			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "values" } });
+			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "values" } });
+		});
+
+		this.addType("category", "wiki", "Category", (type, addProperty) => {
 			addProperty({ name: "categoryName", type: { _kind: "string" } });
 		});
-		this.addType("tel", "Telephone number");
-		this.addType("url", "URL");
-		this.addType("datetime", "Date and time");
-		this.addType("date", "Date");
-		this.addType("time", "Time");
-		this.addType("month", "Month and Year");
-		this.addType("week", "Week");
-		this.addType("color", "Color");
-		this.addType("range", "Range");
-		this.addType("password", "Password");
-		this.addType("link", "Link", (type) => {
+		this.addType("link", "wiki", "Link", (type) => {
 
 		});
 		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {
@@ -166,23 +181,12 @@ export class Eval {
 		// 		}
 		// 	];
 		// });
-		this.addType("array", "Array", (type, addProperty) => {
-			type.editView = "array";
-			var arrayType = (type as ArrayType<object>);
-			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
-			entryType._kind = "object";
-			addProperty({ name: "entryType", type: { _kind: "array", entryType: this.getNewFieldDefinition() } });
-			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "values" } });
-			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "values" } });
-			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "values" } });
-			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "values" } });
-		});
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
 
 	}
 
-	addType(key: string, label: string, typeCallback?: (type: Type, addProperty: (property: Property) => void) => void): void {
+	addType(key: string, group: string, label: string, typeCallback?: (type: Type, addProperty: (property: Property) => void) => void): void {
 
 		var type = { _kind: key, editView: key, printView: key } as Type;
 		if (this.types[key]) {
@@ -197,6 +201,7 @@ export class Eval {
 			var variantKind: VariantKind = {
 				key: key,
 				label: label,
+				group: group,
 				properties: properties
 			}
 			this.variantKinds.push(variantKind);
