@@ -224,7 +224,6 @@ export class Bootstrap extends Theme {
 					output.printStartTag("div", attributes);
 					printContent({});
 					output.printEndTag();
-					output.printHTML("<hr/>");
 				}
 				break;
 

@@ -7,6 +7,7 @@ export interface TypeDefinition<T> {
    printView?: string;
    mandatory?: boolean;
    description?: string;
+   tab?: string;
 }
 
 export interface ValidationResult {
@@ -54,7 +55,6 @@ export interface BooleanType extends TypeDefinition<boolean> {
 export interface Property {
    name: string;
    type: Type;
-   group?: string;
 }
 
 

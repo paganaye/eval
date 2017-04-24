@@ -27,7 +27,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
         for (var p of this.properties) {
             this.allKeys.push(p.name);
             this.typedKeys.push(p.name);
-            var groupName = p.group;
+            var groupName = p.type.tab;
             if (groupName) {
                 var group = this.groupByName[groupName];
                 if (!group) {

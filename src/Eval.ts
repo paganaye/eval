@@ -89,7 +89,8 @@ export class Eval {
 				{ name: "regexp", type: { _kind: "string" } },
 				{ name: "message", type: { _kind: "string" } }
 			]
-		}
+		},
+		tab: "value"
 	};
 
 
@@ -119,20 +120,20 @@ export class Eval {
 		//this.addType("array", null);
 		this.addType("variant", null);
 		this.addType("string", "String", (type, addProperty) => {
-			addProperty({ group: "value", name: "defaultValue", type: { _kind: "string" } });
-			addProperty({ group: "value", name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ group: "display", name: "cols", type: { _kind: "number" } });
-			addProperty({ group: "display", name: "rows", type: { _kind: "number" } });
+			addProperty({ name: "defaultValue", type: { _kind: "string", tab: "value" } });
+			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
+			addProperty({ name: "cols", type: { _kind: "number", tab: "display" } });
+			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
 		this.addType("number", "Number", (type, addProperty) => {
-			addProperty({ group: "value", name: "defaultValue", type: { _kind: "number" } });
-			addProperty({ group: "value", name: "minimum", type: { _kind: "number" } });
-			addProperty({ group: "value", name: "maximum", type: { _kind: "number" } });
-			addProperty({ group: "display", name: "rows", type: { _kind: "number" } });
+			addProperty({ name: "defaultValue", type: { _kind: "number", tab: "value" } });
+			addProperty({ name: "minimum", type: { _kind: "number", tab: "value" } });
+			addProperty({ name: "maximum", type: { _kind: "number", tab: "value" } });
+			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
 
 		this.addType("boolean", "Boolean", (type, addProperty) => {
-			addProperty({ group: "value", name: "defaultValue", type: { _kind: "boolean" } });
+			addProperty({ name: "defaultValue", type: { _kind: "boolean", tab: "value" } });
 		});
 		this.addType("select", "Select", (type, addProperty) => {
 			(type as EnumType).entries = [];
@@ -171,10 +172,10 @@ export class Eval {
 			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
 			entryType._kind = "object";
 			addProperty({ name: "entryType", type: { _kind: "array", entryType: this.getNewFieldDefinition() } });
-			addProperty({ group: "validation", name: "minimumCount", type: { _kind: "number" } });
-			addProperty({ group: "validation", name: "maximumCount", type: { _kind: "number" } });
-			addProperty({ group: "validation", name: "canAddOrDelete", type: { _kind: "boolean" } });
-			addProperty({ group: "validation", name: "canReorder", type: { _kind: "boolean" } });
+			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "values" } });
+			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "values" } });
+			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "values" } });
+			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "values" } });
 		});
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
@@ -189,10 +190,10 @@ export class Eval {
 		}
 
 		this.registerType(key, type);
-		var properties: Property[] = [
-//			{ name: "type", type: { _kind: "const", value: type } }
-		];
+		var properties: Property[] = [];
 		if (label != null) {
+
+
 			var variantKind: VariantKind = {
 				key: key,
 				label: label,
@@ -204,6 +205,13 @@ export class Eval {
 		if (typeCallback) typeCallback(type, (property) => {
 			properties.push(property)
 		});
+
+		properties.push({
+			name: "tab", type: {
+				_kind: "string", description: "Each group is displayed on its own tab.", tab: "display"
+			}
+		});
+
 	}
 
 	nextId(prefix: string) {
@@ -301,8 +309,7 @@ export class Eval {
 						_kind: "variant",
 						kinds: this.variantKinds
 					}
-				},
-				{ group: "advanced", name: "group", type: { _kind: "string", description: "Each group is displayed on its own tab." } }
+				}
 			]
 		};
 	}
