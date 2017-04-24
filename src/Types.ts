@@ -6,7 +6,6 @@ export interface TypeDefinition<T> {
    editView?: string;
    printView?: string;
    mandatory?: boolean;
-   htmlType?: string;
    description?: string;
 }
 
@@ -111,7 +110,7 @@ export interface VariantKind extends EnumEntry {
    group?: string;
    key: string;
    label?: string;
-   type: Type;
+   properties?: Property[]
 }
 
 export interface VariantObject {

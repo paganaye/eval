@@ -119,22 +119,19 @@ export class Eval {
 		//this.addType("array", null);
 		this.addType("variant", null);
 		this.addType("string", "String", (type, addProperty) => {
-			type.htmlType = "text";
 			addProperty({ group: "value", name: "defaultValue", type: { _kind: "string" } });
 			addProperty({ group: "value", name: "validation", type: this.arrayOfValidationRegexp });
 			addProperty({ group: "display", name: "cols", type: { _kind: "number" } });
 			addProperty({ group: "display", name: "rows", type: { _kind: "number" } });
 		});
 		this.addType("number", "Number", (type, addProperty) => {
-			type.htmlType = "text";
-			addProperty({ group: "value", name: "defaultValue", type: { _kind: "string" } });
+			addProperty({ group: "value", name: "defaultValue", type: { _kind: "number" } });
 			addProperty({ group: "value", name: "minimum", type: { _kind: "number" } });
 			addProperty({ group: "value", name: "maximum", type: { _kind: "number" } });
 			addProperty({ group: "display", name: "rows", type: { _kind: "number" } });
 		});
 
 		this.addType("boolean", "Boolean", (type, addProperty) => {
-			type.htmlType = "checkbox";
 			addProperty({ group: "value", name: "defaultValue", type: { _kind: "boolean" } });
 		});
 		this.addType("select", "Select", (type, addProperty) => {
@@ -154,7 +151,9 @@ export class Eval {
 		this.addType("color", "Color");
 		this.addType("range", "Range");
 		this.addType("password", "Password");
-		this.addType("link", "Link", (type) => type.htmlType = "table");
+		this.addType("link", "Link", (type) => {
+
+		});
 		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {
 		// 	type.editView = "object";
 		// 	(type as ObjectType).properties = [
@@ -191,14 +190,13 @@ export class Eval {
 
 		this.registerType(key, type);
 		var properties: Property[] = [
-			{ name: "type", type: { _kind: "const", value: type } }
+//			{ name: "type", type: { _kind: "const", value: type } }
 		];
 		if (label != null) {
 			var variantKind: VariantKind = {
-				key: key, label: label, type: {
-					_kind: "object",
-					properties: properties
-				}
+				key: key,
+				label: label,
+				properties: properties
 			}
 			this.variantKinds.push(variantKind);
 		}
@@ -331,10 +329,10 @@ export class Eval {
 					type = {
 						_kind: "variant",
 						kinds: [
-							{ key: "number", type: { _kind: "number" } },
-							{ key: "boolean", type: { _kind: "boolean" } },
-							{ key: "string", type: { _kind: "string" } },
-							{ key: "object", type: { _kind: "object", properties: [] } }
+							{ key: "number" },
+							{ key: "boolean" },
+							{ key: "string" },
+							{ key: "object" }
 						]
 					}
 					break;
