@@ -54,7 +54,6 @@ export class Crud extends Command {
                                     var path = "tables/" + this.tableName + "/" + this.recordId;
                                     this.evalContext.database.on(path, (data, error) => {
                                           output2.setEditMode(true);
-debugger;
                                           if (data === null) {
                                                 data = this.evalContext.newInstance(type);
                                           }

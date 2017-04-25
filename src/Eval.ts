@@ -116,7 +116,7 @@ export class Eval {
 
 		this.variantKinds = [];
 
-		this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
+		//this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
 		//this.addType("array", null);
 		this.addType("variant", null, null);
 		this.addType("string", "standard", "String", (type, addProperty) => {
@@ -173,6 +173,23 @@ export class Eval {
 			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "behaviour" } });
 			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "behaviour" } });
 			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "behaviour" } });
+		});
+
+
+		this.addType("object", "advanced", "Object", (type, addProperty) => {
+			type.editView = "object";
+			var objectType = (type as ObjectType);
+			objectType.properties = [];
+			objectType.tab = "objectType";
+			objectType.visibility = Visibility.HiddenLabel
+
+			addProperty({ name: "properties", type: this.getNewPropertiesType() });
+			addProperty({ name: "template", type: { _kind: "string" } });
+
+			//addProperty({ name: "minimumCount", type: { _kind: "number", tab: "behaviour" } });
+			//addProperty({ name: "maximumCount", type: { _kind: "number", tab: "behaviour" } });
+			//addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "behaviour" } });
+			//addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "behaviour" } });
 		});
 
 		this.addType("category", "wiki", "Category", (type, addProperty) => {
@@ -349,26 +366,7 @@ export class Eval {
 						_kind: "object",
 						properties: [
 							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
-							{
-								name: "properties", type: {
-									_kind: "array",
-									entryType: {
-										_kind: "object",
-										properties: [
-											{ name: "name", type: { _kind: "string" } },
-											{
-												name: "type", type: {
-													_kind: "variant",
-													kinds: this.variantKinds,
-													visibility: Visibility.HiddenLabel
-												}
-											}
-										],
-										template: "{name} ({type})"
-									},
-									visibility: Visibility.HiddenLabel
-								}
-							},
+							{ name: "properties", type: this.getNewPropertiesType() },
 							{ name: "template", type: { _kind: "string" } },
 						],
 					};
@@ -440,7 +438,7 @@ export class Eval {
 			case "boolean":
 				return type.defaultValue;
 			default:
-				if ((type as ObjectType).properties){
+				if ((type as ObjectType).properties) {
 					var result = {};
 					for (var p of (type as ObjectType).properties) {
 						result[p.name] = this.newInstance(p.type);
@@ -449,5 +447,27 @@ export class Eval {
 				} else return {};
 		}
 	}
+
+	getNewPropertiesType(): ArrayType<object> {
+		return {
+			_kind: "array",
+			entryType: {
+				_kind: "object",
+				properties: [
+					{ name: "name", type: { _kind: "string" } },
+					{
+						name: "type", type: {
+							_kind: "variant",
+							kinds: this.variantKinds,
+							visibility: Visibility.HiddenLabel
+						}
+					}
+				],
+				template: "{name} ({type})"
+			},
+			visibility: Visibility.HiddenLabel
+		}
+	}
+
 }
 

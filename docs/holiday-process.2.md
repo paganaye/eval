@@ -6,8 +6,8 @@ I am wondering how hard it would be to make a holiday request website using the 
 
 First I need employees.
 
-    #update table employees
-        name string
+    #update table holidays
+        employee string
         holidayUsed number defaultValue 0
         holidayPending number defaultValue 0
         holidayLeft number defaultValue 25
@@ -15,11 +15,11 @@ First I need employees.
 
 Then we can edit our first user
 
-    #update user pascal
+    #update holidays pascal
         name pascal
-        holidayUsed 0
-        holidayPending 0
-        holidayLeft 25
+        holidayUsed number
+        holidayPending number
+        holidayLeft number default value 25
     
 
 What next?
