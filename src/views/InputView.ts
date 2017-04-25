@@ -51,7 +51,8 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
 
     getValueString(): string {
         if (this.elt && this.elt instanceof HTMLInputElement) {
-            return this.elt.value;
+            var value = this.elt.value;
+            return value;
         } else {
             throw "HTML Input " + this.inputId + " not found.";
         }
@@ -118,7 +119,12 @@ export class BooleanInputView extends BaseInputView<boolean, BooleanType> {
     }
 
     getValue(): boolean {
-        return !!(this.getValueString());
+        if (this.elt && this.elt instanceof HTMLInputElement) {
+            var value = this.elt.checked;
+            return value;
+        } else {
+            throw "HTML Checkbox " + this.inputId + " not found.";
+        }
     }
 }
 
