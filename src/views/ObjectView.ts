@@ -1,6 +1,6 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ObjectType, Property } from "../Types";
+import { Type, ObjectType, Property, Visibility } from "../Types";
 import { ViewOptions } from "../Theme";
 
 export class ObjectView extends View<Object, ObjectType, ViewOptions> {
@@ -58,8 +58,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
             if (this.mainProperties.length) {
                 output.printSection({ addHeaderCallback: options.addHeaderCallback, name: "object-properties" }, (options) => {
                     for (var key of this.mainProperties) {
-                        var value = this.data[key];
-                        this.views[key] = output.printLabelAndView({ label: key, showLabel: true }, value, this.typeByName[key], this);
+                        this.printProperty(key, output);
                     }
                 });
             }
@@ -73,8 +72,7 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                             active: first, title: groupName, orphans: (groupName == "orphans")
                         }, (options) => {
                             for (var key of group) {
-                                var value = this.data[key];
-                                this.views[key] = output.printLabelAndView({ label: key, showLabel: true }, value, this.typeByName[key], this);
+                                this.printProperty(key, output);
                             }
                         });
                         if (first) first = false;
@@ -82,6 +80,15 @@ export class ObjectView extends View<Object, ObjectType, ViewOptions> {
                 });
             }
         });
+    }
+
+    printProperty(key: string, output: Output) {
+        var value = this.data[key];
+        var type = this.typeByName[key];
+        var visibility = type.visibility || Visibility.Shown;
+        if (visibility != Visibility.Hidden) {
+            this.views[key] = output.printLabelAndView({ label: key, showLabel: visibility == Visibility.Shown }, value, type, this);
+        }
     }
 
     getValue(): any {

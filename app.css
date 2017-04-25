@@ -46,3 +46,8 @@ input[type="color"] {
     /* symbol for "collapsed" panels */
     content: "\e080";    /* adjust as needed, taken from bootstrap.css */
 }
+
+.array-entry {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+}

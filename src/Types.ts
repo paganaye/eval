@@ -8,6 +8,13 @@ export interface TypeDefinition<T> {
    mandatory?: boolean;
    description?: string;
    tab?: string;
+   visibility?: Visibility;
+}
+
+export const enum Visibility {
+   Shown,
+   HiddenLabel,
+   Hidden
 }
 
 export interface ValidationResult {
@@ -56,6 +63,7 @@ export interface Property {
    name: string;
    type: Type;
 }
+
 
 
 export interface ObjectType extends TypeDefinition<object> {

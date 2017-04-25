@@ -1,4 +1,4 @@
-import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, VariantType, VariantKind, Property } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, VariantType, VariantKind, Property, Visibility } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -159,11 +159,13 @@ export class Eval {
 			entryType._kind = "object";
 			addProperty({
 				name: "entryType", type: {
-					_kind: "object", properties: [
-						{ name: "_kind", type: { _kind: "const", value: "object" } },
-						{ name: "properties", type: { _kind: "array", entryType: this.getNewFieldDefinition(), tab: "entries" } }
+					_kind: "object",
+					properties: [
+						{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+						{ name: "properties", type: { _kind: "array", entryType: this.getNewFieldDefinition(), visibility: Visibility.HiddenLabel } }
 					],
-					tab: "entryType"
+					tab: "entryType",
+					visibility: Visibility.HiddenLabel
 				}
 			});
 			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "behaviour" } });
@@ -320,7 +322,8 @@ export class Eval {
 				{
 					name: "type", type: {
 						_kind: "variant",
-						kinds: this.variantKinds
+						kinds: this.variantKinds,
+						visibility: Visibility.HiddenLabel
 					}
 				}
 			]
@@ -359,12 +362,13 @@ export class Eval {
 				case "table":
 					var fieldsDefinition: ArrayType<any> = {
 						_kind: "array",
-						entryType: this.getNewFieldDefinition()
+						entryType: this.getNewFieldDefinition(),
+						visibility: Visibility.HiddenLabel
 					};
 
 					var tableDefinition: ObjectType = {
 						properties: [
-							{ name: "_kind", type: { _kind: "const", value: "object" } },
+							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
 							{ name: "properties", type: fieldsDefinition }
 						],
 						_kind: "object"

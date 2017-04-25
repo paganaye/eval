@@ -79,7 +79,7 @@ export class Bootstrap extends Theme {
 	// }
 
 	printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
-		output.printStartTag("div", { class: "card", id: options.id });;//    <div class="card">
+		output.printStartTag("div", { class: "card array-entry", id: options.id });;//    <div class="card">
 		this.addClass({}, "card-header");
 		this.addClass({}, "collapsed");
 
@@ -168,8 +168,9 @@ export class Bootstrap extends Theme {
 				output.printStartTag("div", { class: "object-body" });
 				var headers: { key: string, label: string }[] = [];
 
-				output.printAsync("ul", { class: "nav nav-tabs", role: "tablist" }, "", (elt, output) => {
+				output.printAsync("div", { class: "form-group" }, "", (elt, output) => {
 					if (headers.length) {
+						output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
 						var first = true;
 						for (var h of headers) {
 							output.printHTML('<li class="nav-item">');
@@ -181,12 +182,12 @@ export class Bootstrap extends Theme {
 							output.printTag('a', headerAttributes, h.label);
 							output.printHTML('</li>');
 						}
+						output.printEndTag();
 						output.domReplace();
 					} else {
 						elt.remove();
 					}
 				});
-
 				/*<!-- Tab panes -->*/
 				this.addClass(attributes, "tab-content");
 				output.printStartTag("div", attributes);
