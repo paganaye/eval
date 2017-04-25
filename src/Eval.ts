@@ -157,11 +157,19 @@ export class Eval {
 			var arrayType = (type as ArrayType<object>);
 			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
 			entryType._kind = "object";
-			addProperty({ name: "entryType", type: { _kind: "array", entryType: this.getNewFieldDefinition() } });
-			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "values" } });
-			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "values" } });
-			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "values" } });
-			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "values" } });
+			addProperty({
+				name: "entryType", type: {
+					_kind: "object", properties: [
+						{ name: "_kind", type: { _kind: "const", value: "object" } },
+						{ name: "properties", type: { _kind: "array", entryType: this.getNewFieldDefinition(), tab: "entries" } }
+					],
+					tab: "entryType"
+				}
+			});
+			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "behaviour" } });
+			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "behaviour" } });
+			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "behaviour" } });
+			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "behaviour" } });
 		});
 
 		this.addType("category", "wiki", "Category", (type, addProperty) => {
