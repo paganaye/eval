@@ -1,7 +1,8 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ArrayType, EnumEntry, VariantObject } from "../Types";
+import { Type, ArrayType, EnumEntry, VariantObject, ObjectType } from "../Types";
 import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from "../Theme";
+import { Parser } from "../Parser";
 
 export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
 {
@@ -49,49 +50,8 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
             });
          });
          output.printSection({ name: "array-buttons" }, (options) => {
-
-            // output.printHTML('<nav aria-label="Page navigation">');
-            // output.printHTML('  <ul class="pagination">');
-            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">Previous</a></li>');
-            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">1</a></li>');
-            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">2</a></li>');
-            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">3</a></li>');
-            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">4</a></li>');
-            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">5</a></li>');
-            // output.printHTML('    <li class="page-item"><a class="page-link" href="#">Next</a></li>');
-            // output.printHTML('  </ul>');
-            // output.printHTML('</nav>');
-            // output.printHTML('<table class="table">');
-            // output.printHTML('  <thead>');
-            // output.printHTML('    <tr>');
-            // output.printHTML('      <th>#</th>');
-            // output.printHTML('      <th>First Name</th>');
-            // output.printHTML('      <th>Last Name</th>');
-            // output.printHTML('      <th>Username</th>');
-            // output.printHTML('    </tr>');
-            // output.printHTML('  </thead>');
-            // output.printHTML('  <tbody>');
-            // output.printHTML('    <tr>');
-            // output.printHTML('      <th scope="row">1</th>');
-            // output.printHTML('      <td>Mark</td>');
-            // output.printHTML('      <td>Otto</td>');
-            // output.printHTML('      <td>@mdo</td>');
-            // output.printHTML('    </tr>');
-            // output.printHTML('    <tr>');
-            // output.printHTML('      <th scope="row">2</th>');
-            // output.printHTML('      <td>Jacob</td>');
-            // output.printHTML('      <td>Thornton</td>');
-            // output.printHTML('      <td>@fat</td>');
-            // output.printHTML('    </tr>');
-            // output.printHTML('    <tr>');
-            // output.printHTML('      <th scope="row">3</th>');
-            // output.printHTML('      <td>Larry</td>');
-            // output.printHTML('      <td>the Bird</td>');
-            // output.printHTML('      <td>@twitter</td>');
-            // output.printHTML('    </tr>');
-            // output.printHTML('  </tbody>');
-            // output.printHTML('</table>');
-
+            // we won't use HTML tables because sorting does not work well on table.
+            // we don't use the bootstrap pager because sorting is hard with a pager and it look crap on mobile
 
             if (this.entryType._kind == "variant") {
                var entries: EnumEntry[] = [];
@@ -126,8 +86,21 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
          this.data.push(entry);
       }
       var id = this.evalContext.nextId("entry");
+
+      var label = this.entryType.template;
+      if (label) {
+         //TODO: evaluate expression here...
+         var parser = new Parser(this.evalContext);
+         var expr = parser.parseTemplate(label);
+         label = expr.getValue(this.evalContext);
+      }
+      else {
+         label = "#" + (this.views.length + 1);
+      }
+
+
       var options: ArrayEntryOptions = {
-         id: id, deletable: true, label: "#" + (this.views.length + 1), frozenDynamic: false,
+         id: id, deletable: true, label: label, frozenDynamic: false,
          entriesElementId: this.entriesElementId,
          active: active
       };

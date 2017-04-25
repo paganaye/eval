@@ -316,36 +316,30 @@ export class Eval {
 			_kind: "object",
 			properties: [
 				{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
-				{ name: "properties", type: this.getPropertiesDefinition() }
+				{
+					name: "properties", type: {
+						_kind: "array",
+						entryType: {
+							_kind: "object",
+							properties: [
+								{ name: "name", type: { _kind: "string" } },
+								{
+									name: "type", type: {
+										_kind: "variant",
+										kinds: this.variantKinds,
+										visibility: Visibility.HiddenLabel
+									}
+								}
+							],
+							template: "{name} ({type})"
+						},
+						visibility: Visibility.HiddenLabel
+					}
+				},
+				{ name: "template", type: { _kind: "string" } },
 			],
 		};
 	}
-
-	getPropertiesDefinition(): ArrayType<any> {
-		var fieldsDefinition: ArrayType<any> = {
-			_kind: "array",
-			entryType: this.getNewFieldDefinition(),
-			visibility: Visibility.HiddenLabel
-		};
-		return fieldsDefinition;
-	}
-
-	getNewFieldDefinition(): ObjectType {
-		return {
-			_kind: "object",
-			properties: [
-				{ name: "name", type: { _kind: "string" } },
-				{
-					name: "type", type: {
-						_kind: "variant",
-						kinds: this.variantKinds,
-						visibility: Visibility.HiddenLabel
-					}
-				}
-			]
-		};
-	}
-
 
 	getTableType(typeName: string, callback: (type: Type) => void): void {
 		typeName = (typeName || "object").toLowerCase();
@@ -379,7 +373,7 @@ export class Eval {
 					var tableDefinition: ObjectType = this.getNewObjectDefinition();
 					tableDefinition.properties.splice(1, 0,
 						{ name: "description", type: { _kind: "string" } });
-					
+
 					type = tableDefinition;
 					break;
 			}

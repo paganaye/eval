@@ -42,6 +42,12 @@ export class Parser {
 		return this.parseExpression(Priority.None);
 	}
 
+	parseTemplate(template: string) {
+		this.init(template);
+		//return this.parseExpression(Priority.None);
+		return new Const(template);
+	}
+
 	parseLeft(priority: Priority): Expression<any> {
 		var result: Expression<any>;
 		switch (this.token.type) {

@@ -9,6 +9,7 @@ export interface TypeDefinition<T> {
    description?: string;
    tab?: string;
    visibility?: Visibility;
+   template?: string;
 }
 
 export const enum Visibility {
@@ -69,7 +70,6 @@ export interface Property {
 export interface ObjectType extends TypeDefinition<object> {
    _kind: "object";
    properties: Property[];
-   template?: string;
 }
 
 export interface Group {
