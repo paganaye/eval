@@ -30,6 +30,7 @@ export class Crud extends Command {
                   var parentView: AnyView = null;
 
                   this.evalContext.getTableType(this.tableName, (type) => {
+                        if (type && !type._kind) type._kind = "object";
                         switch (this.commandName.toLowerCase()) {
                               case "create":
                                     // this should
@@ -53,6 +54,10 @@ export class Crud extends Command {
                                     var path = "tables/" + this.tableName + "/" + this.recordId;
                                     this.evalContext.database.on(path, (data, error) => {
                                           output2.setEditMode(true);
+debugger;
+                                          if (data === null) {
+                                                data = this.evalContext.newInstance(type);
+                                          }
                                           this.innerView = this.evalContext.instantiate(data, type, parentView, true);
                                           this.innerView.render(output2);
                                           output2.printSection({ name: "crud-update" }, (options) => {

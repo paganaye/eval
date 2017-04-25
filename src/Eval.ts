@@ -158,7 +158,11 @@ export class Eval {
 			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
 			entryType._kind = "object";
 
-			var entryTypeDefinition = this.getNewObjectDefinition();
+			var entryTypeDefinition: VariantType = {
+				_kind: "variant",
+				kinds: this.variantKinds,
+				visibility: Visibility.HiddenLabel
+			};
 			entryTypeDefinition.tab = "entryType";
 			entryTypeDefinition.visibility = Visibility.HiddenLabel
 
@@ -303,42 +307,13 @@ export class Eval {
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)
 			: expr;
+
 		if (!options) options = {};
 
 		view.beforeBuild(actualValue, typeDef, options);
 		this.theme.prepareViewBeforeBuild(view);
 		view.build();
 		return view;
-	}
-
-	getNewObjectDefinition(): ObjectType {
-		return {
-			_kind: "object",
-			properties: [
-				{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
-				{
-					name: "properties", type: {
-						_kind: "array",
-						entryType: {
-							_kind: "object",
-							properties: [
-								{ name: "name", type: { _kind: "string" } },
-								{
-									name: "type", type: {
-										_kind: "variant",
-										kinds: this.variantKinds,
-										visibility: Visibility.HiddenLabel
-									}
-								}
-							],
-							template: "{name} ({type})"
-						},
-						visibility: Visibility.HiddenLabel
-					}
-				},
-				{ name: "template", type: { _kind: "string" } },
-			],
-		};
 	}
 
 	getTableType(typeName: string, callback: (type: Type) => void): void {
@@ -370,7 +345,34 @@ export class Eval {
 					}
 					break;
 				case "table":
-					var tableDefinition: ObjectType = this.getNewObjectDefinition();
+					var tableDefinition: ObjectType = {
+						_kind: "object",
+						properties: [
+							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+							{
+								name: "properties", type: {
+									_kind: "array",
+									entryType: {
+										_kind: "object",
+										properties: [
+											{ name: "name", type: { _kind: "string" } },
+											{
+												name: "type", type: {
+													_kind: "variant",
+													kinds: this.variantKinds,
+													visibility: Visibility.HiddenLabel
+												}
+											}
+										],
+										template: "{name} ({type})"
+									},
+									visibility: Visibility.HiddenLabel
+								}
+							},
+							{ name: "template", type: { _kind: "string" } },
+						],
+					};
+
 					tableDefinition.properties.splice(1, 0,
 						{ name: "description", type: { _kind: "string" } });
 
@@ -427,6 +429,25 @@ export class Eval {
 				break;
 		}
 		return value;
+	}
+
+	newInstance(type: Type): any {
+		switch (type._kind) {
+			case "const":
+				return type.value;
+			case "number":
+			case "string":
+			case "boolean":
+				return type.defaultValue;
+			default:
+				if ((type as ObjectType).properties){
+					var result = {};
+					for (var p of (type as ObjectType).properties) {
+						result[p.name] = this.newInstance(p.type);
+					}
+					return result;
+				} else return {};
+		}
 	}
 }
 
