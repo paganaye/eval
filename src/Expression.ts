@@ -264,3 +264,20 @@ export class JsonArray extends Expression<any[]> {
 		return result;
 	}
 }
+
+export class Concat extends Expression<string> {
+
+	constructor(evalContext: Eval, private parts: Expression<any>[]) {
+		super();
+	}
+
+
+	calcValue(evalContext: Eval): string {
+		var result = [];
+		for (var e of this.parts) {
+			result.push(e.getValue(evalContext))
+		}
+		return result.join("");
+	}
+}
+

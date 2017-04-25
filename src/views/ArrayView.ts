@@ -91,6 +91,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       if (label) {
          //TODO: evaluate expression here...
          var parser = new Parser(this.evalContext);
+         this.evalContext.globalVariables = entry;
          var expr = parser.parseTemplate(label);
          label = expr.getValue(this.evalContext);
       }

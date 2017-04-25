@@ -2,7 +2,7 @@ import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from "./CommandCall";
 import { Eval } from "./Eval";
 import { EvalFunction, ParameterDefinition } from "./EvalFunction";
-import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject, GetMember } from './Expression';
+import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject, GetMember, Concat } from './Expression';
 
 // we keep the same priorities than javascript but with less operators.
 // pure function only (no assignment)
@@ -27,9 +27,9 @@ export class Parser {
 	constructor(private evalContext: Eval) {
 	}
 
-	private init(expression: string) {
+	private init(expression: string, inTemplate: boolean) {
 		this.expression = expression;
-		this.tokenizer = new Tokenizer(expression);
+		this.tokenizer = new Tokenizer(expression, inTemplate);
 		this.nextToken();
 	}
 
@@ -38,14 +38,34 @@ export class Parser {
 	}
 
 	parse(expression: string) {
-		this.init(expression);
+		this.init(expression, false);
 		return this.parseExpression(Priority.None);
 	}
 
 	parseTemplate(template: string) {
-		this.init(template);
+		this.init(template, true);
 		//return this.parseExpression(Priority.None);
-		return new Const(template);
+		var parts: Expression<any>[] = [];
+		while (this.token.type != TokenType.EOF) {
+			if (this.token.type == TokenType.Operator && this.token.stringValue == "{") {
+				this.tokenizer.inTemplate = false;
+				this.nextToken();
+				var expr = this.parseExpression(Priority.None);
+				if (this.token.type == TokenType.Operator && this.token.stringValue as any == "}") {
+					parts.push(expr)
+					this.tokenizer.inTemplate = true;
+					this.nextToken();
+				} else {
+					this.unexpectedToken("Expected closing character '}'");
+				}
+			} else if (this.token.type == TokenType.String) {
+				parts.push(new Const(this.token.stringValue));
+				this.nextToken();
+			} else {
+				this.unexpectedToken();
+			}
+		}
+		return new Concat(this.evalContext, parts);
 	}
 
 	parseLeft(priority: Priority): Expression<any> {
@@ -164,7 +184,7 @@ export class Parser {
 	}
 
 	parseCommand(expression: string): CommandCall {
-		this.init(expression);
+		this.init(expression, false);
 		//this.commandName = this.parseString(this.allDelimiters);
 		var parameters = {};
 
@@ -173,7 +193,7 @@ export class Parser {
 		}
 		var commandName = this.token.stringValue;
 		this.nextToken();
-		
+
 		if (this.token.type === TokenType.Operator && this.token.stringValue == "=") {
 			// variable assignment
 			// XX = 1

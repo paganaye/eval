@@ -28,7 +28,7 @@ import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
 
 export class Eval {
-
+	globalVariables: { [key: string]: any } = {};
 	viewFactories: { [key: string]: ViewFactory } = {};
 
 	addViewFactory(viewName: string, viewConstructor: (parent: AnyView) => AnyView): ViewFactory {
@@ -63,7 +63,6 @@ export class Eval {
 
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
 	functions: { [key: string]: (parent: Expression<any>) => EvalFunction<any> } = {};
-	variables: { [key: string]: any } = {};
 	variantKinds: VariantKind[];
 
 
@@ -282,7 +281,7 @@ export class Eval {
 	}
 
 	getVariable(variableName: string): any {
-		var result = this.variables[variableName];
+		var result = this.globalVariables[variableName];
 		if (result == null) {
 
 		}
@@ -290,7 +289,7 @@ export class Eval {
 	}
 
 	setVariable(variableName: string, value: any): void {
-		this.variables[variableName] = value;
+		this.globalVariables[variableName] = value;
 	}
 
 	stringify(expr: Expression<any>, type?: Type): string {
