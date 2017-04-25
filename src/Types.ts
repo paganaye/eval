@@ -69,6 +69,7 @@ export interface Property {
 export interface ObjectType extends TypeDefinition<object> {
    _kind: "object";
    properties: Property[];
+   template?: string;
 }
 
 export interface Group {

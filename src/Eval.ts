@@ -157,16 +157,13 @@ export class Eval {
 			var arrayType = (type as ArrayType<object>);
 			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
 			entryType._kind = "object";
+
+			var entryTypeDefinition = this.getNewObjectDefinition();
+			entryTypeDefinition.tab = "entryType";
+			entryTypeDefinition.visibility = Visibility.HiddenLabel
+
 			addProperty({
-				name: "entryType", type: {
-					_kind: "object",
-					properties: [
-						{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
-						{ name: "properties", type: { _kind: "array", entryType: this.getNewFieldDefinition(), visibility: Visibility.HiddenLabel } }
-					],
-					tab: "entryType",
-					visibility: Visibility.HiddenLabel
-				}
+				name: "entryType", type: entryTypeDefinition
 			});
 			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "behaviour" } });
 			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "behaviour" } });
@@ -314,6 +311,25 @@ export class Eval {
 		return view;
 	}
 
+	getNewObjectDefinition(): ObjectType {
+		return {
+			_kind: "object",
+			properties: [
+				{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+				{ name: "properties", type: this.getPropertiesDefinition() }
+			],
+		};
+	}
+
+	getPropertiesDefinition(): ArrayType<any> {
+		var fieldsDefinition: ArrayType<any> = {
+			_kind: "array",
+			entryType: this.getNewFieldDefinition(),
+			visibility: Visibility.HiddenLabel
+		};
+		return fieldsDefinition;
+	}
+
 	getNewFieldDefinition(): ObjectType {
 		return {
 			_kind: "object",
@@ -360,20 +376,10 @@ export class Eval {
 					}
 					break;
 				case "table":
-					var fieldsDefinition: ArrayType<any> = {
-						_kind: "array",
-						entryType: this.getNewFieldDefinition(),
-						visibility: Visibility.HiddenLabel
-					};
-
-					var tableDefinition: ObjectType = {
-						properties: [
-							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
-							{ name: "description", type: { _kind: "string" } },
-							{ name: "properties", type: fieldsDefinition }
-						],
-						_kind: "object"
-					}
+					var tableDefinition: ObjectType = this.getNewObjectDefinition();
+					tableDefinition.properties.splice(1, 0,
+						{ name: "description", type: { _kind: "string" } });
+					
 					type = tableDefinition;
 					break;
 			}
