@@ -82,7 +82,7 @@ export class Output {
 	}
 
 	printProperty(options: PropertyOptions, view: AnyView) {
-		if (!options) options = {};
+		if (!options) options = { showLabel: true };
 		this.evalContext.theme.printProperty(this, options, view);
 	}
 
@@ -122,7 +122,6 @@ export class Output {
 	printSection(options: SectionOptions, printContent: (options: ViewOptions) => void) {
 		this.evalContext.theme.printSection(this, options, printContent)
 	}
-
 
 	printText(text: string) {
 		this.html.push(Output.escapeHtml(text));

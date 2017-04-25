@@ -26,7 +26,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 
         // var viewId: string = null;
-        var options: PropertyOptions = {};
+        var options: PropertyOptions = { showLabel: true };
 
         // if (this.options.freezeType) {
         //     options.label = this.data._kind;

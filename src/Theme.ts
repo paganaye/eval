@@ -46,6 +46,7 @@ export class ViewOptions {
 export class PropertyOptions extends ViewOptions {
       printLabel?: ((output: Output, options: ViewOptions) => void);
       label?: string;
+      showLabel: boolean;
 }
 
 export class ArrayOptions extends ViewOptions {

@@ -41,10 +41,20 @@ export class Bootstrap extends Theme {
 		if (className) attrs.class += " " + className;
 		output.printStartTag("div", attrs);
 
-		output.printTag("label", { class: "col-lg-2 col-form-label", for: view.getId() },
-			options.printLabel ? (o) => options.printLabel(o, options) : options.label);
+		var valueAttributes = {};
 
-		output.printStartTag("div", { class: "col-lg-10" });
+		if (options.showLabel) {
+			var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
+			output.printTag("label", labelAttributes,
+				options.printLabel ? (o) => options.printLabel(o, options) : options.label);
+			this.addClass(valueAttributes, "col-lg-10");
+		}
+		else {
+			this.addClass(valueAttributes, "col-12");
+		}
+
+
+		output.printStartTag("div", valueAttributes);
 		view.render(output);
 
 		output.printTag('div', { class: "form-control-feedback", id: view.getId() + "-validation" },
@@ -159,7 +169,7 @@ export class Bootstrap extends Theme {
 				var headers: { key: string, label: string }[] = [];
 
 				output.printAsync("ul", { class: "nav nav-tabs", role: "tablist" }, "", (elt, output) => {
-					if (headers.length > 1) {
+					if (headers.length) {
 						var first = true;
 						for (var h of headers) {
 							output.printHTML('<li class="nav-item">');
