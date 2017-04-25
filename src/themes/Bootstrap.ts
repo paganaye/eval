@@ -90,7 +90,7 @@ export class Bootstrap extends Theme {
 		}, (output) => {
 			output.printText(options.label);
 			if (options.deletable) {
-				output.printButton({ buttonText: "x", class: "close" }, (ev: Event) => {
+				output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
 					var elt = (ev.target as HTMLElement).parentElement;
 					if (elt) elt.parentElement.remove();
 				});
