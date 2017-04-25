@@ -369,6 +369,7 @@ export class Eval {
 					var tableDefinition: ObjectType = {
 						properties: [
 							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+							{ name: "description", type: { _kind: "string" } },
 							{ name: "properties", type: fieldsDefinition }
 						],
 						_kind: "object"
