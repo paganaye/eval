@@ -87,13 +87,18 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       }
       var id = this.evalContext.nextId("entry");
 
-      var label = this.entryType.template;
-      if (label) {
+      var template = this.entryType.template;
+      var label: string;
+      if (template) {
          //TODO: evaluate expression here...
          var parser = new Parser(this.evalContext);
          this.evalContext.globalVariables = entry;
-         var expr = parser.parseTemplate(label);
-         label = expr.getValue(this.evalContext);
+         try {
+            var expr = parser.parseTemplate(template);
+            label = expr.getValue(this.evalContext);
+         } catch (error) {
+            label = error;
+         }
       }
       else {
          label = "#" + (this.views.length + 1);

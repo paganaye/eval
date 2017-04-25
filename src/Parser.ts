@@ -108,6 +108,15 @@ export class Parser {
 				} else {
 					result = new GetVariable(variableOrFunction);
 				}
+				while (this.token.type as TokenType == TokenType.Operator && this.token.stringValue == ".") {
+					this.nextToken();
+					if (this.token.type == TokenType.Keyword) {
+						result = new GetMember(this.evalContext, result, this.token.stringValue);
+						this.nextToken();
+					} else {
+						this.unexpectedToken("Expected member name after the dot.")
+					}
+				}
 				return result;
 			case TokenType.Number:
 				result = new Const(this.token.numberValue);

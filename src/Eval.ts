@@ -462,7 +462,7 @@ export class Eval {
 						}
 					}
 				],
-				template: "{name} ({type})"
+				template: "{name} ({type._kind})"
 			},
 			visibility: Visibility.HiddenLabel
 		}
