@@ -85,7 +85,7 @@ export class Bootstrap extends Theme {
 
 		var accordionId = options.entriesElementId
 		output.printTag("a", {
-			href: "#" + options.id + "-content", class: "sort-handle collabsible-title", "data-toggle": "collapse",
+			href: "#" + options.id + "-content", class: "sort-handle collapsible-title", "data-toggle": "collapse",
 			"data-parent": "#" + accordionId
 		}, (output) => {
 			output.printText(options.label);

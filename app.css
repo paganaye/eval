@@ -35,19 +35,22 @@ input[type="color"] {
 }
 
 
-.collapsible-title:after {
+.collapsible-title:before {
     /* symbol for "opening" panels */
     font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+    content: "▽";    /* adjust as needed, taken from bootstrap.css */
     float: right;        /* adjust as needed */
     color: grey;         /* adjust as needed */
+    float: left;
+    margin-right: 5px;
 }
-.collapsible-title.collapsed:after {
+.collapsible-title.collapsed:before {
     /* symbol for "collapsed" panels */
-    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+    content: "▷";    /* adjust as needed, taken from bootstrap.css */
 }
 
 .array-entry {
     margin-bottom: 0.5rem;
     padding: 0.5rem;
 }
+
