@@ -7,6 +7,8 @@ import { Eval } from "./Eval";
 import { RomanView } from "./views/RomanView";
 import { YoutubeView } from "./views/YoutubeView";
 import { Expression } from './Expression';
+import "firebase";
+
 
 class App {
 	//output: Output;
@@ -22,6 +24,138 @@ class App {
 		this.initConsole();
 		// 		this.tests();
 		// 		this.renderOutput();
+		console.log("firebase", firebase);
+
+
+		var provider = new firebase.auth.GoogleAuthProvider();
+		/*
+		firebase.auth().signInWithPopup(googleProvider).then(function (result) {
+			// This gives you a Google Access Token. You can use it to access the Google API.
+			var token = result.credential.accessToken;
+			// The signed-in user info.
+			var user = result.user;
+			// ...
+		}).catch(function (error: any) {
+			// Handle Errors here.
+			var errorCode = error.code;
+			var errorMessage = error.message;
+			// The email of the user's account used.
+			var email = error.email;
+			// The firebase.auth.AuthCredential type that was used.
+			var credential = error.credential;
+			// ...
+		});
+		*/
+
+		//    <div id="auth-container"></div>
+		var authContainer = document.getElementById("auth-container");
+		var output = new Output(this.evalContext, authContainer);
+
+		output.printAsync("div", {}, "...", (elt, output) => {
+			var userOutput: Output;
+			var userName = "...";
+
+			var updateUser = () => {
+				if (!userOutput) return;
+				userOutput.printTag("span", {}, userName);
+				userOutput.domReplace();
+			}
+			output.printAsync("div", {}, "...", (elt, output) => {
+				userOutput = output;
+				updateUser();
+			});
+
+
+			var f1 = firebase.auth().onAuthStateChanged((user) => {
+				console.log("onAuthStateChanged", "change", user);
+				userName = (user && user.displayName) || JSON.stringify(user);
+				updateUser();
+			}, (err) => {
+				console.log("onAuthStateChanged", "error", err);
+				// error
+			}, () => {
+				console.log("onAuthStateChanged", "completed");
+				// completed
+			})
+			console.log("onAuthStateChanged", "result", f1);
+
+
+			firebase.auth().getRedirectResult().then(function (result) {
+				if (result.credential) {
+					// This gives you a Google Access Token. You can use it to access the Google API.
+					var token = result.credential.accessToken;
+					console.log("doc-auth", "redirectResult", result, "token:", token);
+					// ...
+				} else {
+					console.log("doc-auth", "redirectResult", result);
+				}
+				// The signed-in user info.
+				var user = result.user;
+			}).catch(function (error: any) {
+				console.log("doc-auth", "redirectResult", "error", error);
+			});
+
+			output.printButton({ buttonText: "Sign in" }, (ev) => {
+				try {
+					console.log("doc-auth", "signInWithRedirect");
+					firebase.auth().signInWithRedirect(provider);
+				} catch (error) {
+					console.log("doc-auth", "signInWithRedirect", "error", error);
+				}
+			});
+
+			output.printButton({ buttonText: "Sign out" }, (ev) => {
+				try {
+					console.log("doc-auth", "signOut");
+					firebase.auth().signOut().then(function (a) {
+						// Sign-out successful.
+						console.log("doc-auth", "signOut", "success", a);
+					}).catch(function (error) {
+						// An error happened
+						console.log("doc-auth", "signOut", "error", error);
+					})
+				} catch (error) {
+					console.log("doc-auth", "signOut", "error2", error);
+				}
+			});
+
+			output.printButton({ buttonText: "f1" }, (ev) => {
+				try {
+					console.log("doc-auth", "onAuthStateChanged", "f1");
+					f1();
+				} catch (error) {
+					console.log("doc-auth", "onAuthStateChanged", "f1Error", error);
+				}
+			});
+
+			output.domReplace();
+		});
+
+		output.domReplace();
+
+		// 		  // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+		//   var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
+		//     unsubscribe();
+		//     // Check if we are already signed-in Firebase with the correct user.
+		//     if (!isUserEqual(googleUser, firebaseUser)) {
+		//       // Build Firebase credential with the Google ID token.
+		//       var credential = firebase.auth.GoogleAuthProvider.credential(
+		//           googleUser.getAuthResponse().id_token);
+		//       // Sign in with credential from the Google user.
+		//       firebase.auth().signInWithCredential(credential).catch(function(error) {
+		//         // Handle Errors here.
+		//         var errorCode = error.code;
+		//         var errorMessage = error.message;
+		//         // The email of the user's account used.
+		//         var email = error.email;
+		//         // The firebase.auth.AuthCredential type that was used.
+		//         var credential = error.credential;
+		//         // ...
+		//       });
+		//     } else {
+		//       console.log('User already signed-in Firebase.');
+		//     }
+
 	}
 
 	// public renderOutput() {

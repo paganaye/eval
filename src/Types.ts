@@ -65,8 +65,6 @@ export interface Property {
    type: Type;
 }
 
-
-
 export interface ObjectType extends TypeDefinition<object> {
    _kind: "object";
    properties: Property[];

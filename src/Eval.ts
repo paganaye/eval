@@ -117,7 +117,6 @@ export class Eval {
 
 		//this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
 		//this.addType("array", null);
-		this.addType("variant", null, null);
 		this.addType("string", "standard", "String", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "string", tab: "value" } });
 			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
@@ -189,6 +188,15 @@ export class Eval {
 			//addProperty({ name: "maximumCount", type: { _kind: "number", tab: "behaviour" } });
 			//addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "behaviour" } });
 			//addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "behaviour" } });
+		});
+
+		this.addType("variant", "advanced", "Variant", (type, addProperty) => {
+			type.editView = "variant";
+			var variantType = (type as VariantType);
+			variantType.kinds = [];
+
+			addProperty({ name: "kinds", type: this.getNewVariantKindsType() });
+
 		});
 
 		this.addType("category", "wiki", "Category", (type, addProperty) => {
@@ -375,6 +383,50 @@ export class Eval {
 
 					type = tableDefinition;
 					break;
+				case "process":
+					var processActionKinds: VariantKind[] = [{
+						"key": "typeString",
+						"type": { "_kind": "string" }
+					},
+					{
+						"key": "typeNumber",
+						"type": { "_kind": "number" }
+					},
+					{
+						"key": "string2",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "string2str", "type": { "_kind": "string" } }]
+						}
+					},
+					{
+						"key": "cpl1",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "x1", "type": { "_kind": "number" } },
+								{ "name": "x2", "type": { "_kind": "number" } }]
+						}
+					}];
+
+					var processDefinition: ObjectType = {
+						"_kind": "object",
+						"description": "this is the graphcet table",
+						"properties": [
+							{
+								"name": "steps", "type": {
+									"_kind": "array", "entryType": {
+										"_kind": "object",
+										"properties": [{
+											"name": "action", "type": {
+												"_kind": "variant",
+												"kinds": processActionKinds
+											}
+										}]
+									}
+								}
+							}]
+					};
+
 			}
 			if (!type) {
 				type = {
@@ -463,6 +515,37 @@ export class Eval {
 					}
 				],
 				template: "{name} ({type._kind})"
+			},
+			visibility: Visibility.HiddenLabel
+		}
+	}
+
+
+	// export interface VariantKind extends EnumEntry {
+	//    group?: string;
+	//    key: string;
+	//    label?: string;
+	//    type?: Type;
+	// }
+
+	getNewVariantKindsType(): ArrayType<object> {
+		return {
+			_kind: "array",
+			entryType: {
+				_kind: "object",
+				properties: [
+					{ name: "key", type: { _kind: "string" } },
+					{ name: "group", type: { _kind: "string" } },
+					{ name: "label", type: { _kind: "string" } },
+					{
+						name: "type", type: {
+							_kind: "variant",
+							kinds: this.variantKinds,
+							visibility: Visibility.HiddenLabel
+						}
+					}
+				],
+				template: "{key} ({type._kind})"
 			},
 			visibility: Visibility.HiddenLabel
 		}
