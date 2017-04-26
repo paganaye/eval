@@ -368,65 +368,108 @@ export class Eval {
 						]
 					}
 					break;
+				case "object":
+					var objectDefinition: ObjectType = {
+						_kind: "object",
+						properties: [
+							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+							{ name: "description", type: { _kind: "string" } },
+							{ name: "properties", type: this.getNewPropertiesType() },
+							{ name: "template", type: { _kind: "string" } },
+						]
+					};
+					type = objectDefinition;
+					break;
 				case "table":
 					var tableDefinition: ObjectType = {
 						_kind: "object",
 						properties: [
 							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+							{ name: "description", type: { _kind: "string" } },
 							{ name: "properties", type: this.getNewPropertiesType() },
 							{ name: "template", type: { _kind: "string" } },
-						],
+						]
 					};
-
-					tableDefinition.properties.splice(1, 0,
-						{ name: "description", type: { _kind: "string" } });
-
 					type = tableDefinition;
 					break;
 				case "process":
-					var processActionKinds: VariantKind[] = [{
-						"key": "typeString",
-						"type": { "_kind": "string" }
-					},
-					{
-						"key": "typeNumber",
-						"type": { "_kind": "number" }
-					},
-					{
-						"key": "string2",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "string2str", "type": { "_kind": "string" } }]
+					var stepsType: ArrayType<any> = {
+						"_kind": "array", "entryType": {
+							"_kind": "variant",
+							"kinds": null /*soon processActionKinds*/
 						}
-					},
-					{
-						"key": "cpl1",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "x1", "type": { "_kind": "number" } },
-								{ "name": "x2", "type": { "_kind": "number" } }]
-						}
-					}];
+					}
+
+					var processActionKinds: VariantKind[] = [
+						{
+							"group": "display",
+							"key": "showMessage",
+							"type": {
+								"_kind": "object", "properties": [
+									{ "name": "text", "type": { "_kind": "string" } }]
+							}
+						},
+						{
+							"group": "display",
+							"key": "showForm",
+							"type": {
+								"_kind": "object", "properties": [
+									{ "name": "text", "type": { "_kind": "string" } },
+									{ "name": "properties", "type": this.getNewPropertiesType() }]
+							}
+						},
+						{
+							"group": "entry",
+							"key": "input",
+							"type": {
+								"_kind": "object", "properties": [
+									{ "name": "text", "type": { "_kind": "string" } },
+									{ "name": "variableName", "type": { "_kind": "string" } },]
+							}
+						},
+						{
+							"group": "control flow",
+							"key": "if",
+							"type": {
+								"_kind": "object", "properties": [
+									{ "name": "condition", "type": { "_kind": "string" } },
+									{ "name": "then", "type": stepsType },
+									{ "name": "else", "type": stepsType }
+								]
+							}
+						},
+						{
+							"group": "control flow",
+							"key": "while",
+							"type": {
+								"_kind": "object", "properties": [
+									{ "name": "condition", "type": { "_kind": "string" } },
+									{ "name": "steps", "type": stepsType }
+								]
+							}
+						},
+						{
+							"group": "control flow",
+							"key": "repeat",
+							"type": {
+								"_kind": "object", "properties": [
+									{ "name": "steps", "type": stepsType },
+									{ "name": "until", "type": { "_kind": "string" } }
+								]
+							}
+						}];
+
+					(stepsType.entryType as VariantType).kinds = processActionKinds;
 
 					var processDefinition: ObjectType = {
 						"_kind": "object",
 						"description": "this is the graphcet table",
 						"properties": [
-							{
-								"name": "steps", "type": {
-									"_kind": "array", "entryType": {
-										"_kind": "object",
-										"properties": [{
-											"name": "action", "type": {
-												"_kind": "variant",
-												"kinds": processActionKinds
-											}
-										}]
-									}
-								}
-							}]
+							{ "name": "description", "type": { _kind: "string" } },
+							{ "name": "steps", "type": stepsType }
+						]
 					};
-
+					type = processDefinition;
 			}
 			if (!type) {
 				type = {
