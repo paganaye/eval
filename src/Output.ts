@@ -96,9 +96,9 @@ export class Output {
 	}
 
 	printSelect(options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
-		if (data === null && options.entries && options.entries.length > 0) {
-			data = options.entries[0].key;
-			onChanged(data);
+		if (options.entries && options.entries.length > 0) {
+			var filter = options.entries.filter(e => e.key == data);
+			if (filter.length == 0) data = options.entries[0].key;
 		}
 		this.evalContext.theme.printSelect(this, options, data, type, onChanged)
 	}
