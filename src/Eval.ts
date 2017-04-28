@@ -201,10 +201,10 @@ export class Eval {
 		});
 
 		this.addType("category", "wiki", "Category", (type, addProperty) => {
-			addProperty({ name: "categoryName", type: { _kind: "string" } });
+			addProperty({ name: "categoryName", type: { _kind: "string", editView: "link", tableName: "category" } });
 		});
-		this.addType("link", "wiki", "Link", (type) => {
-
+		this.addType("link", "wiki", "Link", (type, addProperty) => {
+			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
 		});
 		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {
 		// 	type.editView = "object";

@@ -67,7 +67,6 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         var result = {};
         //var container = this.targetOutput.getOutputElt();
         result = this.innerView.getValue();
-        debugger;
         if (typeof result === 'object') {
             (result as VariantObject)._kind = this.kind;
         }

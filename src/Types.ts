@@ -5,6 +5,7 @@ export interface TypeDefinition<T> {
    validate?: (value: T) => ValidationResult;
    editView?: string;
    printView?: string;
+   tableName?: string;
    mandatory?: boolean;
    description?: string;
    tab?: string;

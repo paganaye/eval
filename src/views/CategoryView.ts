@@ -17,7 +17,7 @@ export class CategoryView extends View<string, CategoryType, CategoryOptions> {
         output.printAsync("div", {}, "...", (elt, output) => {
             this.evalContext.database.on("tables/category/" + (this.type as CategoryType).categoryName,
                 (data, error) => {
-                    if (data.entries) {
+                    if (data && data.entries) {
                         output.printSelect(
                             { entries: data.entries, id: this.getId() },
                             this.data, this.type, (a) => {
