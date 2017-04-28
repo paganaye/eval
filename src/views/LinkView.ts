@@ -20,7 +20,6 @@ export class LinkView extends View<any, ObjectType, ViewOptions> {
          if (tableName) {
             this.evalContext.database.on("tables/" + tableName + "/_index",
                (data, error) => {
-                  debugger;
                   if (data) {
                      var entries: EnumEntry[] = [];
                      for (var key in data) {

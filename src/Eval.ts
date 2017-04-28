@@ -490,7 +490,6 @@ export class Eval {
 
 
 				if (!type) {
-					debugger;
 					type = {
 						_kind: "const",
 						value: "Table " + typeName + " does not exist."
