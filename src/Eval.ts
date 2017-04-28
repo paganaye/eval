@@ -30,6 +30,7 @@ import { EvalFunction } from "./EvalFunction";
 export class Eval {
 	globalVariables: { [key: string]: any } = {};
 	viewFactories: { [key: string]: ViewFactory } = {};
+	userName: string = "guest";
 
 	addViewFactory(viewName: string, viewConstructor: (parent: AnyView) => AnyView): ViewFactory {
 		return (this.viewFactories[viewName] = new ViewFactory(viewName, viewConstructor));
@@ -219,10 +220,14 @@ export class Eval {
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
 
+
+		// var path = "tables/object/" + this.recordId;
+		// this.evalContext.database.on(path, (data, error) => {
+
+		// }
 	}
 
 	addType(key: string, group: string, label: string, typeCallback?: (type: Type, addProperty: (property: Property) => void) => void): void {
-
 		var type = { _kind: key, editView: key, printView: key } as Type;
 		if (this.types[key]) {
 			console.warn("type " + key + " is already declared.");
@@ -342,145 +347,158 @@ export class Eval {
 
 	getTableType(typeName: string, callback: (type: Type) => void): void {
 		typeName = (typeName || "object").toLowerCase();
-		this.database.on("tables/table/" + typeName, (data, error) => {
-			var type = data as Type;
-			//var y: Table;
+		var type: Type;
 
-
-			switch (typeName) {
-				case "category":
-					type = {
-						_kind: "object",
-						properties: [
-							{ name: "description", type: { _kind: "string" } },
-							{ name: "entries", type: this.arrayOfEnum }
-						]
-					};
-					break;
-				case "lenient":
-					type = {
-						_kind: "variant",
-						kinds: [
-							{ key: "number", type: { _kind: "number" } },
-							{ key: "boolean", type: { _kind: "boolean" } },
-							{ key: "string", type: { _kind: "string" } },
-							{ key: "object", type: { _kind: "object", properties: [] } }
-						]
-					}
-					break;
-				case "object":
-					var objectDefinition: ObjectType = {
-						_kind: "object",
-						properties: [
-							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
-							{ name: "description", type: { _kind: "string" } },
-							{ name: "properties", type: this.getNewPropertiesType() },
-							{ name: "template", type: { _kind: "string" } },
-						]
-					};
-					type = objectDefinition;
-					break;
-				case "table":
-					var tableDefinition: ObjectType = {
-						_kind: "object",
-						properties: [
-							{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
-							{ name: "description", type: { _kind: "string" } },
-							{ name: "properties", type: this.getNewPropertiesType() },
-							{ name: "template", type: { _kind: "string" } },
-						]
-					};
-					type = tableDefinition;
-					break;
-				case "process":
-					var stepsType: ArrayType<any> = {
-						"_kind": "array", "entryType": {
-							"_kind": "variant",
-							"kinds": null /*soon processActionKinds*/
-						}
-					}
-
-					var processActionKinds: VariantKind[] = [
-						{
-							"group": "display",
-							"key": "showMessage",
-							"type": {
-								"_kind": "object", "properties": [
-									{ "name": "text", "type": { "_kind": "string" } }]
-							}
-						},
-						{
-							"group": "display",
-							"key": "showForm",
-							"type": {
-								"_kind": "object", "properties": [
-									{ "name": "text", "type": { "_kind": "string" } },
-									{ "name": "properties", "type": this.getNewPropertiesType() }]
-							}
-						},
-						{
-							"group": "entry",
-							"key": "input",
-							"type": {
-								"_kind": "object", "properties": [
-									{ "name": "text", "type": { "_kind": "string" } },
-									{ "name": "variableName", "type": { "_kind": "string" } },]
-							}
-						},
-						{
-							"group": "control flow",
-							"key": "if",
-							"type": {
-								"_kind": "object", "properties": [
-									{ "name": "condition", "type": { "_kind": "string" } },
-									{ "name": "then", "type": stepsType },
-									{ "name": "else", "type": stepsType }
-								]
-							}
-						},
-						{
-							"group": "control flow",
-							"key": "while",
-							"type": {
-								"_kind": "object", "properties": [
-									{ "name": "condition", "type": { "_kind": "string" } },
-									{ "name": "steps", "type": stepsType }
-								]
-							}
-						},
-						{
-							"group": "control flow",
-							"key": "repeat",
-							"type": {
-								"_kind": "object", "properties": [
-									{ "name": "steps", "type": stepsType },
-									{ "name": "until", "type": { "_kind": "string" } }
-								]
-							}
-						}];
-
-					(stepsType.entryType as VariantType).kinds = processActionKinds;
-
-					var processDefinition: ObjectType = {
-						"_kind": "object",
-						"description": "this is the graphcet table",
-						"properties": [
-							{ "name": "description", "type": { _kind: "string" } },
-							{ "name": "steps", "type": stepsType }
-						]
-					};
-					type = processDefinition;
-			}
-			if (!type) {
+		switch (typeName) {
+			case "category":
 				type = {
 					_kind: "object",
 					properties: [
-						{ name: "id", type: { _kind: "string" } }
+						{ name: "description", type: { _kind: "string" } },
+						{ name: "entries", type: this.arrayOfEnum }
 					]
 				};
-			}
+				break;
+			case "lenient":
+				type = {
+					_kind: "variant",
+					kinds: [
+						{ key: "number", type: { _kind: "number" } },
+						{ key: "boolean", type: { _kind: "boolean" } },
+						{ key: "string", type: { _kind: "string" } },
+						{ key: "object", type: { _kind: "object", properties: [] } }
+					]
+				}
+				break;
+			case "object":
+				var objectDefinition: ObjectType = {
+					_kind: "object",
+					properties: [{
+						name: "_kind",
+						type: {
+							_kind: "variant",
+							kinds: this.variantKinds,
+							visibility: Visibility.HiddenLabel
+						}
+					},
+					{ name: "description", type: { _kind: "string" } },
+					{ name: "properties", type: this.getNewPropertiesType() },
+					{ name: "template", type: { _kind: "string" } },
+					]
+				};
+				type = objectDefinition;
+				break;
+			case "table":
+				var tableDefinition: ObjectType = {
+					_kind: "object",
+					properties: [
+						{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+						{ name: "description", type: { _kind: "string" } },
+						{ name: "properties", type: this.getNewPropertiesType() },
+						{ name: "template", type: { _kind: "string" } },
+					]
+				};
+				type = tableDefinition;
+				break;
+			case "process":
+				var stepsType: ArrayType<any> = {
+					"_kind": "array", "entryType": {
+						"_kind": "variant",
+						"kinds": null /*soon processActionKinds*/
+					}
+				}
+
+				var processActionKinds: VariantKind[] = [
+					{
+						"group": "display",
+						"key": "showMessage",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "text", "type": { "_kind": "string" } }]
+						}
+					},
+					{
+						"group": "display",
+						"key": "showForm",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "text", "type": { "_kind": "string" } },
+								{ "name": "properties", "type": this.getNewPropertiesType() }]
+						}
+					},
+					{
+						"group": "entry",
+						"key": "input",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "text", "type": { "_kind": "string" } },
+								{ "name": "variableName", "type": { "_kind": "string" } },]
+						}
+					},
+					{
+						"group": "control flow",
+						"key": "if",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "condition", "type": { "_kind": "string" } },
+								{ "name": "then", "type": stepsType },
+								{ "name": "else", "type": stepsType }
+							]
+						}
+					},
+					{
+						"group": "control flow",
+						"key": "while",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "condition", "type": { "_kind": "string" } },
+								{ "name": "steps", "type": stepsType }
+							]
+						}
+					},
+					{
+						"group": "control flow",
+						"key": "repeat",
+						"type": {
+							"_kind": "object", "properties": [
+								{ "name": "steps", "type": stepsType },
+								{ "name": "until", "type": { "_kind": "string" } }
+							]
+						}
+					}];
+
+				(stepsType.entryType as VariantType).kinds = processActionKinds;
+
+				var processDefinition: ObjectType = {
+					"_kind": "object",
+					"description": "this is the graphcet table",
+					"properties": [
+						{ "name": "description", "type": { _kind: "string" } },
+						{ "name": "steps", "type": stepsType }
+					]
+				};
+				type = processDefinition;
+		}
+
+		if (type) {
 			callback(type);
-		});
+		}
+		else {
+			this.database.on("tables/table/" + typeName, (data, error) => {
+				var type = data as Type;
+				//var y: Table;
+
+
+				if (!type) {
+					debugger;
+					type = {
+						_kind: "const",
+						value: "Table " + typeName + " does not exist."
+					};
+				}
+				callback(type);
+			});
+		}
 	}
 
 	public clearTheme() {

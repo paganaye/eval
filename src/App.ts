@@ -68,7 +68,8 @@ class App {
 
 			var f1 = firebase.auth().onAuthStateChanged((user) => {
 				console.log("onAuthStateChanged", "change", user);
-				userName = (user && user.displayName) || JSON.stringify(user);
+				userName = user && user.displayName;
+				if (userName) this.evalContext.userName = userName;
 				updateUser();
 			}, (err) => {
 				console.log("onAuthStateChanged", "error", err);
@@ -190,7 +191,15 @@ class App {
 		this.evalConsole.initialize(outputElt, false);
 
 		var onHashChange = () => {
-			this.evalConsole.processCommand(window.location.hash.substring(1));
+			var hash = window.location.hash;
+			if (hash.indexOf(' ') == -1) {
+				try {
+					// spaces in the hash are returned as %20 in Firefox (at least)
+					var hash2 = decodeURIComponent(hash);
+					if (hash2.length < hash.length) hash = hash2;
+				} catch (e) { }
+			}
+			this.evalConsole.processCommand(hash.substring(1));
 		};
 
 		$(window).on('hashchange', () => onHashChange());

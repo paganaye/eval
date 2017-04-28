@@ -56,8 +56,8 @@ Drop that we send links to pages this way it works on email but also sms tweets.
 So we need to be able to send a message to a user.
 And we need a notification system with action buttons.
 
-sub form
-========
+Frame
+=====
 When we are in a page we need to be able to display a "frame" that write to a different path.
 
 Read/Write access
