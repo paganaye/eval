@@ -56,11 +56,14 @@ input[type="color"] {
 
 
 #notifications {
-    position: absolute;
+    position: fixed;
     right: 0;
     bottom: 0;
-    background-color: white;
+    /* background-color: #eee; */
     max-width: 75%;
+    /* border-radius: 0.25rem; */
+    /* padding: 5px; */
+    /* border: 1px solid black; */
 }
 
 .notif-text {
@@ -69,18 +72,16 @@ input[type="color"] {
 
 .notif-msg {
     padding: 5px;
-    margin: 5px;
-    /*background-color: rgba(157, 215, 232, 0.25);*/
+    margin: 1rem;
+    background-color: white;
     border-radius: .25rem;
-    border: 1px solid rgba(0,0,0,.15);
-    box-shadow: 4px;
-    max-height: 4em;
+    /* border: 1px solid rgba(0,0,0,.15); */
+    max-height: 5rem;
     text-overflow: ellipsis;
     overflow: hidden;
     -webkit-line-clamp: 2;
-  
+    box-shadow: 1px 1px 5px 2px #5f7f8e;
 }
-
 .notif-msg:after{
     clear: both;
     content: "";
