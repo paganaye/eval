@@ -54,3 +54,49 @@ input[type="color"] {
     padding: 0.5rem;
 }
 
+
+#notifications {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    max-width: 75%;
+}
+
+.notif-text {
+    min-width: 20em;
+}
+
+.notif-msg {
+    padding: 5px;
+    margin: 5px;
+    /*background-color: rgba(157, 215, 232, 0.25);*/
+    border-radius: .25rem;
+    border: 1px solid rgba(0,0,0,.15);
+    box-shadow: 4px;
+    max-height: 4em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+  
+}
+
+.notif-msg:after{
+    clear: both;
+    content: "";
+    display: block;
+}
+
+.notif-close {
+    color: red;
+    border: 0;
+    background-color: transparent;
+}
+
+.notif-buttons {
+    float: right;
+}
+
+.notif-buttons > button {
+    margin: 3px;
+}

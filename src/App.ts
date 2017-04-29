@@ -54,6 +54,7 @@ class App {
 		output.printAsync("div", {}, "...", (elt, output) => {
 			var userOutput: Output;
 			var userName = "...";
+			var userId = null;
 
 			var updateUser = () => {
 				if (!userOutput) return;
@@ -67,31 +68,35 @@ class App {
 
 
 			var f1 = firebase.auth().onAuthStateChanged((user) => {
-				console.log("onAuthStateChanged", "change", user);
 				userName = user && user.displayName;
-				if (userName) this.evalContext.userName = userName;
-				updateUser();
+				userId = user && user.uid;
+				if (userName && userId) {
+					console.log("doc-auth", "signed in", userName, userId);
+					this.evalContext.userName = userName;
+					this.evalContext.userId = userId;
+					updateUser();
+					if (userId) {
+						this.evalContext.database.on("users/" + userId + "/messages", (data, error) => {
+							// message here
+							// alert("Message added")
+						})
+					}
+				}
 			}, (err) => {
-				console.log("onAuthStateChanged", "error", err);
+				console.log("doc-auth", "onAuthStateChanged", "error", err);
 				// error
 			}, () => {
-				console.log("onAuthStateChanged", "completed");
+				console.log("doc-auth", "onAuthStateChanged", "completed");
 				// completed
 			})
-			console.log("onAuthStateChanged", "result", f1);
 
 
 			firebase.auth().getRedirectResult().then(function (result) {
-				if (result.credential) {
-					// This gives you a Google Access Token. You can use it to access the Google API.
-					var token = result.credential.accessToken;
-					console.log("doc-auth", "redirectResult", result, "token:", token);
-					// ...
-				} else {
-					console.log("doc-auth", "redirectResult", result);
-				}
-				// The signed-in user info.
-				var user = result.user;
+				// if (result.credential) {
+				// 	// This gives you a Google Access Token. You can use it to access the Google API.
+				// 	var token = result.credential.accessToken;
+				// 	console.log("doc-auth", "redirectResult", result, "token:", token);
+				// }
 			}).catch(function (error: any) {
 				console.log("doc-auth", "redirectResult", "error", error);
 			});

@@ -31,6 +31,7 @@ export class Eval {
 	globalVariables: { [key: string]: any } = {};
 	viewFactories: { [key: string]: ViewFactory } = {};
 	userName: string = "guest";
+	userId: string = null;
 
 	addViewFactory(viewName: string, viewConstructor: (parent: AnyView) => AnyView): ViewFactory {
 		return (this.viewFactories[viewName] = new ViewFactory(viewName, viewConstructor));
