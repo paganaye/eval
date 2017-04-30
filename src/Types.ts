@@ -112,6 +112,7 @@ export interface EnumEntry {
 export interface VariantType extends TypeDefinition<any> {
    _kind: "variant";
    kinds: VariantKind[];
+   fixedType?: boolean;
 }
 
 export interface ButtonType extends TypeDefinition<any> {

@@ -1,6 +1,6 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ArrayType, EnumEntry, VariantObject, ObjectType } from "../Types";
+import { Type, ArrayType, EnumEntry, VariantObject, ObjectType, Visibility } from "../Types";
 import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from "../Theme";
 import { Parser } from "../Parser";
 
@@ -12,6 +12,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
    indexById: { [key: string]: number };
    arrayEntriesOutput: Output;
    entriesElementId: string;
+   addButtonEntries: EnumEntry[];
 
    build(): void {
       if (!Array.isArray(this.data)) {
@@ -22,7 +23,15 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       this.entryType = this.type.entryType
       this.entriesElementId = this.evalContext.nextId("entries");
 
+      if (this.entryType._kind == "variant") {
+         this.addButtonEntries = [];
+         for (var entry of this.entryType.kinds) {
+            this.addButtonEntries.push({ key: entry.key, label: entry.label || entry.key });
+         }
+         this.entryType.fixedType = true;
+      }
    }
+
 
    onRender(output: Output): void {
       output.printSection({ name: "array" }, (options) => {
@@ -52,15 +61,10 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
          output.printSection({ name: "array-buttons" }, (options) => {
             // we won't use HTML tables because sorting does not work well on table.
             // we don't use the bootstrap pager because sorting is hard with a pager and it look crap on mobile
-
-            if (this.entryType._kind == "variant") {
-               var entries: EnumEntry[] = [];
-               for (var entry of this.entryType.kinds) {
-                  entries.push({ key: entry.key, label: entry.label || entry.key });
-               }
+            if (this.addButtonEntries) {
                output.printButtonGroup({
                   buttonText: "Add",
-                  entries: entries
+                  entries: this.addButtonEntries
                }, (ev, str) => {
                   this.addOne(null, str, true);
                   this.arrayEntriesOutput.domAppend();

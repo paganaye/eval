@@ -71,6 +71,14 @@ Buttons
 We should have a new control type for button
 It is not harder to make a button bar so we'll do it.
 
+Translation
+===========
+
+Translation would be great for forms labels.
+It could actually simplify some of the entries.
+Anywhere we enter key/value pairs, we could consider using translation
+So the key would go in the type but the label would go in the translation and not in the type.
+
 
 Frame
 =====

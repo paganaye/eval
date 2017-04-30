@@ -1,5 +1,5 @@
 import { View, AnyView } from '../View';
-import { Type, EnumEntry, EnumType, VariantType, VariantObject, VariantKind } from '../Types';
+import { Type, EnumEntry, EnumType, VariantType, VariantObject, VariantKind, ObjectType } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
 import { SelectOptions, ViewOptions, VariantObjectOptions, PropertyOptions } from "../Theme";
@@ -40,10 +40,15 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         var id: string = this.evalContext.nextId("select");
 
         output.printSection({ name: "variant-select-container" }, (options) => {
-            output.printSelect({ entries: variantKinds, id: id }, this.kind, this.type,
-                (kind) => this.selectionChanged(kind));
+            if (this.type.fixedType) {
+                debugger;
+                output.printTag("div", {}, (this.data as ObjectType)._kind as string);
+            }
+            else {
+                output.printSelect({ entries: variantKinds, id: id }, this.kind, this.type,
+                    (kind) => this.selectionChanged(kind));
+            }
         });
-
         output.printAsync("div", {}, "...", (elt, output) => {
             this.targetOutput = output;
             this.selectionChanged(this.kind);
