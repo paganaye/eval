@@ -26,6 +26,7 @@ import { LinkView } from "./views/LinkView";
 import { CategoryView } from "./views/CategoryView";
 import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
+import { ButtonView } from "./views/ButtonView";
 
 export class Eval {
 	globalVariables: { [key: string]: any } = {};
@@ -60,7 +61,7 @@ export class Eval {
 	variantViewFactory = this.addViewFactory("variant", (parent: AnyView) => new VariantView(this, parent));
 	linkViewFactory = this.addViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
-
+	buttonView = this.addViewFactory("button", (parent: AnyView) => new ButtonView(this, parent));
 	private types: { [key: string]: Type } = {};
 
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
@@ -129,6 +130,90 @@ export class Eval {
 		},
 		visibility: Visibility.HiddenLabel
 	};
+
+	stepType: VariantType = {
+		_kind: "variant",
+		kinds: null /*soon processActionKinds*/
+	};
+
+	stepsType: ArrayType<any> = {
+		_kind: "array",
+		entryType: this.stepType
+	};
+
+	stepKinds: VariantKind[] = [
+		{
+			group: "display",
+			key: "showMessage",
+			type: {
+				_kind: "object",
+				properties: [
+					{ name: "text", type: { _kind: "string" } }]
+			}
+		},
+		{
+			group: "display",
+			key: "showForm",
+			type: {
+				_kind: "object",
+				properties: [
+					{ name: "text", type: { _kind: "string" } },
+					{ name: "properties", type: this.propertiesType }]
+			}
+		},
+		{
+			group: "entry",
+			key: "input",
+			type: {
+				_kind: "object",
+				properties: [
+					{ name: "text", type: { _kind: "string" } },
+					{ name: "variableName", type: { _kind: "string" } },]
+			}
+		},
+		{
+			group: "control flow",
+			key: "if",
+			type: {
+				_kind: "object", properties: [
+					{ name: "condition", type: { _kind: "string" } },
+					{ name: "then", type: this.stepsType },
+					{ name: "else", type: this.stepsType }
+				]
+			}
+		},
+		{
+			group: "control flow",
+			key: "while",
+			type: {
+				_kind: "object", properties: [
+					{ name: "condition", type: { _kind: "string" } },
+					{ name: "steps", type: this.stepsType }
+				]
+			}
+		},
+		{
+			group: "control flow",
+			key: "repeat",
+			type: {
+				_kind: "object", properties: [
+					{ name: "steps", type: this.stepsType },
+					{ name: "until", type: { _kind: "string" } }
+				]
+			}
+		},
+		{
+			group: "control flow",
+			key: "run",
+			label: "Run process",
+			type: {
+				_kind: "object",
+				properties: [
+					{ name: "process", type: { _kind: "string", editView: "link", tableName: "process" } }
+				]
+			}
+		}];
+
 
 	constructor() {
 
@@ -244,7 +329,7 @@ export class Eval {
 		});
 		this.addType("button", "wiki", "Button", (type, addProperty) => {
 			addProperty({ name: "text", type: { _kind: "string" } });
-			addProperty({ name: "action", type: { _kind: "string" } });
+			addProperty({ name: "action", type: this.stepsType });
 		});
 
 		this.variantType.kinds = this.variantKinds;
@@ -259,6 +344,9 @@ export class Eval {
 		// 		}
 		// 	];
 		// });
+
+		this.stepType.kinds = this.stepKinds;
+
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
 
@@ -443,80 +531,13 @@ export class Eval {
 				type = tableDefinition;
 				break;
 			case "process":
-				var stepsType: ArrayType<any> = {
-					"_kind": "array", "entryType": {
-						"_kind": "variant",
-						"kinds": null /*soon processActionKinds*/
-					}
-				}
-
-				var processActionKinds: VariantKind[] = [
-					{
-						"group": "display",
-						"key": "showMessage",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "text", "type": { "_kind": "string" } }]
-						}
-					},
-					{
-						"group": "display",
-						"key": "showForm",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "text", "type": { "_kind": "string" } },
-								{ "name": "properties", "type": this.propertiesType }]
-						}
-					},
-					{
-						"group": "entry",
-						"key": "input",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "text", "type": { "_kind": "string" } },
-								{ "name": "variableName", "type": { "_kind": "string" } },]
-						}
-					},
-					{
-						"group": "control flow",
-						"key": "if",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "condition", "type": { "_kind": "string" } },
-								{ "name": "then", "type": stepsType },
-								{ "name": "else", "type": stepsType }
-							]
-						}
-					},
-					{
-						"group": "control flow",
-						"key": "while",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "condition", "type": { "_kind": "string" } },
-								{ "name": "steps", "type": stepsType }
-							]
-						}
-					},
-					{
-						"group": "control flow",
-						"key": "repeat",
-						"type": {
-							"_kind": "object", "properties": [
-								{ "name": "steps", "type": stepsType },
-								{ "name": "until", "type": { "_kind": "string" } }
-							]
-						}
-					}];
-
-				(stepsType.entryType as VariantType).kinds = processActionKinds;
 
 				var processDefinition: ObjectType = {
-					"_kind": "object",
-					"description": "this is the graphcet table",
-					"properties": [
-						{ "name": "description", "type": { _kind: "string" } },
-						{ "name": "steps", "type": stepsType }
+					_kind: "object",
+					description: "this is the graphcet table",
+					properties: [
+						{ name: "description", type: { _kind: "string" } },
+						{ name: "steps", type: this.stepsType }
 					]
 				};
 				type = processDefinition;

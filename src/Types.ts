@@ -16,7 +16,7 @@ export interface TypeDefinition<T> {
 export const enum Visibility {
    Shown,
    HiddenLabel,
-   Hidden
+   Hidden,
 }
 
 export interface ValidationResult {
@@ -114,6 +114,13 @@ export interface VariantType extends TypeDefinition<any> {
    kinds: VariantKind[];
 }
 
+export interface ButtonType extends TypeDefinition<any> {
+   _kind: "button";
+   text: string;
+   process: string;
+   visibility: Visibility.HiddenLabel;
+}
+
 export interface VariantKind extends EnumEntry {
    group?: string;
    key: string;
@@ -127,7 +134,7 @@ export interface VariantObject {
 }
 
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
-   | EnumType | ObjectType | ArrayType<any> | VariantType;
+   | EnumType | ObjectType | ArrayType<any> | VariantType | ButtonType;
 
 export type TypeOrString = Type | string;
 
