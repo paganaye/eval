@@ -5,45 +5,45 @@ import { ViewOptions } from "../Theme";
 
 
 export class LinkView extends View<any, ObjectType, ViewOptions> {
-   tableName: string = "dog";
-   selectedOption: string;
+      tableName: string = "dog";
+      selectedOption: string;
 
-   build(): void {
-      this.selectedOption = this.data;
-   }
+      build(): void {
+            this.selectedOption = this.data;
+      }
 
 
-   onRender(output: Output): void {
-      //  for simplicity we make the id of the input element identical to the id of the view.
-      output.printAsync("div", {}, "...", (elt, output) => {
-         var tableName = this.type.tableName;
-         if (tableName) {
-            this.evalContext.database.on("tables/" + tableName + "/_index",
-               (data, error) => {
-                  if (data) {
-                     var entries: EnumEntry[] = [];
-                     for (var key in data) {
-                        entries.push({ key: key });
-                     }
+      onRender(output: Output): void {
+            //  for simplicity we make the id of the input element identical to the id of the view.
+            output.printAsync("div", {}, "...", (elt, output) => {
+                  var tableName = this.type.tableName;
+                  if (tableName) {
+                        this.evalContext.database.on("tables/" + tableName + "/_index",
+                              (data, error) => {
+                                    if (data) {
+                                          var entries: EnumEntry[] = [];
+                                          for (var key in data) {
+                                                entries.push({ key: key });
+                                          }
 
-                     output.printSelect(
-                        { entries: entries, id: this.getId() },
-                        this.data, { _kind: "string" }, (a) => {
-                           this.selectedOption = a;
-                        });
+                                          output.printSelect(
+                                                { entries: entries, id: this.getId() },
+                                                this.data, { _kind: "string" }, (a) => {
+                                                      this.selectedOption = a;
+                                                });
+                                    }
+                                    output.domReplace();
+                              });
+                  } else {
+                        output.printTag("p", {}, "Link tableName is not set.")
+                        output.domReplace();
                   }
-                  output.domReplace();
-               });
-         } else {
-            output.printTag("p", {}, "Link tableName is not set.")
-            output.domReplace();
-         }
-      });
-   }
+            });
+      }
 
-   getValue(): string {
-      return this.selectedOption;
-   }
+      getValue(): string {
+            return this.selectedOption;
+      }
 }
 
 

@@ -4,7 +4,7 @@ import { Eval } from "./Eval";
 import { View, AnyView } from "./View";
 import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
-
+import { Notification } from "./commands/Notification"
 
 export abstract class Theme {
       constructor(public readonly evalContext: Eval) { }
@@ -26,7 +26,7 @@ export abstract class Theme {
       abstract printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void): void;
       abstract printButton(output: Output, options: ButtonOptions, action: (ev: Event) => void): void;
       abstract printButtonGroup(output: Output, options: ButtonGroupOptions, action: (ev: Event, text: string) => void): void;
-
+      abstract printNotification(output: Output, options: NotificationOptions, data: Notification, callback: (notification: Notification, id: string) => void): void;
       abstract refreshView(view: AnyView, refreshOptions: RefreshOptions): void;
 }
 
@@ -127,6 +127,10 @@ export class ButtonOptions extends ViewOptions {
 export class ButtonGroupOptions extends ViewOptions {
       buttonText: string;
       entries: EnumEntry[];
+}
+
+export class NotificationOptions extends ViewOptions {
+
 }
 
 export class FormButton {

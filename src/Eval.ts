@@ -94,6 +94,41 @@ export class Eval {
 		tab: "value"
 	};
 
+	variantType: VariantType = {
+		_kind: "variant",
+		kinds: [], // will come later
+		visibility: Visibility.HiddenLabel
+	};
+
+	propertiesType: ArrayType<object> = {
+		_kind: "array",
+		entryType: {
+			_kind: "object",
+			properties: [
+				{ name: "name", type: { _kind: "string" } },
+				{
+					name: "type", type: this.variantType
+				}
+			],
+			template: "{name} ({type._kind})"
+		},
+		visibility: Visibility.HiddenLabel
+	};
+
+	variantKindsType: ArrayType<any> = {
+		_kind: "array",
+		entryType: {
+			_kind: "object",
+			properties: [
+				{ name: "key", type: { _kind: "string" } },
+				{ name: "group", type: { _kind: "string" } },
+				{ name: "label", type: { _kind: "string" } },
+				{ name: "type", type: this.variantType }
+			],
+			template: "{key} ({type._kind})"
+		},
+		visibility: Visibility.HiddenLabel
+	};
 
 	constructor() {
 
@@ -183,7 +218,7 @@ export class Eval {
 			objectType.tab = "objectType";
 			objectType.visibility = Visibility.HiddenLabel
 
-			addProperty({ name: "properties", type: this.getNewPropertiesType() });
+			addProperty({ name: "properties", type: this.propertiesType });
 			addProperty({ name: "template", type: { _kind: "string" } });
 
 			//addProperty({ name: "minimumCount", type: { _kind: "number", tab: "behaviour" } });
@@ -197,7 +232,7 @@ export class Eval {
 			var variantType = (type as VariantType);
 			variantType.kinds = [];
 
-			addProperty({ name: "kinds", type: this.getNewVariantKindsType() });
+			addProperty({ name: "kinds", type: this.variantKindsType });
 
 		});
 
@@ -207,6 +242,12 @@ export class Eval {
 		this.addType("link", "wiki", "Link", (type, addProperty) => {
 			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
 		});
+		this.addType("button", "wiki", "Button", (type, addProperty) => {
+			addProperty({ name: "text", type: { _kind: "string" } });
+			addProperty({ name: "action", type: { _kind: "string" } });
+		});
+
+		this.variantType.kinds = this.variantKinds;
 		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {
 		// 	type.editView = "object";
 		// 	(type as ObjectType).properties = [
@@ -383,7 +424,7 @@ export class Eval {
 						}
 					},
 					{ name: "description", type: { _kind: "string" } },
-					{ name: "properties", type: this.getNewPropertiesType() },
+					{ name: "properties", type: this.propertiesType },
 					{ name: "template", type: { _kind: "string" } },
 					]
 				};
@@ -395,7 +436,7 @@ export class Eval {
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
 						{ name: "description", type: { _kind: "string" } },
-						{ name: "properties", type: this.getNewPropertiesType() },
+						{ name: "properties", type: this.propertiesType },
 						{ name: "template", type: { _kind: "string" } },
 					]
 				};
@@ -424,7 +465,7 @@ export class Eval {
 						"type": {
 							"_kind": "object", "properties": [
 								{ "name": "text", "type": { "_kind": "string" } },
-								{ "name": "properties", "type": this.getNewPropertiesType() }]
+								{ "name": "properties", "type": this.propertiesType }]
 						}
 					},
 					{
@@ -560,28 +601,6 @@ export class Eval {
 		}
 	}
 
-	getNewPropertiesType(): ArrayType<object> {
-		return {
-			_kind: "array",
-			entryType: {
-				_kind: "object",
-				properties: [
-					{ name: "name", type: { _kind: "string" } },
-					{
-						name: "type", type: {
-							_kind: "variant",
-							kinds: this.variantKinds,
-							visibility: Visibility.HiddenLabel
-						}
-					}
-				],
-				template: "{name} ({type._kind})"
-			},
-			visibility: Visibility.HiddenLabel
-		}
-	}
-
-
 	// export interface VariantKind extends EnumEntry {
 	//    group?: string;
 	//    key: string;
@@ -589,28 +608,6 @@ export class Eval {
 	//    type?: Type;
 	// }
 
-	getNewVariantKindsType(): ArrayType<object> {
-		return {
-			_kind: "array",
-			entryType: {
-				_kind: "object",
-				properties: [
-					{ name: "key", type: { _kind: "string" } },
-					{ name: "group", type: { _kind: "string" } },
-					{ name: "label", type: { _kind: "string" } },
-					{
-						name: "type", type: {
-							_kind: "variant",
-							kinds: this.variantKinds,
-							visibility: Visibility.HiddenLabel
-						}
-					}
-				],
-				template: "{key} ({type._kind})"
-			},
-			visibility: Visibility.HiddenLabel
-		}
-	}
 
 }
 

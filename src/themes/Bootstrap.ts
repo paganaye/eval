@@ -6,10 +6,9 @@ import { View, AnyView, ValidationStatus } from "../View";
 import { ObjectView } from "../views/ObjectView";
 import { ArrayView } from "../views/ArrayView";
 import { VariantView } from "../views/VariantView";
-
+import { Notification } from "../commands/Notification"
 
 export class Bootstrap extends Theme {
-
 	classPrefix = "evl-";
 
 	constructor(evalContext: Eval, private addScripts: boolean = true) {
@@ -434,5 +433,22 @@ export class Bootstrap extends Theme {
 				return null;
 		}
 
+	}
+
+	printNotification(output: Output, options: NotificationOptions, data: Notification, callback: (notification: Notification, id: string) => void): void {
+		output.printTag("div", { class: "notification" }, (output) => {
+			output.printStartTag("div", { class: "notification-buttons" });
+			if (data.buttons && data.buttons.length) {
+				for (var b of data.buttons) {
+					output.printStartTag("div", { class: "notification-button" });
+				}
+			}
+			if (data.closable) {
+				output.printStartTag("div", { class: "close-button" });
+			}
+			output.printEndTag();
+			output.printTag("div", {}, data.title);
+			if (data.text) output.printTag("div", {}, data.text);
+		});
 	}
 }
