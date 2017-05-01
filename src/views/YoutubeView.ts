@@ -14,7 +14,7 @@ export class YoutubeView extends View<IYoutube, Type, PrintArgs> {
     attributes2: ElementAttributes;
 
     build(): void {
-        var data = this.data;
+        var data = this.data || {};
         this.attributes2 = {
             frameBorder: "0",
             allowFullscreen: "true",

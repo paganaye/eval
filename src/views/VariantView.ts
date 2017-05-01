@@ -41,7 +41,6 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 
         output.printSection({ name: "variant-select-container" }, (printArgs) => {
             if (this.type.fixedType) {
-                debugger;
                 output.printTag("div", {}, (this.data as ObjectType)._kind as string);
             }
             else {

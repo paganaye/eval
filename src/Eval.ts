@@ -27,6 +27,7 @@ import { CategoryView } from "./views/CategoryView";
 import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
 import { ButtonView } from "./views/ButtonView";
+import { YoutubeView } from "./views/YoutubeView";
 
 export class Eval {
 	globalVariables: { [key: string]: any } = {};
@@ -61,7 +62,8 @@ export class Eval {
 	variantViewFactory = this.addViewFactory("variant", (parent: AnyView) => new VariantView(this, parent));
 	linkViewFactory = this.addViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
-	buttonView = this.addViewFactory("button", (parent: AnyView) => new ButtonView(this, parent));
+	buttonViewFactory = this.addViewFactory("button", (parent: AnyView) => new ButtonView(this, parent));
+	youtubeViewFactory = this.addViewFactory("youtube", (parent: AnyView) => new YoutubeView(this, parent));
 	private types: { [key: string]: Type } = {};
 
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
@@ -326,6 +328,11 @@ export class Eval {
 		});
 		this.addType("link", "wiki", "Link", (type, addProperty) => {
 			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
+		});
+		this.addType("youtube", "wiki", "Youtube", (type, addProperty) => {
+			// addProperty({ name: "video", type: { _kind: "string" } });
+			addProperty({ name: "width", type: { _kind: "string" } });
+			addProperty({ name: "height", type: { _kind: "string" } });
 		});
 		this.addType("button", "wiki", "Button", (type, addProperty) => {
 			addProperty({ name: "text", type: { _kind: "string" } });
