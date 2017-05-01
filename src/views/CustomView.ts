@@ -53,7 +53,7 @@ export class CustomView extends ObjectView {
             else {
                 text = JSON.stringify(data);
             }
-            this.customOutput.printTag("span", {}, text);
+            this.customOutput.printHTML(text);
         }
         this.customOutput.domReplace();
     }
