@@ -1,4 +1,4 @@
-import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, VariantType, VariantKind, Property, Visibility } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, VariantType, VariantKind, Property, Visibility, EnumEntry } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -28,6 +28,7 @@ import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
 import { ButtonView } from "./views/ButtonView";
 import { YoutubeView } from "./views/YoutubeView";
+import { CustomView } from "./views/CustomView";
 
 export class Eval {
 	globalVariables: { [key: string]: any } = {};
@@ -64,6 +65,7 @@ export class Eval {
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
 	buttonViewFactory = this.addViewFactory("button", (parent: AnyView) => new ButtonView(this, parent));
 	youtubeViewFactory = this.addViewFactory("youtube", (parent: AnyView) => new YoutubeView(this, parent));
+	customViewFactory = this.addViewFactory("custom", (parent: AnyView) => new CustomView(this, parent));
 	private types: { [key: string]: Type } = {};
 
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
@@ -337,6 +339,9 @@ export class Eval {
 		this.addType("button", "wiki", "Button", (type, addProperty) => {
 			addProperty({ name: "text", type: { _kind: "string" } });
 			addProperty({ name: "action", type: this.stepsType });
+		});
+		this.addType("custom", "wiki", "Custom Object", (type, addProperty) => {
+			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "object" } });
 		});
 
 		this.variantType.kinds = this.variantKinds;
@@ -629,13 +634,11 @@ export class Eval {
 		}
 	}
 
-	// export interface VariantKind extends EnumEntry {
-	//    group?: string;
-	//    key: string;
-	//    label?: string;
-	//    type?: Type;
-	// }
-
-
+	findEntry(entries: EnumEntry[], data: string): string {
+		if (!entries || entries.length == 0) return null;
+		var filter = entries.filter(e => e.key == data);
+		if (filter.length == 0) data = entries[0].key;
+		return data;
+	}
 }
 

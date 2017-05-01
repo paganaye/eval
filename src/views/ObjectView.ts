@@ -93,14 +93,14 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 
     getValue(): any {
         var result = {};
-        var value: any;
         for (var key of this.allKeys) {
             // and we overwrite with whatever was edited.
             var view = this.views[key];
             if (view) {
                 value = view.getValue();
             } else value = this.data[key];
-            result[key] = this.evalContext.fixValue(value);
+            var value = this.evalContext.fixValue(value);
+            if (value != null) result[key] = value;
         }
         return result;
     }

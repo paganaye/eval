@@ -16,9 +16,10 @@ export class SelectView extends View<string, EnumType, SelectPrintArgs> {
     onRender(output: Output): void {
         var enumEntries: EnumEntry[] = this.type.entries;
 
+        this.selectedOption = this.evalContext.findEntry(enumEntries, this.data);
         output.printSelect(
             { entries: enumEntries, id: this.getId() },
-            this.data, this.type, (a) => {
+            this.selectedOption, this.type, (a) => {
                 this.selectedOption = a;
             });
     }

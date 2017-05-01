@@ -18,7 +18,6 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
         var data = this.data;
         if (data === null) data = { _kind: "object" };
         this.kind = (typeof data === "object" ? data._kind || "object" : typeof data);
-        if (!this.entriesByKey[this.kind]) this.kind = this.type.kinds[0].key;
     }
 
     onRender(output: Output): void {
@@ -44,6 +43,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
                 output.printTag("div", {}, (this.data as ObjectType)._kind as string);
             }
             else {
+                this.kind = this.evalContext.findEntry(variantKinds, this.kind);
                 output.printSelect({ entries: variantKinds, id: id }, this.kind, this.type,
                     (kind) => this.selectionChanged(kind));
             }
@@ -68,12 +68,10 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
     }
 
     getValue(): any {
-        var result = {};
-        //var container = this.targetOutput.getOutputElt();
-        result = this.innerView.getValue();
+        var result = this.innerView.getValue();
         if (typeof result === 'object') {
             (result as VariantObject)._kind = this.kind;
-        }
+        }        
         return result;
     }
 }

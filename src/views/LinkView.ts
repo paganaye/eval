@@ -25,10 +25,11 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
                                           for (var key in data) {
                                                 entries.push({ key: key });
                                           }
+                                          this.selectedOption = this.evalContext.findEntry(entries, this.data);
 
                                           output.printSelect(
                                                 { entries: entries, id: this.getId() },
-                                                this.data, { _kind: "string" }, (a) => {
+                                                this.selectedOption, { _kind: "string" }, (a) => {
                                                       this.selectedOption = a;
                                                 });
                                     }
