@@ -49,6 +49,7 @@ export interface StringType extends TypeDefinition<string> {
    validation?: ValidationRegexp[];
    cols?: number;
    rows?: number;
+   translate?: boolean;
 }
 
 export interface ValidationRegexp {
