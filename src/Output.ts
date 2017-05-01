@@ -76,15 +76,11 @@ export class Output {
 
 		view = this.evalContext.instantiate(data, type, parentView, this.editMode, printArgs);
 
-		this.printProperty(printArgs,
-			view);
+		if (!printArgs) printArgs = { showLabel: true };
+		this.evalContext.theme.printProperty(this, printArgs, view);
 		return view;
 	}
 
-	printProperty(printArgs: PropertyPrintArgs, view: AnyView) {
-		if (!printArgs) printArgs = { showLabel: true };
-		this.evalContext.theme.printProperty(this, printArgs, view);
-	}
 
 
 	printArrayEntry(arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, type: Type): AnyView {

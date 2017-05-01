@@ -1,7 +1,8 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { Type } from "../Types";
+import { Type, ObjectType } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
+import { ObjectView } from "../views/ObjectView";
 
 interface IYoutube {
     video?: string;
@@ -9,29 +10,38 @@ interface IYoutube {
     height?: number;
 }
 
-export class YoutubeView extends View<IYoutube, Type, PrintArgs> {
+export class YoutubeView extends ObjectView {
     printArgs: PrintArgs;
-    attributes2: ElementAttributes;
 
     build(): void {
-        var data = this.data || {};
-        this.attributes2 = {
-            frameBorder: "0",
-            allowFullscreen: "true",
-            width: (data.width || 560).toString(),
-            height: (data.height || 315).toString(),
-            src: "https://www.youtube.com/embed/" + ((typeof data == "string")
-                ? (data as string)
-                : data.video)
-        };
+        this.type.properties = [
+            { name: "video", type: { _kind: "string" } }
+        ]
+        super.build()
+
+        var data = (this.data || {}) as IYoutube;
     }
 
     onRender(output: Output): void {
-        output.printTag("iframe", this.attributes2);
+        if (output.isEditMode()) {
+            debugger;
+            super.onRender(output)
+            //output.printLabelAndView({ showLabel: true }, {}, youtubeType, this);
+        } else {
+            var data: IYoutube = this.data || {};
+            var attributes = {
+                frameBorder: "0",
+                allowFullscreen: "true",
+                width: (data.width || 560).toString(),
+                height: (data.height || 315).toString(),
+                src: "https://www.youtube.com/embed/" + data.video
+            };
+            output.printTag("iframe", attributes);
+        }
     }
 
     getValue(): any {
-        return this.data;
+        return super.getValue();
     }
 }
 
