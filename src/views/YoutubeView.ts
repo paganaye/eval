@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ViewOptions, ElementAttributes } from "../Theme";
+import { PrintArgs, ElementAttributes } from "../Theme";
 
 interface IYoutube {
     video?: string;
@@ -9,8 +9,8 @@ interface IYoutube {
     height?: number;
 }
 
-export class YoutubeView extends View<IYoutube, Type, ViewOptions> {
-    options: ViewOptions;
+export class YoutubeView extends View<IYoutube, Type, PrintArgs> {
+    options: PrintArgs;
     attributes2: ElementAttributes;
 
     build(): void {

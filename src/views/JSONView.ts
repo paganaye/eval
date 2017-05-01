@@ -1,9 +1,9 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ViewOptions } from "../Theme";
+import { PrintArgs } from "../Theme";
 
-export class JSONView extends View<any, any, ViewOptions> {
+export class JSONView extends View<any, any, PrintArgs> {
    data: any;
    text: string;
 

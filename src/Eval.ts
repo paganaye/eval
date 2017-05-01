@@ -18,7 +18,7 @@ import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Database } from './Database';
 import { Crud } from './commands/Crud';
-import { Theme, ViewOptions } from "./Theme";
+import { Theme, PrintArgs } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
 import { VariantView } from "./views/VariantView";
@@ -455,7 +455,7 @@ export class Eval {
 	}
 
 
-	instantiate(expr: any, type: Type, parent: AnyView, editMode: boolean, options?: ViewOptions): AnyView {
+	instantiate(expr: any, type: Type, parent: AnyView, editMode: boolean, options?: PrintArgs): AnyView {
 		var typeDef = this.getTypeDef(expr, type)
 		if (!options) options = {};
 

@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberType } from "../Types";
-import { ViewOptions } from "../Theme";
+import { PrintArgs } from "../Theme";
 
 
 export interface IParagraph {
@@ -10,7 +10,7 @@ export interface IParagraph {
     children: IParagraph[];
 }
 
-export class ParagraphView extends View<IParagraph, Type, ViewOptions> {
+export class ParagraphView extends View<IParagraph, Type, PrintArgs> {
 
     build(): void {
         if (!this.data) this.data = {} as IParagraph;

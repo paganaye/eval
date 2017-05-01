@@ -2,9 +2,9 @@ import { View, AnyView } from '../View';
 import { Type, EnumEntry, EnumType, VariantType, VariantObject, VariantKind, ObjectType } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { SelectOptions, ViewOptions, VariantObjectOptions, PropertyOptions } from "../Theme";
+import { SelectPrintArgs, PrintArgs, VariantPrintArgs, PropertyPrintArgs } from "../Theme";
 
-export class VariantView extends View<VariantObject, VariantType, VariantObjectOptions> {
+export class VariantView extends View<VariantObject, VariantType, VariantPrintArgs> {
     innertype: Type;
     kind: string;
     targetOutput: Output;
@@ -26,7 +26,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantObjectO
         //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 
         // var viewId: string = null;
-        var options: PropertyOptions = { showLabel: true };
+        var options: PropertyPrintArgs = { showLabel: true };
 
         // if (this.options.freezeType) {
         //     options.label = this.data._kind;

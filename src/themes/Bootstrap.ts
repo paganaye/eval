@@ -1,4 +1,4 @@
-import { Theme, FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, VariantObjectOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, MapEntryOptions, GroupOptions, RefreshOptions } from "../Theme";
+import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions } from "../Theme";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { Eval } from "../Eval";
@@ -31,7 +31,7 @@ export class Bootstrap extends Theme {
 		}
 	}
 
-	printProperty(output: Output, options: PropertyOptions, view: AnyView) {
+	printProperty(output: Output, options: PropertyPrintArgs, view: AnyView) {
 
 		var validationStatus = view.getValidationStatus();
 		var className = this.getClassName(view.getValidationStatus());
@@ -77,7 +77,7 @@ export class Bootstrap extends Theme {
 	//     output.printEndTag();
 	// }
 
-	printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
+	printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
 		output.printStartTag("div", { class: "card array-entry", id: options.id });;//    <div class="card">
 		this.addClass({}, "card-header");
 		this.addClass({}, "collapsed");
@@ -126,37 +126,21 @@ export class Bootstrap extends Theme {
 		return result;
 	}
 
-	printForm(output: Output, options: FormOptions, printContent: (output: Output, options: ViewOptions) => void) {
-		output.printStartTag("form", {});
-		printContent(output, {});
-		// print buttons...
-		if (!options.buttons) options.buttons = ["Submit"];
-
-		output.printStartTag("div", {});
-		var className = "btn";
-		for (var button of options.buttons) {
-			output.printTag("button", { type: "button", class: className }, button as string);
-			className = "";
-		}
-		output.printEndTag(); // buttons
-		output.printEndTag(); // form                
-	}
-
-	printPage(output: Output, options: PageOptions, printContent: (output: Output, options: ViewOptions) => void) {
+	printPage(output: Output, options: PagePrintArgs, printContent: (output: Output, options: PrintArgs) => void) {
 		output.printStartTag("div", { class: "container" });
 		printContent(output, {});
 		output.printEndTag();
 		document.title = options.title;
 	}
 
-	printGroup(output: Output, options: GroupOptions, printContent: (output: Output, options: ViewOptions) => void) {
+	printGroup(output: Output, options: GroupOptions, printContent: (output: Output, options: PrintArgs) => void) {
 		output.printStartTag("div", { class: "group" });
 		output.printHTML("<p>hello</p>")
 		printContent(output, {});
 		output.printEndTag();
 	}
 
-	printSection(output: Output, options: SectionOptions, printContent: (options: ViewOptions) => void) {
+	printSection(output: Output, options: SectionPrintArgs, printContent: (options: PrintArgs) => void) {
 		this.addClass({}, options.name);
 		var attributes: ElementAttributes = { class: this.classPrefix + options.name };
 		switch (options.name) {
@@ -285,7 +269,7 @@ export class Bootstrap extends Theme {
 		"week": "Defines a week and year control (no time zone)"
 	};
 
-	printInput(output: Output, options: InputOptions, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
+	printInput(output: Output, options: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
 		var attributes: ElementAttributes = { value: data };
 		this.addClass(attributes, "form-control");
 		if (!output.isEditMode()) {
@@ -306,7 +290,7 @@ export class Bootstrap extends Theme {
 		});
 	}
 
-	printSelect(output: Output, options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
+	printSelect(output: Output, options: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
 		var attributes: ElementAttributes = { class: "form-control" };
 		attributes.id = options.id;
 		output.printAsync("select", attributes, () => {
@@ -339,7 +323,7 @@ export class Bootstrap extends Theme {
 	}
 
 
-	printButton(output: Output, options: ButtonOptions, action: (ev: Event) => void) {
+	printButton(output: Output, options: ButtonPrintArgs, action: (ev: Event) => void) {
 		var attributes: ElementAttributes = {};
 		if (options.class) attributes.class = options.class;
 		output.printAsync("button", attributes, options.buttonText, (elt) => {
@@ -347,7 +331,7 @@ export class Bootstrap extends Theme {
 		});
 	}
 
-	printButtonGroup(output: Output, options: ButtonGroupOptions, action: (ev: Event, string: any) => void) {
+	printButtonGroup(output: Output, options: ButtonGroupPrintArgs, action: (ev: Event, string: any) => void) {
 		output.printTag("div", { class: "dropdown" }, () => {
 
 			output.printStartTag("a",

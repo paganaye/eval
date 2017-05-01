@@ -2,9 +2,9 @@ import { Output } from "./Output";
 import { Type, ConstType } from "./Types";
 import { Expression } from './Expression';
 import { Eval } from "./Eval";
-import { ViewOptions, ElementAttributes } from "./Theme";
+import { PrintArgs, ElementAttributes } from "./Theme";
 
-export abstract class View<TValue, TType extends Type, TViewOptions extends ViewOptions> {
+export abstract class View<TValue, TType extends Type, TViewOptions extends PrintArgs> {
     protected data: TValue; // stored data
     protected type: TType; // stored type
     public options: TViewOptions; // runtime extra stuff
@@ -98,4 +98,4 @@ export class ViewFactory {
     }
 }
 
-export type AnyView = View<any, Type, ViewOptions>;
+export type AnyView = View<any, Type, PrintArgs>;

@@ -1,7 +1,7 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ViewOptions, ElementAttributes } from "../Theme";
+import { PrintArgs, ElementAttributes } from "../Theme";
 
 interface ImageSource {
     src?: string;
@@ -9,7 +9,7 @@ interface ImageSource {
     height?: number;
 }
 
-export class ImageView extends View<ImageSource, any, ViewOptions> {
+export class ImageView extends View<ImageSource, any, PrintArgs> {
 
     build(): void {
         var data = this.data;

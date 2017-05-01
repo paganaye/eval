@@ -2,9 +2,9 @@ import { View, ValidationStatus } from '../View';
 import { Type, StringType, NumberType, BooleanType } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { ViewOptions, InputOptions } from "../Theme";
+import { PrintArgs, InputPrintArgs } from "../Theme";
 
-export abstract class BaseInputView<TValue, TType extends Type> extends View<TValue, TType, InputOptions> {
+export abstract class BaseInputView<TValue, TType extends Type> extends View<TValue, TType, InputPrintArgs> {
     kind: string;
     inputId: string;
     elt: HTMLInputElement;

@@ -2,9 +2,9 @@ import { View } from '../View';
 import { Type, EnumEntry, EnumType } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { SelectOptions, ViewOptions } from "../Theme";
+import { SelectPrintArgs, PrintArgs } from "../Theme";
 
-export class SelectView extends View<string, EnumType, SelectOptions> {
+export class SelectView extends View<string, EnumType, SelectPrintArgs> {
     selectedOption: string;
 
 

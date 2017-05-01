@@ -1,9 +1,9 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, ButtonType } from "../Types";
-import { ViewOptions, ButtonOptions } from "../Theme";
+import { PrintArgs, ButtonPrintArgs } from "../Theme";
 
-export class ButtonView extends View<boolean, ButtonType, ButtonOptions> {
+export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
    data: any;
    text: string;
 

@@ -1,10 +1,10 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type, ArrayType, EnumEntry, VariantObject, ObjectType, Visibility } from "../Types";
-import { ArrayOptions, ViewOptions, ElementAttributes, ArrayEntryOptions } from "../Theme";
+import { ArrayPrintArgs, PrintArgs, ElementAttributes, ArrayEntryPrintArgs } from "../Theme";
 import { Parser } from "../Parser";
 
-export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
+export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 {
    data: any[];
    views: AnyView[];
@@ -109,7 +109,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayOptions>
       }
 
 
-      var options: ArrayEntryOptions = {
+      var options: ArrayEntryPrintArgs = {
          id: id, deletable: true, label: label, frozenDynamic: false,
          entriesElementId: this.entriesElementId,
          active: active

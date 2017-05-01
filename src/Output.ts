@@ -6,7 +6,7 @@ import { Type, EnumEntry } from './Types';
 import { View, AnyView } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { FormOptions, PageOptions, SectionOptions, ViewOptions, InputOptions, ButtonOptions, ArrayOptions, SelectOptions, ButtonGroupOptions, ElementAttributes, PropertyOptions, ArrayEntryOptions, GroupOptions } from "./Theme";
+import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { VariantView } from "./views/VariantView";
 
@@ -71,7 +71,7 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printLabelAndView(options: PropertyOptions, data: any, type: Type, parentView: AnyView): AnyView {
+	printLabelAndView(options: PropertyPrintArgs, data: any, type: Type, parentView: AnyView): AnyView {
 		var view: AnyView;
 
 		view = this.evalContext.instantiate(data, type, parentView, this.editMode, options);
@@ -81,21 +81,21 @@ export class Output {
 		return view;
 	}
 
-	printProperty(options: PropertyOptions, view: AnyView) {
+	printProperty(options: PropertyPrintArgs, view: AnyView) {
 		if (!options) options = { showLabel: true };
 		this.evalContext.theme.printProperty(this, options, view);
 	}
 
 
-	printArrayEntry(arrayView: ArrayView<any>, options: ArrayEntryOptions, data: any, type: Type): AnyView {
+	printArrayEntry(arrayView: ArrayView<any>, options: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
 		return this.evalContext.theme.printArrayEntry(this, arrayView, options, data, type)
 	}
 
-	printInput(options: InputOptions, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
+	printInput(options: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
 		this.evalContext.theme.printInput(this, options, data, type, callback)
 	}
 
-	printSelect(options: SelectOptions, data: string, type: Type, onChanged?: (string) => void) {
+	printSelect(options: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
 		if (options.entries && options.entries.length > 0) {
 			var filter = options.entries.filter(e => e.key == data);
 			if (filter.length == 0) data = options.entries[0].key;
@@ -103,27 +103,23 @@ export class Output {
 		this.evalContext.theme.printSelect(this, options, data, type, onChanged)
 	}
 
-	printButton(options: ButtonOptions, action: (ev: Event) => void): void {
+	printButton(options: ButtonPrintArgs, action: (ev: Event) => void): void {
 		this.evalContext.theme.printButton(this, options, action);
 	}
 
-	printButtonGroup(options: ButtonGroupOptions, action: (ev: Event, string) => void) {
+	printButtonGroup(options: ButtonGroupPrintArgs, action: (ev: Event, string) => void) {
 		this.evalContext.theme.printButtonGroup(this, options, action);
 	}
 
-	printForm(options: FormOptions, printContent: (options: ViewOptions) => void) {
-		this.evalContext.theme.printForm(this, options, printContent)
-	}
-
-	printPage(options: PageOptions, printContent: (options: ViewOptions) => void) {
+	printPage(options: PagePrintArgs, printContent: (options: PrintArgs) => void) {
 		this.evalContext.theme.printPage(this, options, printContent)
 	}
 
-	printGroup(options: GroupOptions, printContent: (options: ViewOptions) => void) {
+	printGroup(options: GroupOptions, printContent: (options: PrintArgs) => void) {
 		this.evalContext.theme.printGroup(this, options, printContent)
 	}
 
-	printSection(options: SectionOptions, printContent: (options: ViewOptions) => void) {
+	printSection(options: SectionPrintArgs, printContent: (options: PrintArgs) => void) {
 		this.evalContext.theme.printSection(this, options, printContent)
 	}
 

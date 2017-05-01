@@ -4,7 +4,7 @@ import { Eval } from "../Eval";
 import { Expression } from '../Expression';
 import { Output } from "../Output";
 import { View, AnyView } from "../View";
-import { ViewOptions } from "../Theme";
+import { PrintArgs } from "../Theme";
 import { CommandDescription } from "../EvalFunction";
 
 

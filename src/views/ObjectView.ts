@@ -1,9 +1,9 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type, ObjectType, Property, Visibility } from "../Types";
-import { ViewOptions } from "../Theme";
+import { PrintArgs } from "../Theme";
 
-export class ObjectView extends View<Object, ObjectType, ViewOptions> {
+export class ObjectView extends View<Object, ObjectType, PrintArgs> {
     allKeys: string[];
     typedKeys: string[];
     properties: Property[];

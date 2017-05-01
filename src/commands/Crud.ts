@@ -5,7 +5,7 @@ import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
 import { View, AnyView } from "../View";
-import { ViewOptions } from "../Theme";
+import { PrintArgs } from "../Theme";
 
 export class Crud extends Command {
       private tableName: string;
@@ -32,16 +32,6 @@ export class Crud extends Command {
                   this.evalContext.getTableType(this.tableName, (type) => {
                         if (type && !type._kind) type._kind = "object";
                         switch (this.commandName.toLowerCase()) {
-                              case "create":
-                                    // this should
-                                    output2.setEditMode(true);
-                                    output2.printForm({ buttons: ["Save"] }, (options) => {
-                                          this.innerView = this.evalContext.instantiate({}, type, parentView, true);
-                                          this.innerView.render(output2);
-                                          output2.domReplace();
-                                    });
-                                    location.hash = ("create " + this.tableName);
-                                    break;
                               case "read":
                                     this.evalContext.database.on("tables/" + this.tableName + "/" + this.recordId, (data, error) => {
                                           this.innerView = this.evalContext.instantiate(data, type, parentView, false);
@@ -70,6 +60,7 @@ export class Crud extends Command {
                                                 this.innerView.render(output2);
                                                 output2.printSection({ name: "crud-update" }, (options) => {
                                                       output2.printButton({ buttonText: "Save" }, () => {
+                                                            debugger;
                                                             var data = this.innerView.getValue();
                                                             this.evalContext.database.addUpdate(path, data);
                                                             var json = JSON.stringify(data);
@@ -79,11 +70,11 @@ export class Crud extends Command {
                                                             //       size: json.length
                                                             // }
                                                             var indexData = json.length;
-                                                            
+
                                                             this.evalContext.database.addUpdate(indexPath, indexData);
                                                             this.evalContext.database.runUpdates();
                                                             console.log("eval", "save", this.tableName, this.recordId, json.length + " bytes", data, json);
-                                                            //alert("saving..." + JSON.stringify(data), JSON.stringify(data));
+                                                            alert("saved " + JSON.stringify(data));
                                                       });
                                                 });
                                                 output2.domReplace();

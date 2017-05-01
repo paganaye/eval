@@ -1,9 +1,9 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
-import { ViewOptions } from "../Theme";
+import { PrintArgs } from "../Theme";
 
-export class BoxView extends View<any, Type, ViewOptions> {
+export class BoxView extends View<any, Type, PrintArgs> {
 
    build(): void {
    }

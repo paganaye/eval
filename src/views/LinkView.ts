@@ -1,10 +1,10 @@
 import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberType, ObjectType, EnumEntry } from "../Types";
-import { ViewOptions } from "../Theme";
+import { PrintArgs } from "../Theme";
 
 
-export class LinkView extends View<any, ObjectType, ViewOptions> {
+export class LinkView extends View<any, ObjectType, PrintArgs> {
       tableName: string = "dog";
       selectedOption: string;
 

@@ -2,9 +2,9 @@ import { View } from '../View';
 import { Type, EnumEntry, EnumType, CategoryType } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
-import { CategoryOptions, ViewOptions } from "../Theme";
+import { CategoryPrintArgs, PrintArgs } from "../Theme";
 
-export class CategoryView extends View<string, CategoryType, CategoryOptions> {
+export class CategoryView extends View<string, CategoryType, CategoryPrintArgs> {
     selectedOption: string;
 
 
