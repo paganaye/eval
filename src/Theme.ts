@@ -11,21 +11,21 @@ export abstract class Theme {
       abstract initialize(output: Output): void;
       abstract prepareViewBeforeBuild(view: AnyView): void;
 
-      abstract printPage(output: Output, options: PagePrintArgs, printContent: (options: PrintArgs) => void): void;
-      abstract printGroup(output: Output, options: GroupOptions, printContent: (options: PrintArgs) => void): void;
-      abstract printProperty(output: Output, options: PropertyPrintArgs, view: AnyView): void;
+      abstract printPage(output: Output, printArgs: PagePrintArgs, printContent: (printArgs: PrintArgs) => void): void;
+      abstract printGroup(output: Output, printArgs: GroupOptions, printContent: (printArgs: PrintArgs) => void): void;
+      abstract printProperty(output: Output, printArgs: PropertyPrintArgs, view: AnyView): void;
 
-      abstract printSection(output: Output, options: SectionPrintArgs, printContent: (options: PrintArgs) => void);
+      abstract printSection(output: Output, printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void);
 
       abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
-            options: ArrayEntryPrintArgs, data: any, type: Type): AnyView;
+            printArgs: ArrayEntryPrintArgs, data: any, type: Type): AnyView;
       abstract getArrayEntriesIndex(element: HTMLElement): string[];
 
-      abstract printInput(output: Output, options: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void;
-      abstract printSelect(output: Output, options: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void): void;
-      abstract printButton(output: Output, options: ButtonPrintArgs, action: (ev: Event) => void): void;
-      abstract printButtonGroup(output: Output, options: ButtonGroupPrintArgs, action: (ev: Event, text: string) => void): void;
-      abstract printNotification(output: Output, options: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void;
+      abstract printInput(output: Output, printArgs: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void;
+      abstract printSelect(output: Output, printArgs: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void): void;
+      abstract printButton(output: Output, printArgs: ButtonPrintArgs, action: (ev: Event) => void): void;
+      abstract printButtonGroup(output: Output, printArgs: ButtonGroupPrintArgs, action: (ev: Event, text: string) => void): void;
+      abstract printNotification(output: Output, printArgs: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void;
       abstract refreshView(view: AnyView, refreshOptions: RefreshOptions): void;
 }
 
@@ -43,7 +43,7 @@ export class PrintArgs {
 }
 
 export class PropertyPrintArgs extends PrintArgs {
-      printLabel?: ((output: Output, options: PrintArgs) => void);
+      printLabel?: ((output: Output, printArgs: PrintArgs) => void);
       label?: string;
       showLabel: boolean;
 }

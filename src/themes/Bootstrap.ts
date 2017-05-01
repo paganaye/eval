@@ -31,7 +31,7 @@ export class Bootstrap extends Theme {
 		}
 	}
 
-	printProperty(output: Output, options: PropertyPrintArgs, view: AnyView) {
+	printProperty(output: Output, printArgs: PropertyPrintArgs, view: AnyView) {
 
 		var validationStatus = view.getValidationStatus();
 		var className = this.getClassName(view.getValidationStatus());
@@ -42,10 +42,10 @@ export class Bootstrap extends Theme {
 
 		var valueAttributes = {};
 
-		if (options.showLabel) {
+		if (printArgs.showLabel) {
 			var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
 			output.printTag("label", labelAttributes,
-				options.printLabel ? (o) => options.printLabel(o, options) : options.label);
+				printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
 			this.addClass(valueAttributes, "col-lg-10");
 		}
 		else {
@@ -64,45 +64,45 @@ export class Bootstrap extends Theme {
 		output.printEndTag(); // row
 	}
 
-	// printVariantProperty(output: Output, options: PropertyOptions, view: View) {
+	// printVariantProperty(output: Output, printArgs: PropertyOptions, view: View) {
 	//     var parentView = view.getParentView();
 	//     if (parentView instanceof ArrayView) {
 
 	//     }
 	//     output.printStartTag("div", { class: "evl-variant-type" });
 	//     output.printTag("label", { class: "col-lg-2 col-form-label", for: view.getId() },
-	//         options.printLabel ? (o) => options.printLabel(o, options) : options.label);
+	//         printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
 	//     output.printEndTag();
 	//     view.render(output);
 	//     output.printEndTag();
 	// }
 
-	printArrayEntry(output: Output, arrayView: ArrayView<any>, options: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
-		output.printStartTag("div", { class: "card array-entry", id: options.id });;//    <div class="card">
+	printArrayEntry(output: Output, arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
+		output.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
 		this.addClass({}, "card-header");
 		this.addClass({}, "collapsed");
 
-		var accordionId = options.entriesElementId
+		var accordionId = printArgs.entriesElementId
 		output.printTag("a", {
-			href: "#" + options.id + "-content", class: "sort-handle collapsible-title", "data-toggle": "collapse",
+			href: "#" + printArgs.id + "-content", class: "sort-handle collapsible-title", "data-toggle": "collapse",
 			"data-parent": "#" + accordionId
 		}, (output) => {
-			output.printText(options.label);
-			if (options.deletable) {
+			output.printText(printArgs.label);
+			if (printArgs.deletable) {
 				output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
 					var elt = (ev.target as HTMLElement).parentElement;
 					if (elt) elt.parentElement.remove();
 				});
 			}
 		});
-		var contentAttributes = { class: "card-block collapse", id: options.id + "-content" };
+		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
 		var innerView = this.evalContext.instantiate(data, type, arrayView, output.isEditMode(), {});
 
 		output.printAsync("div", contentAttributes, "...", (elt, output) => {
 			var $: any = window["$"];
 			innerView.render(output);
 			output.domReplace();
-			if (options.active) {
+			if (printArgs.active) {
 				//this.addClass(contentAttributes, "show");
 				$(elt).collapse("show");
 				$(elt).siblings().collapse("hide");
@@ -126,24 +126,24 @@ export class Bootstrap extends Theme {
 		return result;
 	}
 
-	printPage(output: Output, options: PagePrintArgs, printContent: (output: Output, options: PrintArgs) => void) {
+	printPage(output: Output, printArgs: PagePrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
 		output.printStartTag("div", { class: "container" });
 		printContent(output, {});
 		output.printEndTag();
-		document.title = options.title;
+		document.title = printArgs.title;
 	}
 
-	printGroup(output: Output, options: GroupOptions, printContent: (output: Output, options: PrintArgs) => void) {
+	printGroup(output: Output, printArgs: GroupOptions, printContent: (output: Output, printArgs: PrintArgs) => void) {
 		output.printStartTag("div", { class: "group" });
 		output.printHTML("<p>hello</p>")
 		printContent(output, {});
 		output.printEndTag();
 	}
 
-	printSection(output: Output, options: SectionPrintArgs, printContent: (options: PrintArgs) => void) {
-		this.addClass({}, options.name);
-		var attributes: ElementAttributes = { class: this.classPrefix + options.name };
-		switch (options.name) {
+	printSection(output: Output, printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void) {
+		this.addClass({}, printArgs.name);
+		var attributes: ElementAttributes = { class: this.classPrefix + printArgs.name };
+		switch (printArgs.name) {
 			case "property-groups":
 				// output.printStartTag("div", {});
 				// output.printHTML("...hi...")
@@ -200,13 +200,13 @@ export class Bootstrap extends Theme {
 				break;
 
 			case "property-group":
-				if (options.title) {
+				if (printArgs.title) {
 					var id = this.evalContext.nextId("tab");
-					if (options.addHeaderCallback) {
-						options.addHeaderCallback(id, options.title);
+					if (printArgs.addHeaderCallback) {
+						printArgs.addHeaderCallback(id, printArgs.title);
 					}
 					this.addClass(attributes, "tab-pane");
-					if (options.active) {
+					if (printArgs.active) {
 						this.addClass(attributes, "active");
 					}
 					attributes.role = "tabpanel";
@@ -226,12 +226,12 @@ export class Bootstrap extends Theme {
 			case "array":
 			// case "object-orphans":
 			case "object":
-				// no tag for those but we pass the options along
-				printContent(options);
+				// no tag for those but we pass the printArgs along
+				printContent(printArgs);
 				break;
 
 			default:
-				console.error("Section " + options.name + " not implemented by Bootstrap Eval theme.");
+				console.error("Section " + printArgs.name + " not implemented by Bootstrap Eval theme.");
 				output.printStartTag("div", attributes);
 				printContent({});
 				output.printEndTag();
@@ -269,13 +269,13 @@ export class Bootstrap extends Theme {
 		"week": "Defines a week and year control (no time zone)"
 	};
 
-	printInput(output: Output, options: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
+	printInput(output: Output, printArgs: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
 		var attributes: ElementAttributes = { value: data };
 		this.addClass(attributes, "form-control");
 		if (!output.isEditMode()) {
 			attributes.readonly = "readonly";
 		}
-		attributes.id = options.id;
+		attributes.id = printArgs.id;
 
 		attributes.type = this.inputTypes[type._kind] ||
 			(this.htmlInputType[type._kind] ? type._kind : "text");
@@ -290,12 +290,12 @@ export class Bootstrap extends Theme {
 		});
 	}
 
-	printSelect(output: Output, options: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
+	printSelect(output: Output, printArgs: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
 		var attributes: ElementAttributes = { class: "form-control" };
-		attributes.id = options.id;
+		attributes.id = printArgs.id;
 		output.printAsync("select", attributes, () => {
 			var currentGroup = null;
-			for (var entry of options.entries) {
+			for (var entry of printArgs.entries) {
 				if (entry.group != currentGroup) {
 					if (currentGroup) output.printEndTag();
 					currentGroup = entry.group;
@@ -323,15 +323,15 @@ export class Bootstrap extends Theme {
 	}
 
 
-	printButton(output: Output, options: ButtonPrintArgs, action: (ev: Event) => void) {
+	printButton(output: Output, printArgs: ButtonPrintArgs, action: (ev: Event) => void) {
 		var attributes: ElementAttributes = {};
-		if (options.class) attributes.class = options.class;
-		output.printAsync("button", attributes, options.buttonText, (elt) => {
+		if (printArgs.class) attributes.class = printArgs.class;
+		output.printAsync("button", attributes, printArgs.buttonText, (elt) => {
 			elt.onclick = (ev) => action(ev);
 		});
 	}
 
-	printButtonGroup(output: Output, options: ButtonGroupPrintArgs, action: (ev: Event, string: any) => void) {
+	printButtonGroup(output: Output, printArgs: ButtonGroupPrintArgs, action: (ev: Event, string: any) => void) {
 		output.printTag("div", { class: "dropdown" }, () => {
 
 			output.printStartTag("a",
@@ -339,13 +339,13 @@ export class Bootstrap extends Theme {
 					type: "button", class: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown",
 					"aria-haspopup": "true", "aria-expanded": "false"
 				});
-			output.printText(options.buttonText);
+			output.printText(printArgs.buttonText);
 			output.printEndTag(); // button
 
 			output.printStartTag("div", { class: "dropdown-menu" });
 
 			var currentGroup = null;
-			for (let entry of options.entries) {
+			for (let entry of printArgs.entries) {
 				if (entry.group != currentGroup) {
 					output.printHTML("<div class=\"dropdown-divider\"></div>");
 					output.printText(entry.group);
@@ -378,7 +378,7 @@ export class Bootstrap extends Theme {
 		if (view instanceof VariantView) {
 			// not sure about this
 			// at all
-			// view.options.freezeType = true;
+			// view.printArgs.freezeType = true;
 		}
 	}
 
@@ -419,7 +419,7 @@ export class Bootstrap extends Theme {
 
 	}
 
-	printNotification(output: Output, options: NotificationOptions, data: Notification, callback: (notification: Notification, id: string) => void): void {
+	printNotification(output: Output, printArgs: NotificationOptions, data: Notification, callback: (notification: Notification, id: string) => void): void {
 		output.printTag("div", { class: "notification" }, (output) => {
 			output.printStartTag("div", { class: "notification-buttons" });
 			if (data.buttons && data.buttons.length) {

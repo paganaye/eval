@@ -34,7 +34,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 
 
    onRender(output: Output): void {
-      output.printSection({ name: "array" }, (options) => {
+      output.printSection({ name: "array" }, (printArgs) => {
 
 
          output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...", (elt, output) => {
@@ -58,7 +58,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
                handle: ".sort-handle"
             });
          });
-         output.printSection({ name: "array-buttons" }, (options) => {
+         output.printSection({ name: "array-buttons" }, (printArgs) => {
             // we won't use HTML tables because sorting does not work well on table.
             // we don't use the bootstrap pager because sorting is hard with a pager and it look crap on mobile
             if (this.addButtonEntries) {
@@ -109,13 +109,13 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
       }
 
 
-      var options: ArrayEntryPrintArgs = {
+      var printArgs: ArrayEntryPrintArgs = {
          id: id, deletable: true, label: label, frozenDynamic: false,
          entriesElementId: this.entriesElementId,
          active: active
       };
-      if (kind) options.frozenDynamic = true;
-      var view = this.arrayEntriesOutput.printArrayEntry(this, options, entry, this.entryType);
+      if (kind) printArgs.frozenDynamic = true;
+      var view = this.arrayEntriesOutput.printArrayEntry(this, printArgs, entry, this.entryType);
 
       this.indexById[id] = this.views.length;
       this.views.push(view);

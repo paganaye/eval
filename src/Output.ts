@@ -71,56 +71,56 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printLabelAndView(options: PropertyPrintArgs, data: any, type: Type, parentView: AnyView): AnyView {
+	printLabelAndView(printArgs: PropertyPrintArgs, data: any, type: Type, parentView: AnyView): AnyView {
 		var view: AnyView;
 
-		view = this.evalContext.instantiate(data, type, parentView, this.editMode, options);
+		view = this.evalContext.instantiate(data, type, parentView, this.editMode, printArgs);
 
-		this.printProperty(options,
+		this.printProperty(printArgs,
 			view);
 		return view;
 	}
 
-	printProperty(options: PropertyPrintArgs, view: AnyView) {
-		if (!options) options = { showLabel: true };
-		this.evalContext.theme.printProperty(this, options, view);
+	printProperty(printArgs: PropertyPrintArgs, view: AnyView) {
+		if (!printArgs) printArgs = { showLabel: true };
+		this.evalContext.theme.printProperty(this, printArgs, view);
 	}
 
 
-	printArrayEntry(arrayView: ArrayView<any>, options: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
-		return this.evalContext.theme.printArrayEntry(this, arrayView, options, data, type)
+	printArrayEntry(arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
+		return this.evalContext.theme.printArrayEntry(this, arrayView, printArgs, data, type)
 	}
 
-	printInput(options: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
-		this.evalContext.theme.printInput(this, options, data, type, callback)
+	printInput(printArgs: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
+		this.evalContext.theme.printInput(this, printArgs, data, type, callback)
 	}
 
-	printSelect(options: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
-		if (options.entries && options.entries.length > 0) {
-			var filter = options.entries.filter(e => e.key == data);
-			if (filter.length == 0) data = options.entries[0].key;
+	printSelect(printArgs: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
+		if (printArgs.entries && printArgs.entries.length > 0) {
+			var filter = printArgs.entries.filter(e => e.key == data);
+			if (filter.length == 0) data = printArgs.entries[0].key;
 		}
-		this.evalContext.theme.printSelect(this, options, data, type, onChanged)
+		this.evalContext.theme.printSelect(this, printArgs, data, type, onChanged)
 	}
 
-	printButton(options: ButtonPrintArgs, action: (ev: Event) => void): void {
-		this.evalContext.theme.printButton(this, options, action);
+	printButton(printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
+		this.evalContext.theme.printButton(this, printArgs, action);
 	}
 
-	printButtonGroup(options: ButtonGroupPrintArgs, action: (ev: Event, string) => void) {
-		this.evalContext.theme.printButtonGroup(this, options, action);
+	printButtonGroup(printArgs: ButtonGroupPrintArgs, action: (ev: Event, string) => void) {
+		this.evalContext.theme.printButtonGroup(this, printArgs, action);
 	}
 
-	printPage(options: PagePrintArgs, printContent: (options: PrintArgs) => void) {
-		this.evalContext.theme.printPage(this, options, printContent)
+	printPage(printArgs: PagePrintArgs, printContent: (printArgs: PrintArgs) => void) {
+		this.evalContext.theme.printPage(this, printArgs, printContent)
 	}
 
-	printGroup(options: GroupOptions, printContent: (options: PrintArgs) => void) {
-		this.evalContext.theme.printGroup(this, options, printContent)
+	printGroup(printArgs: GroupOptions, printContent: (printArgs: PrintArgs) => void) {
+		this.evalContext.theme.printGroup(this, printArgs, printContent)
 	}
 
-	printSection(options: SectionPrintArgs, printContent: (options: PrintArgs) => void) {
-		this.evalContext.theme.printSection(this, options, printContent)
+	printSection(printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void) {
+		this.evalContext.theme.printSection(this, printArgs, printContent)
 	}
 
 	printText(text: string) {

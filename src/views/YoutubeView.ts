@@ -10,7 +10,7 @@ interface IYoutube {
 }
 
 export class YoutubeView extends View<IYoutube, Type, PrintArgs> {
-    options: PrintArgs;
+    printArgs: PrintArgs;
     attributes2: ElementAttributes;
 
     build(): void {

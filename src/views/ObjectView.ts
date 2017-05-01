@@ -54,23 +54,23 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 
     onRender(output: Output): void {
 
-        output.printSection({ name: "object" }, (options) => {
+        output.printSection({ name: "object" }, (printArgs) => {
             if (this.mainProperties.length) {
-                output.printSection({ addHeaderCallback: options.addHeaderCallback, name: "object-properties" }, (options) => {
+                output.printSection({ addHeaderCallback: printArgs.addHeaderCallback, name: "object-properties" }, (printArgs) => {
                     for (var key of this.mainProperties) {
                         this.printProperty(key, output);
                     }
                 });
             }
             if (this.groupNames.length) {
-                output.printSection({ name: "property-groups" }, (options) => {
+                output.printSection({ name: "property-groups" }, (printArgs) => {
                     var first = true;
                     for (var groupName of this.groupNames) {
                         var group = this.groupByName[groupName];
                         output.printSection({
-                            addHeaderCallback: options.addHeaderCallback, name: "property-group",
+                            addHeaderCallback: printArgs.addHeaderCallback, name: "property-group",
                             active: first, title: groupName, orphans: (groupName == "orphans")
-                        }, (options) => {
+                        }, (printArgs) => {
                             for (var key of group) {
                                 this.printProperty(key, output);
                             }

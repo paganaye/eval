@@ -11,8 +11,8 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
    }
 
    onRender(output: Output): void {
-      var options = { buttonText: this.type.text };
-      output.printButton(options, (ev) => {
+      var printArgs = { buttonText: this.type.text };
+      output.printButton(printArgs, (ev) => {
          console.log("Run process", this.type.process);
       });
    }

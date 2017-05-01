@@ -26,12 +26,12 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
         //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 
         // var viewId: string = null;
-        var options: PropertyPrintArgs = { showLabel: true };
+        var printArgs: PropertyPrintArgs = { showLabel: true };
 
-        // if (this.options.freezeType) {
-        //     options.label = this.data._kind;
+        // if (this.printArgs.freezeType) {
+        //     printArgs.label = this.data._kind;
         // } else {
-        //     options.printLabel = (output) => {
+        //     printArgs.printLabel = (output) => {
         //         var id: string = this.evalContext.nextId("select");
         //         output.printSelect({ entries: variantKinds, id: id }, this.data._kind, this.type,
         //             (kind) => this.selectionChanged(kind));
@@ -39,7 +39,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
         // }
         var id: string = this.evalContext.nextId("select");
 
-        output.printSection({ name: "variant-select-container" }, (options) => {
+        output.printSection({ name: "variant-select-container" }, (printArgs) => {
             if (this.type.fixedType) {
                 debugger;
                 output.printTag("div", {}, (this.data as ObjectType)._kind as string);

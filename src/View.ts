@@ -7,7 +7,7 @@ import { PrintArgs, ElementAttributes } from "./Theme";
 export abstract class View<TValue, TType extends Type, TViewOptions extends PrintArgs> {
     protected data: TValue; // stored data
     protected type: TType; // stored type
-    public options: TViewOptions; // runtime extra stuff
+    public printArgs: TViewOptions; // runtime extra stuff
     private readonly id: string;
     protected abstract onRender(output: Output): void;
     abstract getValue(): TValue;
@@ -27,13 +27,13 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends Prin
         this.rendered = true;
     }
 
-    beforeBuild(data: TValue, type: TType, options: TViewOptions): void {
+    beforeBuild(data: TValue, type: TType, printArgs: TViewOptions): void {
         this.type = type || {} as TType;
         if (this.type._kind === "const" && !this.data) {
             data = (this.type as ConstType).value;
         }
         this.data = (data === undefined) ? null : data;
-        this.options = options || {} as TViewOptions;
+        this.printArgs = printArgs || {} as TViewOptions;
     }
 
     getParentView(): AnyView {

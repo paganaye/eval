@@ -455,9 +455,9 @@ export class Eval {
 	}
 
 
-	instantiate(expr: any, type: Type, parent: AnyView, editMode: boolean, options?: PrintArgs): AnyView {
+	instantiate(expr: any, type: Type, parent: AnyView, editMode: boolean, printArgs?: PrintArgs): AnyView {
 		var typeDef = this.getTypeDef(expr, type)
-		if (!options) options = {};
+		if (!printArgs) printArgs = {};
 
 		var viewName = (editMode ? typeDef.editView : typeDef.printView) || typeDef._kind;
 		var viewFactory = this.viewFactories[viewName] || this.jsonViewFactory;
@@ -467,9 +467,9 @@ export class Eval {
 			? expr.getValue(this)
 			: expr;
 
-		if (!options) options = {};
+		if (!printArgs) printArgs = {};
 
-		view.beforeBuild(actualValue, typeDef, options);
+		view.beforeBuild(actualValue, typeDef, printArgs);
 		this.theme.prepareViewBeforeBuild(view);
 		view.build();
 		return view;
