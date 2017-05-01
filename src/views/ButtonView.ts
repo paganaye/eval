@@ -13,7 +13,16 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
    onRender(output: Output): void {
       var printArgs = { buttonText: this.type.text };
       output.printButton(printArgs, (ev) => {
-         console.log("Run process", this.type.process);
+         var steps = this.type.onclick;
+         console.log("Run process", steps);
+
+         for (var a of steps) {
+            switch (a._kind) {
+               case "showMessage":
+                  alert(a.text);
+                  break;
+            }
+         }
       });
    }
 

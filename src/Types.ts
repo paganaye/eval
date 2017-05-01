@@ -119,7 +119,7 @@ export interface VariantType extends TypeDefinition<any> {
 export interface ButtonType extends TypeDefinition<any> {
    _kind: "button";
    text: string;
-   process: string;
+   onclick: Action[];
    visibility: Visibility.HiddenLabel;
 }
 
@@ -135,8 +135,16 @@ export interface VariantObject {
    //[otherFields: string]: any;
 }
 
+export interface ShowMessageAction {
+   _kind: "showMessage"
+   text: string;
+}
+
+
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
    | EnumType | ObjectType | ArrayType<any> | VariantType | ButtonType;
+
+export type Action = ShowMessageAction;
 
 export type TypeOrString = Type | string;
 

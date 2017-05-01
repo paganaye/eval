@@ -1,10 +1,16 @@
-# Holiday Process II
+# TODO
+
+Holiday Process II
 
 I have made some progress on the JSON display area.
 
 I am wondering how hard it would be to make a holiday request website using the current framework and fix as I go along.
 
-First I need employees.
+How to make a holiday request work flow using eval
+==================================================
+
+I need a holidays table.
+We wil have a page per employee.
 
     #update table holidays
         lastname string
@@ -22,7 +28,7 @@ First I need employees.
                 - rejected
     
 
-Then we can edit our first user
+Then we can edit our first record
 
     #update holidays pascal
 
@@ -61,15 +67,17 @@ And we need a notification system with action buttons.
 
 > going a bit further on this. I don't want notification to be specific. The are plenty of building blocks that could be used more generically.
 
-> So we nned buttons but lets make them generic.
+> ✔  So we need buttons but lets make them generic.
 
-> Also we need to be able to show a form coming from some other page but lets make it generic too.
+> Also we need to be a frame to show a form coming from some other page but lets make it generic too.
 
-Buttons
-=======
+State machine
+=============
+* we need a state machine
+A flow contains steps.
+A flow can split and merge.
+I can see graphcet coming
 
-We should have a new control type for button
-It is not harder to make a button bar so we'll do it.
 
 Translation
 ===========
@@ -109,13 +117,6 @@ Offline mode
 ============
 * we need an offline mode
 
-State machine
-=============
-* we need a state machine
-A flow is a page.
-A flow contains steps.
-A flow can split and merge.
-I can see graphcet coming
 
 ........
 ========

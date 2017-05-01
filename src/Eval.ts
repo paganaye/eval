@@ -338,7 +338,7 @@ export class Eval {
 		});
 		this.addType("button", "wiki", "Button", (type, addProperty) => {
 			addProperty({ name: "text", type: { _kind: "string" } });
-			addProperty({ name: "action", type: this.stepsType });
+			addProperty({ name: "onclick", type: this.stepsType });
 		});
 		this.addType("custom", "wiki", "Custom Object", (type, addProperty) => {
 			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "object" } });
@@ -549,7 +549,7 @@ export class Eval {
 					description: "this is the graphcet table",
 					properties: [
 						{ name: "description", type: { _kind: "string" } },
-						{ name: "steps", type: this.stepsType }
+						{ name: "onclick", type: this.stepsType }
 					]
 				};
 				type = processDefinition;
