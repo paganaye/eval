@@ -223,6 +223,16 @@ export class Bootstrap extends Theme {
 
 			// case "array-entries":
 			// case "nodiv":
+			case "frame":
+				output.printHTML('<div class="card">');
+				output.printHTML('   <div class="card-header">');
+				output.printHTML('      Featured');
+				output.printHTML('   </div>');
+				output.printHTML('   <div class="card-block">');
+				printContent({});
+				output.printHTML('   </div>');
+				output.printHTML('</div>');
+				break;
 			case "array":
 			// case "object-orphans":
 			case "object":

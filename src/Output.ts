@@ -1,5 +1,4 @@
 import { app } from "./App";
-import { YoutubeView } from "./views/YoutubeView";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
 import { Type, EnumEntry } from './Types';

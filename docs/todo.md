@@ -39,16 +39,6 @@ Then we can edit our first record
 What next?
 ==========
 
-Erratum: This is turning into a todo list.
-
-
-* we need user messaging with structured data inside
-
-* we need better historization
-
-* we need an offline mode
-
-* we need a state machine
     
 ✔ Login
 ========
@@ -71,13 +61,15 @@ And we need a notification system with action buttons.
 
 > Also we need to be a frame to show a form coming from some other page but lets make it generic too.
 
+* we need user messaging with structured data inside
+
+
 State machine
 =============
 * we need a state machine
 A flow contains steps.
 A flow can split and merge.
 I can see graphcet coming
-
 
 Translation
 ===========
@@ -86,7 +78,6 @@ Translation would be great for forms labels.
 It could actually simplify some of the entries.
 Anywhere we enter key/value pairs, we could consider using translation
 So the key would go in the type but the label would go in the translation and not in the type.
-
 
 Frame
 =====
@@ -115,8 +106,5 @@ historization
 
 Offline mode
 ============
-* we need an offline mode
 
 
-........
-========

@@ -31,6 +31,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
         for (var key in this.data) {
             if (key === "_kind") continue;
             if (this.typeByName[key] !== undefined) continue;
+            this.typeByName[key] = { _kind: "string" }
             this.addKey(key, "orphans");
         }
     }

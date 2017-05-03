@@ -27,8 +27,8 @@ import { CategoryView } from "./views/CategoryView";
 import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
 import { ButtonView } from "./views/ButtonView";
-import { YoutubeView } from "./views/YoutubeView";
 import { CustomView } from "./views/CustomView";
+import { FrameView } from "./views/FrameView";
 
 export class Eval {
 	globalVariables: { [key: string]: any } = {};
@@ -64,8 +64,9 @@ export class Eval {
 	linkViewFactory = this.addViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
 	buttonViewFactory = this.addViewFactory("button", (parent: AnyView) => new ButtonView(this, parent));
-	youtubeViewFactory = this.addViewFactory("youtube", (parent: AnyView) => new YoutubeView(this, parent));
 	customViewFactory = this.addViewFactory("custom", (parent: AnyView) => new CustomView(this, parent));
+	frameViewFactory = this.addViewFactory("frame", (parent: AnyView) => new FrameView(this, parent));
+
 	private types: { [key: string]: Type } = {};
 
 	commands: { [key: string]: (evalContext: Eval) => Command } = {};
@@ -331,11 +332,6 @@ export class Eval {
 		this.addType("link", "wiki", "Link", (type, addProperty) => {
 			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
 		});
-		this.addType("youtube", "wiki", "Youtube", (type, addProperty) => {
-			// addProperty({ name: "video", type: { _kind: "string" } });
-			addProperty({ name: "width", type: { _kind: "string" } });
-			addProperty({ name: "height", type: { _kind: "string" } });
-		});
 		this.addType("button", "wiki", "Button", (type, addProperty) => {
 			addProperty({ name: "text", type: { _kind: "string" } });
 			addProperty({ name: "onclick", type: this.stepsType });
@@ -343,6 +339,11 @@ export class Eval {
 		this.addType("custom", "wiki", "Custom Object", (type, addProperty) => {
 			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "object" } });
 		});
+		this.addType("frame", "wiki", "New record", (type, addProperty) => {
+			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
+			type.visibility = Visibility.HiddenLabel;
+		});
+
 
 		this.variantType.kinds = this.variantKinds;
 		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {

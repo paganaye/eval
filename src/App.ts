@@ -5,7 +5,6 @@ import { Output } from "./Output";
 import { Type } from "./Types";
 import { Eval } from "./Eval";
 import { RomanView } from "./views/RomanView";
-import { YoutubeView } from "./views/YoutubeView";
 import { Expression } from './Expression';
 import "firebase";
 
@@ -22,32 +21,28 @@ class App {
 		this.detectIncrementReload();
 		this.initEval();
 		this.initConsole();
-		// 		this.tests();
-		// 		this.renderOutput();
 		console.log("firebase", firebase);
 
 
 		var provider = new firebase.auth.GoogleAuthProvider();
-		/*
-		firebase.auth().signInWithPopup(googleProvider).then(function (result) {
-			// This gives you a Google Access Token. You can use it to access the Google API.
-			var token = result.credential.accessToken;
-			// The signed-in user info.
-			var user = result.user;
-			// ...
-		}).catch(function (error: any) {
-			// Handle Errors here.
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			// The email of the user's account used.
-			var email = error.email;
-			// The firebase.auth.AuthCredential type that was used.
-			var credential = error.credential;
-			// ...
-		});
-		*/
 
-		//    <div id="auth-container"></div>
+		// firebase.auth().signInWithPopup(googleProvider).then(function (result) {
+		// 	// This gives you a Google Access Token. You can use it to access the Google API.
+		// 	var token = result.credential.accessToken;
+		// 	// The signed-in user info.
+		// 	var user = result.user;
+		// 	// ...
+		// }).catch(function (error: any) {
+		// 	// Handle Errors here.
+		// 	var errorCode = error.code;
+		// 	var errorMessage = error.message;
+		// 	// The email of the user's account used.
+		// 	var email = error.email;
+		// 	// The firebase.auth.AuthCredential type that was used.
+		// 	var credential = error.credential;
+		// 	// ...
+		// });
+
 		var authContainer = document.getElementById("auth-container");
 		var output = new Output(this.evalContext, authContainer);
 
@@ -164,10 +159,6 @@ class App {
 
 	}
 
-	// public renderOutput() {
-	// 	this.evalContext.renderOutput();
-	// }
-
 	detectIncrementReload() {
 		var reloadString = document.body.getAttribute("data-reload");
 		this.reload = (typeof reloadString === "string") ? parseInt(reloadString) + 1 : 0;
@@ -177,10 +168,7 @@ class App {
 	initEval() {
 		this.evalContext = new Eval();
 		this.evalContext.registerView("roman", (parent: AnyView) => new RomanView(this.evalContext, parent));
-		this.evalContext.registerView("youtube", (parent: AnyView) => new YoutubeView(this.evalContext, parent));
-
 		this.evalContext.registerType("roman", { _kind: "number", printView: "roman" });
-		this.evalContext.registerType("youtube", { _kind: "string", printView: "youtube" });
 	}
 
 	initConsole() {
