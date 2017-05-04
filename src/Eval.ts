@@ -370,7 +370,7 @@ export class Eval {
 		// }
 	}
 
-	addType(key: string, group: string, label: string, typeCallback?: (type: Type, addProperty: (property: Property) => void) => void): void {
+	addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): void {
 		var type = { _kind: key, editView: key, printView: key } as Type;
 		if (this.types[key]) {
 			console.warn("type " + key + " is already declared.");
@@ -432,8 +432,8 @@ export class Eval {
 		this.functions[name] = getNew;
 	}
 
-	registerType<T>(name: string, type: Type) {
-		this.types[name] = type;
+	registerType<T>(name: string, newType: Type) {
+		this.types[name] = newType;
 	}
 
 	getVariable(variableName: string): any {
@@ -468,8 +468,8 @@ export class Eval {
 	}
 
 
-	instantiate(expr: any, type: Type, parent: AnyView, editMode: boolean, printArgs?: PrintArgs): AnyView {
-		var typeDef = this.getTypeDef(expr, type)
+	instantiate(expr: any, exprType: Type, parent: AnyView, editMode: boolean, printArgs?: PrintArgs): AnyView {
+		var typeDef = this.getTypeDef(expr, exprType)
 		if (!printArgs) printArgs = {};
 
 		var viewName = (editMode ? typeDef.editView : typeDef.printView) || typeDef._kind;
@@ -488,13 +488,13 @@ export class Eval {
 		return view;
 	}
 
-	getTableType(typeName: string, callback: (type: Type) => void): void {
+	getTableType(typeName: string, callback: (loadedType: Type) => void): void {
 		typeName = (typeName || "object").toLowerCase();
-		var type: Type;
+		var tableType: Type;
 
 		switch (typeName) {
 			case "category":
-				type = {
+				tableType = {
 					_kind: "object",
 					properties: [
 						{ name: "description", type: { _kind: "string" } },
@@ -503,7 +503,7 @@ export class Eval {
 				};
 				break;
 			case "lenient":
-				type = {
+				tableType = {
 					_kind: "variant",
 					kinds: [
 						{ key: "number", type: { _kind: "number" } },
@@ -529,7 +529,7 @@ export class Eval {
 					{ name: "template", type: { _kind: "string" } },
 					]
 				};
-				type = objectDefinition;
+				tableType = objectDefinition;
 				break;
 			case "table":
 				var tableDefinition: ObjectType = {
@@ -541,7 +541,7 @@ export class Eval {
 						{ name: "template", type: { _kind: "string" } },
 					]
 				};
-				type = tableDefinition;
+				tableType = tableDefinition;
 				break;
 			case "process":
 
@@ -553,11 +553,11 @@ export class Eval {
 						{ name: "onclick", type: this.stepsType }
 					]
 				};
-				type = processDefinition;
+				tableType = processDefinition;
 		}
 
-		if (type) {
-			callback(type);
+		if (tableType) {
+			callback(tableType);
 		}
 		else {
 			this.database.on("tables/table/" + typeName, (data, error) => {
@@ -616,18 +616,18 @@ export class Eval {
 		return value;
 	}
 
-	newInstance(type: Type): any {
-		switch (type._kind) {
+	newInstance(instanceType: Type): any {
+		switch (instanceType._kind) {
 			case "const":
-				return type.value;
+				return instanceType.value;
 			case "number":
 			case "string":
 			case "boolean":
-				return type.defaultValue;
+				return instanceType.defaultValue;
 			default:
-				if ((type as ObjectType).properties) {
+				if ((instanceType as ObjectType).properties) {
 					var result = {};
-					for (var p of (type as ObjectType).properties) {
+					for (var p of (instanceType as ObjectType).properties) {
 						result[p.name] = this.newInstance(p.type);
 					}
 					return result;

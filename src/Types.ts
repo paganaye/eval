@@ -16,6 +16,7 @@ export interface TypeDefinition<T> {
 export const enum Visibility {
    Shown,
    HiddenLabel,
+   TitleInBox,
    Hidden,
 }
 

@@ -85,10 +85,10 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 
     printProperty(key: string, output: Output) {
         var value = this.data[key];
-        var type = this.typeByName[key] || {} as Type;
-        var visibility = type.visibility || Visibility.Shown;
+        var vtype = this.typeByName[key] || {} as Type;
+        var visibility = vtype.visibility || Visibility.Shown;
         if (visibility != Visibility.Hidden) {
-            this.views[key] = output.printLabelAndView({ label: key, showLabel: visibility == Visibility.Shown }, value, type, this);
+            this.views[key] = output.printLabelAndView({ label: key, visibility: visibility }, value, vtype, this);
         }
     }
 

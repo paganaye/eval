@@ -1,6 +1,6 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ObjectType } from "../Types";
+import { Type, ObjectType, Visibility } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
 import { ObjectView } from "../views/ObjectView";
 
@@ -14,7 +14,8 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 
 
     build(): void {
-        this.tableName = this.type.tableName;
+        this.tableName = this.type.tableName;    
+        this.type.visibility = Visibility.TitleInBox;    
         this.evalContext.database.on("tables/table/" + this.tableName, (data, error) => {
             if (data) {
                 this.frameType = data;

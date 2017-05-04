@@ -1,5 +1,5 @@
 import { View, AnyView } from '../View';
-import { Type, EnumEntry, EnumType, VariantType, VariantObject, VariantKind, ObjectType } from '../Types';
+import { Type, EnumEntry, EnumType, VariantType, VariantObject, VariantKind, ObjectType, Visibility } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
 import { SelectPrintArgs, PrintArgs, VariantPrintArgs, PropertyPrintArgs } from "../Theme";
@@ -25,7 +25,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
         //var selectOptions: SelectOptions = { entries: enumEntries, id: };
 
         // var viewId: string = null;
-        var printArgs: PropertyPrintArgs = { showLabel: true };
+        var printArgs: PropertyPrintArgs = {visibility: Visibility.Shown };
 
         // if (this.printArgs.freezeType) {
         //     printArgs.label = this.data._kind;

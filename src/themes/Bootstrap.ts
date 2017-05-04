@@ -1,6 +1,6 @@
 import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions } from "../Theme";
 import { Output } from "../Output";
-import { Type } from "../Types";
+import { Type, Visibility } from "../Types";
 import { Eval } from "../Eval";
 import { View, AnyView, ValidationStatus } from "../View";
 import { ObjectView } from "../views/ObjectView";
@@ -37,19 +37,34 @@ export class Bootstrap extends Theme {
 		var className = this.getClassName(view.getValidationStatus());
 
 		var attrs = { class: "form-group row", id: view.getId() + "-container" };
-		if (className) attrs.class += " " + className;
-		output.printStartTag("div", attrs);
+		if (className) this.addClass(attrs, className);
 
 		var valueAttributes = {};
-
-		if (printArgs.showLabel) {
-			var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
-			output.printTag("label", labelAttributes,
-				printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-			this.addClass(valueAttributes, "col-lg-10");
-		}
-		else {
-			this.addClass(valueAttributes, "col-12");
+		var titleInBox = false;
+		switch (printArgs.visibility) {
+			case Visibility.Shown:
+				output.printStartTag("div", attrs);
+				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
+				output.printTag("label", labelAttributes,
+					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
+				this.addClass(valueAttributes, "col-lg-10");
+				break;
+			case Visibility.TitleInBox:
+				attrs.class = "card";
+				if (className) this.addClass(attrs, className);
+				output.printStartTag("div", attrs);
+				output.printHTML('   <div class="card-header">');
+				output.printTag("label", labelAttributes,
+					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
+				output.printHTML('   </div>');
+				output.printHTML('   <div class="card-block">');
+				titleInBox = true;
+				this.addClass(valueAttributes, "col-lg-12");
+				break;
+			default:
+				output.printStartTag("div", attrs);
+				this.addClass(valueAttributes, "col-12");
+				break;
 		}
 
 
@@ -61,23 +76,13 @@ export class Bootstrap extends Theme {
 		output.printTag('small', { class: "form-text text-muted", id: view.getId() + "-description" }, view.getDescription() || "");
 
 		output.printEndTag(); // col-lg-10;
-		output.printEndTag(); // row
+		if (titleInBox) {
+			output.printHTML('   </div>');
+		}
+		output.printEndTag(); // row or card
 	}
 
-	// printVariantProperty(output: Output, printArgs: PropertyOptions, view: View) {
-	//     var parentView = view.getParentView();
-	//     if (parentView instanceof ArrayView) {
-
-	//     }
-	//     output.printStartTag("div", { class: "evl-variant-type" });
-	//     output.printTag("label", { class: "col-lg-2 col-form-label", for: view.getId() },
-	//         printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-	//     output.printEndTag();
-	//     view.render(output);
-	//     output.printEndTag();
-	// }
-
-	printArrayEntry(output: Output, arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
+	printArrayEntry(output: Output, arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
 		output.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
 		this.addClass({}, "card-header");
 		this.addClass({}, "collapsed");
@@ -96,7 +101,7 @@ export class Bootstrap extends Theme {
 			}
 		});
 		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
-		var innerView = this.evalContext.instantiate(data, type, arrayView, output.isEditMode(), {});
+		var innerView = this.evalContext.instantiate(data, dataType, arrayView, output.isEditMode(), {});
 
 		output.printAsync("div", contentAttributes, "...", (elt, output) => {
 			var $: any = window["$"];
@@ -223,18 +228,9 @@ export class Bootstrap extends Theme {
 
 			// case "array-entries":
 			// case "nodiv":
-			case "frame":
-				output.printHTML('<div class="card">');
-				output.printHTML('   <div class="card-header">');
-				output.printHTML('      Featured');
-				output.printHTML('   </div>');
-				output.printHTML('   <div class="card-block">');
-				printContent({});
-				output.printHTML('   </div>');
-				output.printHTML('</div>');
-				break;
-			case "array":
 			// case "object-orphans":
+			case "frame":
+			case "array":
 			case "object":
 				// no tag for those but we pass the printArgs along
 				printContent(printArgs);
@@ -279,7 +275,7 @@ export class Bootstrap extends Theme {
 		"week": "Defines a week and year control (no time zone)"
 	};
 
-	printInput(output: Output, printArgs: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
+	printInput(output: Output, printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
 		var attributes: ElementAttributes = { value: data };
 		this.addClass(attributes, "form-control");
 		if (!output.isEditMode()) {
@@ -287,8 +283,8 @@ export class Bootstrap extends Theme {
 		}
 		attributes.id = printArgs.id;
 
-		attributes.type = this.inputTypes[type._kind] ||
-			(this.htmlInputType[type._kind] ? type._kind : "text");
+		attributes.type = this.inputTypes[dataType._kind] ||
+			(this.htmlInputType[dataType._kind] ? dataType._kind : "text");
 		if (attributes.type === "checkbox" && data) {
 			attributes.checked = "checked";
 		}
@@ -300,7 +296,7 @@ export class Bootstrap extends Theme {
 		});
 	}
 
-	printSelect(output: Output, printArgs: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
+	printSelect(output: Output, printArgs: SelectPrintArgs, data: string, datType: Type, onChanged?: (string) => void) {
 		var attributes: ElementAttributes = { class: "form-control" };
 		attributes.id = printArgs.id;
 		output.printAsync("select", attributes, () => {

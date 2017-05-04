@@ -1,7 +1,7 @@
 import { app } from "./App";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
-import { Type, EnumEntry } from './Types';
+import { Type, EnumEntry, Visibility } from './Types';
 import { View, AnyView } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
@@ -70,28 +70,29 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printLabelAndView(printArgs: PropertyPrintArgs, data: any, type: Type, parentView: AnyView): AnyView {
+	printLabelAndView(printArgs: PropertyPrintArgs, data: any, dataType: Type, parentView: AnyView): AnyView {
 		var view: AnyView;
 
-		view = this.evalContext.instantiate(data, type, parentView, this.editMode, printArgs);
+		view = this.evalContext.instantiate(data, dataType, parentView, this.editMode, printArgs);
 
-		if (!printArgs) printArgs = { showLabel: true };
+		if (!printArgs) printArgs = { visibility: dataType.visibility || Visibility.Shown };
+		if (dataType.visibility> printArgs.visibility) printArgs.visibility= dataType.visibility;
 		this.evalContext.theme.printProperty(this, printArgs, view);
 		return view;
 	}
 
 
 
-	printArrayEntry(arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, type: Type): AnyView {
-		return this.evalContext.theme.printArrayEntry(this, arrayView, printArgs, data, type)
+	printArrayEntry(arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
+		return this.evalContext.theme.printArrayEntry(this, arrayView, printArgs, data, dataType)
 	}
 
-	printInput(printArgs: InputPrintArgs, data: any, type: Type, callback: (elt: HTMLInputElement) => void): void {
-		this.evalContext.theme.printInput(this, printArgs, data, type, callback)
+	printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
+		this.evalContext.theme.printInput(this, printArgs, data, dataType, callback)
 	}
 
-	printSelect(printArgs: SelectPrintArgs, data: string, type: Type, onChanged?: (string) => void) {
-		this.evalContext.theme.printSelect(this, printArgs, data, type, onChanged)
+	printSelect(printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void) {
+		this.evalContext.theme.printSelect(this, printArgs, data, dataType, onChanged)
 	}
 
 	printButton(printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
