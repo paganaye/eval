@@ -31,6 +31,7 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
         output.printSection({ name: "frame" }, (printArgs) => {
             output.printAsync("div", {}, "...", (elt, output2) => {
                 this.customOutput = output2;
+                output2.setEditMode(true);
                 this.renderView();
             });
             output.printButton({ buttonText: "Save " + this.tableName }, (ev) => {
