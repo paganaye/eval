@@ -37,6 +37,11 @@ export class Database {
         };
     }
 
+    ref(path): any {
+        var result = firebase.database().ref(path);
+        return result;
+    }
+
     addUpdate(path, data): void {
         this.updates[path] = data;
     }

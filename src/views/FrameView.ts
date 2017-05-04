@@ -3,6 +3,7 @@ import { Output } from "../Output";
 import { Type, ObjectType, Visibility } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
 import { ObjectView } from "../views/ObjectView";
+import { Crud } from "../commands/Crud";
 
 
 export class FrameView extends View<Object, ObjectType, PrintArgs> {
@@ -14,8 +15,8 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 
 
     build(): void {
-        this.tableName = this.type.tableName;    
-        this.type.visibility = Visibility.TitleInBox;    
+        this.tableName = this.type.tableName;
+        this.type.visibility = Visibility.TitleInBox;
         this.evalContext.database.on("tables/table/" + this.tableName, (data, error) => {
             if (data) {
                 this.frameType = data;
@@ -34,8 +35,16 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
                 output2.setEditMode(true);
                 this.renderView();
             });
-            output.printButton({ buttonText: "Save " + this.tableName }, (ev) => {
-                alert("he");
+            output.printButton({ buttonText: "Add " + this.tableName }, (ev) => {
+                var path = "tables/" + this.tableName;
+                var postsRef = this.evalContext.database.ref(path);
+                var newPostRef = postsRef.push();
+
+                var data = this.frameView.getValue();
+                newPostRef.set(data);
+
+                var indexRef = postsRef.child("_index").child(newPostRef.getKey());
+                indexRef.set(JSON.stringify(data).length);
             });
         });
     }

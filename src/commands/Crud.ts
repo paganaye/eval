@@ -8,11 +8,11 @@ import { View, AnyView } from "../View";
 import { PrintArgs } from "../Theme";
 
 export class Crud extends Command {
-      private tableName: string;
-      private recordId: string;
+      tableName: string;
+      recordId: string;
       private innerView: AnyView;
 
-      constructor(evalContext: Eval, private commandName: string) {
+      constructor(evalContext: Eval, public commandName: string) {
             super(evalContext);
       }
 
