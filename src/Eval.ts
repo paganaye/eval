@@ -27,7 +27,7 @@ import { CategoryView } from "./views/CategoryView";
 import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
 import { ButtonView } from "./views/ButtonView";
-import { CustomView } from "./views/CustomView";
+import { StructView } from "./views/StructView";
 import { FrameView } from "./views/FrameView";
 
 export class Eval {
@@ -64,7 +64,7 @@ export class Eval {
 	linkViewFactory = this.addViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
 	buttonViewFactory = this.addViewFactory("button", (parent: AnyView) => new ButtonView(this, parent));
-	customViewFactory = this.addViewFactory("custom", (parent: AnyView) => new CustomView(this, parent));
+	structViewFactory = this.addViewFactory("struct", (parent: AnyView) => new StructView(this, parent));
 	frameViewFactory = this.addViewFactory("frame", (parent: AnyView) => new FrameView(this, parent));
 
 	private types: { [key: string]: Type } = {};
@@ -336,10 +336,10 @@ export class Eval {
 			addProperty({ name: "text", type: { _kind: "string" } });
 			addProperty({ name: "onclick", type: this.stepsType });
 		});
-		this.addType("custom", "wiki", "Custom Object", (type, addProperty) => {
-			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "object" } });
+		this.addType("struct", "wiki", "Structure", (type, addProperty) => {
+			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "struct" } });
 		});
-		this.addType("frame", "wiki", "New record", (type, addProperty) => {
+		this.addType("frame", "wiki", "Frame", (type, addProperty) => {
 			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
 			type.visibility = Visibility.HiddenLabel;
 		});

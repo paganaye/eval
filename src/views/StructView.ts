@@ -6,13 +6,13 @@ import { ObjectView } from "../views/ObjectView";
 import { Parser } from "../Parser";
 
 
-export class CustomView extends ObjectView {
+export class StructView extends ObjectView {
     printArgs: PrintArgs;
 
     build(): void {
-        var objectName = this.type.tableName;
+        var structName = this.type.tableName;
         this.type.visibility = Visibility.TitleInBox;
-        this.evalContext.database.on("tables/object/" + objectName, (data, error) => {
+        this.evalContext.database.on("tables/struct/" + structName, (data, error) => {
             if (data) {
                 this.type = data;
                 super.build();
