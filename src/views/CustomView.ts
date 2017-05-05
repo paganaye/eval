@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { Type, ObjectType } from "../Types";
+import { Type, ObjectType, Visibility } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
 import { ObjectView } from "../views/ObjectView";
 import { Parser } from "../Parser";
@@ -11,6 +11,7 @@ export class CustomView extends ObjectView {
 
     build(): void {
         var objectName = this.type.tableName;
+        this.type.visibility = Visibility.TitleInBox;
         this.evalContext.database.on("tables/object/" + objectName, (data, error) => {
             if (data) {
                 this.type = data;
