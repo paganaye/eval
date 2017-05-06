@@ -141,11 +141,16 @@ export interface ShowMessageAction {
    text: string;
 }
 
+export interface AddRecordAction {
+   _kind: "addRecord"
+   tableName: string;
+}
+
 
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
    | EnumType | ObjectType | ArrayType<any> | VariantType | ButtonType;
 
-export type Action = ShowMessageAction;
+export type Action = ShowMessageAction | AddRecordAction;
 
 export type TypeOrString = Type | string;
 

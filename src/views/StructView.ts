@@ -20,7 +20,7 @@ export class StructView extends ObjectView {
             if (this.customOutput) {
                 this.renderView();
             }
-        })
+        });
     }
 
     onRender(output: Output): void {
@@ -58,6 +58,7 @@ export class StructView extends ObjectView {
         }
         this.customOutput.domReplace();
     }
+
     getValue(): any {
         return super.getValue();
     }

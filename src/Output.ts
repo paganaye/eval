@@ -125,7 +125,6 @@ export class Output {
 
 	domReplace(): void {
 		var htmlText = this.toString();
-
 		this.elt.innerHTML = htmlText;
 		this.html = [];
 		this.raiseAfterDomCreated();
@@ -197,7 +196,11 @@ export class Output {
 			id = this.evalContext.nextId(tag);
 			attributes.id = id;
 		}
+
 		switch (typeof text) {
+			case "undefined":
+				text = "button";
+				//continue;
 			case "string":
 				this.printTag(tag, attributes, text);
 				break;

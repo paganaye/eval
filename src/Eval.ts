@@ -157,6 +157,15 @@ export class Eval {
 			}
 		},
 		{
+			group: "data",
+			key: "addRecord",
+			type: {
+				_kind: "object",
+				properties: [
+					{ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } }]
+			}
+		},
+		{
 			group: "display",
 			key: "showForm",
 			type: {

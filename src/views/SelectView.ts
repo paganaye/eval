@@ -22,7 +22,7 @@ export class SelectView extends View<string, EnumType, SelectPrintArgs> {
             this.selectedOption, this.type, (a) => {
                 this.selectedOption = a;
             });
-    }
+    }    
 
     getValue(): any {
         return this.selectedOption;
