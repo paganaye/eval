@@ -131,9 +131,17 @@ export interface VariantKind extends EnumEntry {
    type?: Type;
 }
 
+export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
+   | EnumType | ObjectType | ArrayType<any> | VariantType | ButtonType;
+
 export interface VariantObject {
    _kind: string;
    //[otherFields: string]: any;
+}
+
+export interface AlertAction {
+   _kind: "alert"
+   text: string;
 }
 
 export interface ShowMessageAction {
@@ -146,11 +154,7 @@ export interface AddRecordAction {
    tableName: string;
 }
 
-
-export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
-   | EnumType | ObjectType | ArrayType<any> | VariantType | ButtonType;
-
-export type Action = ShowMessageAction | AddRecordAction;
+export type Action = ShowMessageAction | AddRecordAction | AlertAction;
 
 export type TypeOrString = Type | string;
 

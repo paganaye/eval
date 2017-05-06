@@ -29,12 +29,26 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 		this.stepNo += 1;
 		this.running = false;
 		var step = this.steps[this.stepNo];
+		if (step == null) {
+			//this.finished =true;
+			return;
+		}
 		switch (step._kind) {
-			case "showMessage":
-				setTimeout(()=>{
+			case "alert":
+				setTimeout(() => {
 					alert((step as ShowMessageAction).text);
 					this.runNextStep();
 				})
+				this.contentOutput.printText(step.text);
+				break;
+			case "showMessage":
+				this.contentOutput.printTag("div", {}, step.text);
+				this.contentOutput.printButton({ buttonText: "next" },
+					(ev) => {
+						this.contentOutput.domReplace();
+						this.runNextStep();
+					});
+				this.contentOutput.domReplace();
 				break;
 			case "addRecord":
 				var structName = step.tableName;
@@ -62,7 +76,7 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 		var data = {};
 		this.frameView = this.evalContext.instantiate({}, structType, this, true);
 		this.frameView.render(this.contentOutput);
-		
+
 		this.contentOutput.printButton({ buttonText: "next" },
 			(ev) => {
 				this.contentOutput.printText("Thank you");
