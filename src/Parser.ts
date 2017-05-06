@@ -202,7 +202,6 @@ export class Parser {
 		}
 		var commandName = this.token.stringValue;
 		this.nextToken();
-		debugger;
 
 		if (this.token.type === TokenType.Operator && this.token.stringValue == "=") {
 			// variable assignment

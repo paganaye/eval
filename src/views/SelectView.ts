@@ -17,12 +17,20 @@ export class SelectView extends View<string, EnumType, SelectPrintArgs> {
         var enumEntries: EnumEntry[] = this.type.entries;
 
         this.selectedOption = this.evalContext.findEntry(enumEntries, this.data);
-        output.printSelect(
-            { entries: enumEntries, id: this.getId() },
-            this.selectedOption, this.type, (a) => {
-                this.selectedOption = a;
-            });
-    }    
+        
+        if (output.isEditMode()) {
+            output.printSelect(
+                { entries: enumEntries, id: this.getId() },
+                this.selectedOption, this.type, (a) => {
+                    this.selectedOption = a;
+                });
+        } else {
+            output.printInput(
+                { id: this.getId() },
+                this.selectedOption, this.type, () => { });
+
+        }
+    }
 
     getValue(): any {
         return this.selectedOption;
