@@ -23,7 +23,6 @@ class App {
 		this.initConsole();
 		console.log("firebase", firebase);
 
-
 		var provider = new firebase.auth.GoogleAuthProvider();
 
 		// firebase.auth().signInWithPopup(googleProvider).then(function (result) {

@@ -5,34 +5,34 @@ import { Eval } from "../Eval";
 import { SelectPrintArgs, PrintArgs } from "../Theme";
 
 export class SelectView extends View<string, EnumType, SelectPrintArgs> {
-    selectedOption: string;
+	selectedOption: string;
 
 
-    build(): void {
-        if (typeof this.data !== 'string') this.data = JSON.stringify(this.data);
-        this.selectedOption = this.data;
-    }
+	build(): void {
+		if (typeof this.data !== 'string') this.data = JSON.stringify(this.data);
+		this.selectedOption = this.data;
+	}
 
-    onRender(output: Output): void {
-        var enumEntries: EnumEntry[] = this.type.entries;
+	onRender(output: Output): void {
+		var enumEntries: EnumEntry[] = this.type.entries;
 
-        this.selectedOption = this.evalContext.findEntry(enumEntries, this.data);
-        
-        if (output.isEditMode()) {
-            output.printSelect(
-                { entries: enumEntries, id: this.getId() },
-                this.selectedOption, this.type, (a) => {
-                    this.selectedOption = a;
-                });
-        } else {
-            output.printInput(
-                { id: this.getId() },
-                this.selectedOption, this.type, () => { });
+		this.selectedOption = this.evalContext.findEntry(enumEntries, this.data);
 
-        }
-    }
+		if (output.isEditMode()) {
+			output.printSelect(
+				{ entries: enumEntries, id: this.getId() },
+				this.selectedOption, this.type, (a) => {
+					this.selectedOption = a;
+				});
+		} else {
+			output.printInput(
+				{ id: this.getId() },
+				this.selectedOption, this.type, () => { });
 
-    getValue(): any {
-        return this.selectedOption;
-    }
+		}
+	}
+
+	getValue(): any {
+		return this.selectedOption;
+	}
 }

@@ -5,17 +5,17 @@ import { PrintArgs } from "../Theme";
 
 export class BoxView extends View<any, Type, PrintArgs> {
 
-   build(): void {
-   }
+	build(): void {
+	}
 
-   onRender(output: Output): void {
-      output.printStartTag("span", {});
-      output.printText("Todo");
-      output.printEndTag();
+	onRender(output: Output): void {
+		output.printStartTag("span", {});
+		output.printText("Todo");
+		output.printEndTag();
 
-   }
+	}
 
-   getValue(): any {
-      return this.data;
-   }
+	getValue(): any {
+		return this.data;
+	}
 }

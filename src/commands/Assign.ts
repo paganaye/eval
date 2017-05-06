@@ -5,21 +5,21 @@ import { Output } from "../Output";
 import { CommandDescription } from "../EvalFunction";
 
 export class Assign extends Command {
-      variableName: string;
-      variableValue: any;
+	variableName: string;
+	variableValue: any;
 
-      getDescription(): CommandDescription {
-            return new CommandDescription()
-                  .addParameter("variableName", "string", "")
-                  .addParameter("variableValue", "any", "");
-      }
+	getDescription(): CommandDescription {
+		return new CommandDescription()
+			.addParameter("variableName", "string", "")
+			.addParameter("variableValue", "any", "");
+	}
 
-      run(output: Output) {
-            this.evalContext.setVariable(this.variableName, this.variableValue);
-      }
+	run(output: Output) {
+		this.evalContext.setVariable(this.variableName, this.variableValue);
+	}
 
-      runTests(output: Output): void {
+	runTests(output: Output): void {
 
-      }
+	}
 }
 

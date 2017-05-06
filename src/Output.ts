@@ -76,7 +76,7 @@ export class Output {
 		view = this.evalContext.instantiate(data, dataType, parentView, this.editMode, printArgs);
 
 		if (!printArgs) printArgs = { visibility: dataType.visibility || Visibility.Shown };
-		if (dataType.visibility> printArgs.visibility) printArgs.visibility= dataType.visibility;
+		if (dataType.visibility > printArgs.visibility) printArgs.visibility = dataType.visibility;
 		this.evalContext.theme.printProperty(this, printArgs, view);
 		return view;
 	}
@@ -200,7 +200,7 @@ export class Output {
 		switch (typeof text) {
 			case "undefined":
 				text = "button";
-				//continue;
+			//continue;
 			case "string":
 				this.printTag(tag, attributes, text);
 				break;

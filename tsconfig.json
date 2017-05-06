@@ -1,26 +1,25 @@
 {
-  "compileOnSave": true,
-  "typeAcquisition": {
-    "enable": true
-  },
-  "compilerOptions": {
-    "noEmit": true,
-    "module": "es6",
-    "target": "es6",
-    "moduleResolution": "Node",
-    "baseUrl": "src",
-    "traceResolution": false,
-    "listFiles": false,
-    "listEmittedFiles": true,
-    "pretty": true,
-    "emitDecoratorMetadata": true,  
-    "experimentalDecorators": true,
-    "outDir": "output",
-    "types": [   
-    ],
-    "sourceMap": true
-  },
-  "include": [
-     "src/**/*"
-  ]
+	"compileOnSave": true,
+	"typeAcquisition": {
+		"enable": true
+	},
+	"compilerOptions": {
+		"noEmit": true,
+		"module": "es6",
+		"target": "es6",
+		"moduleResolution": "Node",
+		"baseUrl": "src",
+		"traceResolution": false,
+		"listFiles": false,
+		"listEmittedFiles": true,
+		"pretty": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"outDir": "output",
+		"types": [],
+		"sourceMap": true
+	},
+	"include": [
+		"src/**/*"
+	]
 }

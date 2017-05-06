@@ -14,7 +14,6 @@ class Player {
 	}
 }
 
-
 class TestReporter implements jasmine.CustomReporter {
 	private output: Output;
 	private level: number = 1;
