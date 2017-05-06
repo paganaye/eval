@@ -209,15 +209,14 @@ export class Parser {
 			this.nextToken();
 			commandName = "assign"
 			parameters["variableName"] = new Const(commandName);
-			this.parseParameters(parameters, false);
 		}
 		else {
 			if (!this.evalContext.commands[commandName]) {
 				parameters["tableName"] = new Const(commandName);
 				commandName = "read";
-				this.parseParameters(parameters, false);
 			}
 		}
+		this.parseParameters(parameters, false);
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}
 
