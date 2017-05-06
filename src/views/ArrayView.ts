@@ -86,7 +86,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
       } else {
          index = this.data.length;
          entry = this.evalContext.newInstance(this.entryType);
-         if (kind) (entry as VariantObject)._kind = kind;
+         if (kind && typeof entry == "object") (entry as VariantObject)._kind = kind;
          this.data.push(entry);
       }
       var id = this.evalContext.nextId("entry");

@@ -633,6 +633,10 @@ export class Eval {
 			case "string":
 			case "boolean":
 				return instanceType.defaultValue;
+			case "variant":
+				var variantResult = this.newInstance(instanceType.kinds[0].type);
+				if (typeof variantResult == "object") variantResult._kind = instanceType.kinds[0].key);
+				return variantResult;
 			default:
 				if ((instanceType as ObjectType).properties) {
 					var result = {};
