@@ -202,15 +202,23 @@ export class Parser {
 		}
 		var commandName = this.token.stringValue;
 		this.nextToken();
+		debugger;
 
 		if (this.token.type === TokenType.Operator && this.token.stringValue == "=") {
 			// variable assignment
 			// XX = 1
 			this.nextToken();
-			parameters[0] = new Const(commandName);
 			commandName = "assign"
+			parameters["variableName"] = new Const(commandName);
+			this.parseParameters(parameters, false);
 		}
-		this.parseParameters(parameters, false);
+		else {
+			if (!this.evalContext.commands[commandName]) {
+				parameters["tableName"] = new Const(commandName);
+				commandName = "read";
+				this.parseParameters(parameters, false);
+			}
+		}
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}
 

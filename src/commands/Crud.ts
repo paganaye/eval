@@ -38,7 +38,7 @@ export class Crud extends Command {
                                           this.innerView.render(output2);
                                           output2.domReplace();
                                     })
-                                    location.hash = ("read " + this.tableName + " " + this.recordId);
+                                    location.hash = (this.tableName + " " + this.recordId);
                                     break;
                               case "update":
                                     if (type._kind == "const") {
