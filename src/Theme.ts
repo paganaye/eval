@@ -1,5 +1,5 @@
 import { Output } from "./Output";
-import { EnumEntry, Type, Visibility } from "./Types";
+import { SelectEntry, Type, Visibility } from "./Types";
 import { Eval } from "./Eval";
 import { View, AnyView } from "./View";
 import { ArrayView } from "./views/ArrayView";
@@ -83,7 +83,7 @@ export class InputPrintArgs extends PrintArgs {
 }
 
 export class SelectPrintArgs extends PrintArgs {
-	entries: EnumEntry[];
+	entries: SelectEntry[];
 	id: string;
 }
 
@@ -95,7 +95,7 @@ export class CategoryPrintArgs extends PrintArgs {
 
 export class VariantPrintArgs extends PrintArgs {
 	freezeType: boolean;
-	entries: EnumEntry[];
+	entries: SelectEntry[];
 	id: string;
 }
 
@@ -106,7 +106,7 @@ export class ButtonPrintArgs extends PrintArgs {
 
 export class ButtonGroupPrintArgs extends PrintArgs {
 	buttonText: string;
-	entries: EnumEntry[];
+	entries: SelectEntry[];
 }
 
 export class NotificationPrintArgs extends PrintArgs {

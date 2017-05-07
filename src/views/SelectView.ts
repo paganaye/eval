@@ -1,10 +1,10 @@
 import { View } from '../View';
-import { Type, EnumEntry, EnumType } from '../Types';
+import { Type, SelectEntry, SelectType } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
 import { SelectPrintArgs, PrintArgs } from "../Theme";
 
-export class SelectView extends View<string, EnumType, SelectPrintArgs> {
+export class SelectView extends View<string, SelectType, SelectPrintArgs> {
 	selectedOption: string;
 
 
@@ -14,7 +14,7 @@ export class SelectView extends View<string, EnumType, SelectPrintArgs> {
 	}
 
 	onRender(output: Output): void {
-		var enumEntries: EnumEntry[] = this.type.entries;
+		var enumEntries: SelectEntry[] = this.type.entries;
 
 		this.selectedOption = this.evalContext.findEntry(enumEntries, this.data);
 

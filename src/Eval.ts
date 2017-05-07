@@ -1,4 +1,4 @@
-import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, EnumType, TypeOrString, VariantType, VariantKind, Property, Visibility, EnumEntry } from './Types';
+import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, SelectType, TypeOrString, VariantType, VariantKind, Property, Visibility, SelectEntry } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
 import { JSONView } from "./views/JSONView";
@@ -24,7 +24,6 @@ import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
 import { VariantView } from "./views/VariantView";
 import { LinkView } from "./views/LinkView";
-import { CategoryView } from "./views/CategoryView";
 import { ParagraphView, IParagraph } from "./views/ParagraphView"
 import { EvalFunction } from "./EvalFunction";
 import { ButtonView } from "./views/ButtonView";
@@ -60,7 +59,6 @@ export class Eval {
 	passwordViewFactory = this.addViewFactory("password", (parent: AnyView) => new PasswordInputView(this, parent));
 
 	selectViewFactory = this.addViewFactory("select", (parent: AnyView) => new SelectView(this, parent));
-	categoryViewFactory = this.addViewFactory("category", (parent: AnyView) => new CategoryView(this, parent));
 	variantViewFactory = this.addViewFactory("variant", (parent: AnyView) => new VariantView(this, parent));
 	linkViewFactory = this.addViewFactory("link", (parent: AnyView) => new LinkView(this, parent));
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView) => new ParagraphView(this, parent));
@@ -240,7 +238,7 @@ export class Eval {
 		this.registerCommand("input", () => new Input(this));
 		this.registerCommand("read", () => new Read(this, "read"));
 		this.registerCommand("update", () => new Update(this, "update"));
-//		this.registerCommand("delete", () => new Crud(this, "delete"));
+		//		this.registerCommand("delete", () => new Crud(this, "delete"));
 		this.registerCommand("tests", () => new Tests(this));
 		this.registerCommand("test", () => new Tests(this));
 
@@ -256,8 +254,8 @@ export class Eval {
 		this.addType("string", "standard", "String", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "string", tab: "value" } });
 			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ name: "cols", type: { _kind: "number", tab: "display" } });
-			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
+			addProperty({ name: "cols", type: { _kind: "number", tab: "update" } });
+			addProperty({ name: "rows", type: { _kind: "number", tab: "update" } });
 		});
 		this.addType("number", "standard", "Number", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "number", tab: "value" } });
@@ -282,7 +280,7 @@ export class Eval {
 		this.addType("week", "html5", "Week");
 
 		this.addType("select", "advanced", "Select", (type, addProperty) => {
-			(type as EnumType).entries = [];
+			(type as SelectType).entries = [];
 			addProperty({ name: "entries", type: this.arrayOfEnum });
 		});
 
@@ -406,6 +404,17 @@ export class Eval {
 		properties.push({
 			name: "tab", type: {
 				_kind: "string", description: "Each group is displayed on its own tab.", tab: "display"
+			}
+		});
+		properties.push({
+			name: "visibility", type: {
+				_kind: "select", description: "Property visibility.", tab: "display",
+				entries: [
+					{ key: "hidden", label: "Hidden" },
+					{ key: "hiddenLabel", label: "Label hidden" },
+					{ key: "shown", label: "Normal" },
+					{ key: "titleInBox", label: "Title in box" }
+				]
 			}
 		});
 
@@ -648,7 +657,7 @@ export class Eval {
 		}
 	}
 
-	findEntry(entries: EnumEntry[], data: string): string {
+	findEntry(entries: SelectEntry[], data: string): string {
 		if (!entries || entries.length == 0) return null;
 		var filter = entries.filter(e => e.key == data);
 		if (filter.length == 0) data = entries[0].key;

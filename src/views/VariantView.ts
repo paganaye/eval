@@ -1,5 +1,5 @@
 import { View, AnyView } from '../View';
-import { Type, EnumEntry, EnumType, VariantType, VariantObject, VariantKind, ObjectType, Visibility } from '../Types';
+import { Type, SelectEntry, SelectType, VariantType, VariantObject, VariantKind, ObjectType, Visibility } from '../Types';
 import { Output } from '../Output';
 import { Eval } from "../Eval";
 import { SelectPrintArgs, PrintArgs, VariantPrintArgs, PropertyPrintArgs } from "../Theme";

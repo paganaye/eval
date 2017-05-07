@@ -1,7 +1,7 @@
 import { app } from "./App";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
-import { Type, EnumEntry, Visibility } from './Types';
+import { Type, SelectEntry, Visibility } from './Types';
 import { View, AnyView } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';

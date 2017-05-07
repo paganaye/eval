@@ -37,7 +37,6 @@ export class Read extends Command {
 					this.innerView.render(output2);
 					output2.domReplace();
 				})
-				location.hash = (this.tableName + " " + this.recordId);
 			});
 		});
 

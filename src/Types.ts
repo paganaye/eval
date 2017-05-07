@@ -75,7 +75,7 @@ export interface ObjectType extends TypeDefinition<object> {
 
 export interface Group {
 	defaultValue?: string;
-	entries: EnumEntry[];
+	entries: SelectEntry[];
 	multiple?: boolean;
 }
 
@@ -89,23 +89,23 @@ export interface ArrayType<T> extends TypeDefinition<T[]> {
 	canReorder?: boolean;
 }
 
-export interface EnumType extends TypeDefinition<string> {
-	_kind: "enum";
+export interface SelectType extends TypeDefinition<string> {
+	_kind: "select";
 	defaultValue?: string;
-	entries: EnumEntry[];
+	entries: SelectEntry[];
 	multiple?: boolean;
 }
 
 export interface CategoryType extends TypeDefinition<string> {
 	_kind: "enum";
 	defaultValue?: string;
-	entries: EnumEntry[];
+	entries: SelectEntry[];
 	multiple?: boolean;
 	categoryName: string;
 }
 
 
-export interface EnumEntry {
+export interface SelectEntry {
 	group?: string;
 	key: string
 	label?: string
@@ -124,7 +124,7 @@ export interface ButtonType extends TypeDefinition<any> {
 	visibility: Visibility.HiddenLabel;
 }
 
-export interface VariantKind extends EnumEntry {
+export interface VariantKind extends SelectEntry {
 	group?: string;
 	key: string;
 	label?: string;
@@ -132,7 +132,7 @@ export interface VariantKind extends EnumEntry {
 }
 
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
-	| EnumType | ObjectType | ArrayType<any> | VariantType | ButtonType;
+	| SelectType | ObjectType | ArrayType<any> | VariantType | ButtonType;
 
 export interface VariantObject {
 	_kind: string;

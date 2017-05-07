@@ -197,7 +197,7 @@ class App {
 		$(window).on('hashchange', () => onHashChange());
 
 		if (window.location.hash.length <= 1) {
-			window.location.hash = "update dog one";
+			window.location.hash = "Welcome";
 		} else {
 			onHashChange();
 		}

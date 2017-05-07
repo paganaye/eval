@@ -1,6 +1,6 @@
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ArrayType, EnumEntry, VariantObject, ObjectType, Visibility } from "../Types";
+import { Type, ArrayType, SelectEntry, VariantObject, ObjectType, Visibility } from "../Types";
 import { ArrayPrintArgs, PrintArgs, ElementAttributes, ArrayEntryPrintArgs } from "../Theme";
 import { Parser } from "../Parser";
 
@@ -12,7 +12,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	indexById: { [key: string]: number };
 	arrayEntriesOutput: Output;
 	entriesElementId: string;
-	addButtonEntries: EnumEntry[];
+	addButtonEntries: SelectEntry[];
 
 	build(): void {
 		if (!Array.isArray(this.data)) {

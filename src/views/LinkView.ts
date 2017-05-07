@@ -1,6 +1,6 @@
 import { View } from "../View";
 import { Output } from "../Output";
-import { Type, NumberType, ObjectType, EnumEntry } from "../Types";
+import { Type, NumberType, ObjectType, SelectEntry } from "../Types";
 import { PrintArgs } from "../Theme";
 
 
@@ -21,7 +21,7 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 				this.evalContext.database.on("tables/" + tableName + "/_index",
 					(data, error) => {
 						if (data) {
-							var entries: EnumEntry[] = [];
+							var entries: SelectEntry[] = [];
 							for (var key in data) {
 								entries.push({ key: key });
 							}
