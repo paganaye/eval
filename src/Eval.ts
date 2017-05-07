@@ -418,10 +418,10 @@ export class Eval {
 			name: "visibility", type: {
 				_kind: "select", description: "Property visibility.", tab: "display",
 				entries: [
-					{ key: "hidden", label: "Hidden" },
-					{ key: "hiddenLabel", label: "Label hidden" },
-					{ key: "shown", label: "Normal" },
-					{ key: "titleInBox", label: "Title in box" }
+					{ key: "Hidden", label: "Hidden" },
+					{ key: "HiddenLabel", label: "Label hidden" },
+					{ key: "Shown", label: "Normal" },
+					{ key: "TitleInBox", label: "Title in box" }
 				]
 			}
 		});
@@ -514,7 +514,7 @@ export class Eval {
 		return view;
 	}
 
-	getTableType(typeName: string, callback: (loadedType: Type) => void): void {
+	getPageType(typeName: string, callback: (loadedType: Type) => void): void {
 		typeName = (typeName || "object").toLowerCase();
 		var tableType: Type;
 
@@ -672,6 +672,12 @@ export class Eval {
 		return data;
 	}
 
-	
+	fixEnum<T>(value: T, constEnum: any): T {
+		if (typeof value === "string") {
+			var valueString: string = value;
+			value = constEnum[valueString];
+		}
+		return value;
+	}
 }
 

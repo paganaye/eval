@@ -25,7 +25,7 @@ export class Index extends Command {
 		output.printAsync("div", {}, "Loading " + this.pageName + " pages...", (elt, output) => {
 			var parentView: AnyView = null;
 
-			this.evalContext.getTableType(this.pageName, (type) => {
+			this.evalContext.getPageType(this.pageName, (type) => {
 				if (type && !type._kind) type._kind = "object";
 
 				this.evalContext.database.on("eval/" + this.pageName.toLowerCase() + "/_index", (data, error) => {

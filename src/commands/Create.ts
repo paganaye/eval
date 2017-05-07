@@ -2,7 +2,7 @@ import { Command } from "../Command";
 import { Eval } from "../Eval";
 import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
-import { Type } from '../Types';
+import { Type, Visibility } from '../Types';
 import { Output } from "../Output";
 import { View, AnyView } from "../View";
 import { PrintArgs } from "../Theme";
@@ -23,7 +23,9 @@ export class Create extends Update {
 		this.recordId = (this.recordId || "").toLowerCase();
 
 		output.printAsync("div", {}, "Update " + this.pageName + " " + this.recordId, (elt, output2) => {
-			output2.printInput({ id: "recordId" }, "", { _kind: "string" }, (elt) => { });
+			output2.printLabelAndView({ visibility: Visibility.Shown, label: "Page Name" }, "", { _kind: "string" }, null);
+			//			output2.printInput({ id: "recordId" }, "", , (elt) => { });
+			output2.printHTML("<hr/>");
 			this.showForm(output2);
 		});
 

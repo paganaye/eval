@@ -13,7 +13,7 @@ export interface TypeDefinition<T> {
 	template?: string;
 }
 
-export const enum Visibility {
+export enum Visibility {
 	Shown,
 	HiddenLabel,
 	TitleInBox,

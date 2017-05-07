@@ -29,7 +29,7 @@ export class Read extends Command {
 		output.printAsync("div", {}, "Read " + this.pageName + " " + this.recordId, (elt, output2) => {
 			var parentView: AnyView = null;
 
-			this.evalContext.getTableType(this.pageName, (type) => {
+			this.evalContext.getPageType(this.pageName, (type) => {
 				if (type && !type._kind) type._kind = "object";
 
 				this.evalContext.database.on("eval/" + this.pageName + "/" + this.recordId, (data, error) => {

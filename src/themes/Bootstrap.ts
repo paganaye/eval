@@ -41,7 +41,8 @@ export class Bootstrap extends Theme {
 
 		var valueAttributes = {};
 		var titleInBox = false;
-		switch (printArgs.visibility) {
+		var visibility = this.evalContext.fixEnum(printArgs.visibility, Visibility);
+		switch (visibility) {
 			case Visibility.Shown:
 				output.printStartTag("div", attrs);
 				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };

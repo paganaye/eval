@@ -37,7 +37,7 @@ export class Update extends Command {
 	}
 
 	showForm(output2: Output) {
-		this.evalContext.getTableType(this.pageName, (type) => {
+		this.evalContext.getPageType(this.pageName, (type) => {
 			var parentView: AnyView = null;
 			if (type && !type._kind) type._kind = "object";
 
