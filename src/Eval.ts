@@ -1,34 +1,39 @@
 import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, SelectType, TypeOrString, VariantType, VariantKind, Property, Visibility, SelectEntry } from './Types';
 import { View, AnyView, ViewFactory } from "./View";
 import { Command } from "./Command";
-import { JSONView } from "./views/JSONView";
-import { ObjectView } from './views/ObjectView';
-import { ArrayView } from './views/ArrayView';
 import { Print } from "./commands/Print";
 import { Hello } from "./commands/Hello";
 import { Tests } from "./commands/Tests";
 import { Assign } from "./commands/Assign";
-import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
-import { NowFunction } from './functions/Time';
+import { Index } from "./commands/Index";
 import { Alert } from "./commands/Alert";
-import { Expression } from './Expression';
-import { Output } from './Output';
-import { NumberInputView, StringInputView, BooleanInputView, TelInputView, UrlInputView, DateTimeInputView, DateInputView, MonthInputView, TimeInputView, WeekInputView, ColorInputView, RangeInputView, PasswordInputView } from './views/InputView';
 import { Input } from './commands/Input';
 import { Load } from './commands/Load';
-import { Database } from './Database';
 import { Read } from './commands/Read';
 import { Update } from './commands/Update';
-import { Theme, PrintArgs } from "./Theme";
-import { Bootstrap } from "./themes/Bootstrap";
-import { SelectView } from "./views/SelectView";
-import { VariantView } from "./views/VariantView";
-import { LinkView } from "./views/LinkView";
-import { ParagraphView, IParagraph } from "./views/ParagraphView"
-import { EvalFunction } from "./EvalFunction";
+
 import { ButtonView } from "./views/ButtonView";
 import { StructView } from "./views/StructView";
 import { FrameView } from "./views/FrameView";
+import { SelectView } from "./views/SelectView";
+import { VariantView } from "./views/VariantView";
+import { LinkView } from "./views/LinkView";
+import { JSONView } from "./views/JSONView";
+import { ObjectView } from './views/ObjectView';
+import { ArrayView } from './views/ArrayView';
+import { ParagraphView, IParagraph } from "./views/ParagraphView"
+
+import { Expression } from './Expression';
+import { Output } from './Output';
+import { NumberInputView, StringInputView, BooleanInputView, TelInputView, UrlInputView, DateTimeInputView, DateInputView, MonthInputView, TimeInputView, WeekInputView, ColorInputView, RangeInputView, PasswordInputView } from './views/InputView';
+import { Database } from './Database';
+import { Theme, PrintArgs } from "./Theme";
+import { Bootstrap } from "./themes/Bootstrap";
+
+import { EvalFunction } from "./EvalFunction";
+import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
+import { NowFunction } from './functions/Time';
+
 
 export class Eval {
 	globalVariables: { [key: string]: any } = {};
@@ -236,8 +241,9 @@ export class Eval {
 		this.registerCommand("assign", () => new Assign(this));
 		this.registerCommand("alert", () => new Alert(this));
 		this.registerCommand("input", () => new Input(this));
-		this.registerCommand("read", () => new Read(this, "read"));
-		this.registerCommand("update", () => new Update(this, "update"));
+		this.registerCommand("read", () => new Read(this));
+		this.registerCommand("update", () => new Update(this));
+		this.registerCommand("index", () => new Index(this));
 		//		this.registerCommand("delete", () => new Crud(this, "delete"));
 		this.registerCommand("tests", () => new Tests(this));
 		this.registerCommand("test", () => new Tests(this));
@@ -663,5 +669,7 @@ export class Eval {
 		if (filter.length == 0) data = entries[0].key;
 		return data;
 	}
+
+	
 }
 

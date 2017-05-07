@@ -212,10 +212,12 @@ export class Parser {
 		}
 		else {
 			if (!this.evalContext.commands[commandName]) {
+				// If the first character is not a read command 
 				parameters["tableName"] = new Const(commandName);
-				commandName = "read";
+				commandName = (this.token.type == TokenType.EOF)
+					? "index" : "read";
 			}
-		}
+		}""
 		this.parseParameters(parameters, false);
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}

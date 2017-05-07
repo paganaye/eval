@@ -12,7 +12,7 @@ export class Update extends Command {
 	recordId: string;
 	private innerView: AnyView;
 
-	constructor(evalContext: Eval, public commandName: string) {
+	constructor(evalContext: Eval) {
 		super(evalContext);
 	}
 
@@ -26,7 +26,7 @@ export class Update extends Command {
 		this.tableName = (this.tableName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, this.commandName + " " + this.tableName + " " + this.recordId, (elt, output2) => {
+		output.printAsync("div", {}, "Update " + this.tableName + " " + this.recordId, (elt, output2) => {
 			var parentView: AnyView = null;
 
 			this.evalContext.getTableType(this.tableName, (type) => {

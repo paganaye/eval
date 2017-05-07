@@ -9,10 +9,9 @@ export class CommandCall {
 
 	constructor(private evalContext: Eval, private source: string, private commandName, private expressions: { [key: string]: Expression<any> }) {
 		var getNew = evalContext.commands[commandName.toLowerCase()];
-		if (!getNew) {
-			throw "Unknown command " + commandName;
+		if (getNew) {
+			this.command = getNew(evalContext);
 		}
-		this.command = getNew(evalContext);
 	}
 
 	getName() {
@@ -32,8 +31,16 @@ export class CommandCall {
 	}
 
 	run(output: Output) {
-		var description = this.command.getDescription();
-		FunctionCall.applyParameters(this.evalContext, description, this.expressions, this.command, "command " + this.commandName);
-		this.command.run(output)
+		if (!this.command) {
+			output.printTag("div", { class: "error" }, "The command \"" + this.commandName + "\" does not exist.");
+			return
+		}
+		try {
+			var description = this.command.getDescription();
+			FunctionCall.applyParameters(this.evalContext, description, this.expressions, this.command, "command " + this.commandName);
+			this.command.run(output)
+		} catch (error) {
+			output.printTag("div", { class: "error" }, error);
+		}
 	}
 }

@@ -50,5 +50,14 @@ export class Database {
 		var db = firebase.database().ref().update(this.updates);
 		this.updates = {};
 	}
+
+	pushData(tableName: string, data: any) {
+		var path = "tables/" + tableName;
+		var postsRef = this.ref(path);
+		var newPostRef = postsRef.push();
+		newPostRef.set(data);
+		var indexRef = postsRef.child("_index").child("byLength").child(newPostRef.getKey());
+		indexRef.set(JSON.stringify(data).length);
+	}
 }
 

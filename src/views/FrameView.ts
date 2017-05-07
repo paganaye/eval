@@ -42,16 +42,8 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 		if (this.frameView) {
 			this.frameView.render(this.customOutput);
 			this.customOutput.printButton({ buttonText: "Add " + this.tableName }, (ev) => {
-				debugger;
-				var path = "tables/" + this.tableName;
-				var postsRef = this.evalContext.database.ref(path);
-				var newPostRef = postsRef.push();
-
 				var data = this.frameView.getValue();
-				newPostRef.set(data);
-
-				var indexRef = postsRef.child("_index").child(newPostRef.getKey());
-				indexRef.set(JSON.stringify(data).length);
+				this.evalContext.database.pushData(this.tableName, data);
 
 				this.customOutput.printTag("div", {}, "Thank you.");
 				this.customOutput.domReplace();
