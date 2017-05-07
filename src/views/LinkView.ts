@@ -46,27 +46,3 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 		return this.selectedOption;
 	}
 }
-
-
-// import { View } from '../View';
-// import { Type, EnumEntry, EnumType, CategoryType } from '../Types';
-// import { Output } from '../Output';
-// import { Eval } from "../Eval";
-// import { CategoryOptions, ViewOptions } from "../Theme";
-
-// export class CategoryView extends View<string, CategoryType, CategoryOptions> {
-//     selectedOption: string;
-
-
-//     build(): void {
-//         if (typeof this.data !== 'string') this.data = JSON.stringify(this.data);
-//         this.selectedOption = this.data;
-//     }
-
-//     onRender(output: Output): void {
-//     }
-
-//     getValue(): any {
-//         return this.selectedOption;
-//     }
-// }

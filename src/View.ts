@@ -4,15 +4,15 @@ import { Expression } from './Expression';
 import { Eval } from "./Eval";
 import { PrintArgs, ElementAttributes } from "./Theme";
 
-export abstract class View<TValue, TType extends Type, TViewOptions extends PrintArgs> {
-	protected data: TValue; // stored data
-	protected type: TType; // stored type
-	public printArgs: TViewOptions; // runtime extra stuff
+export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintArgs> {
+	protected data: TValue;
+	protected type: TType;
+	public printArgs: TPrintArgs;
+
 	private readonly id: string;
 	protected abstract onRender(output: Output): void;
 	abstract getValue(): TValue;
-	private rendered = false
-
+	private rendered = false;
 	private validationStatus: ValidationStatus = ValidationStatus.none;
 	private validationText: string;
 	private description: string;
@@ -27,20 +27,23 @@ export abstract class View<TValue, TType extends Type, TViewOptions extends Prin
 		this.rendered = true;
 	}
 
-	beforeBuild(data: TValue, type: TType, printArgs: TViewOptions): void {
+	beforeBuild(data: TValue, type: TType, printArgs: TPrintArgs): void {
 		this.type = type || {} as TType;
 		if (this.type._kind === "const" && !this.data) {
 			data = (this.type as ConstType).value;
 		}
 		this.data = (data === undefined) ? null : data;
-		this.printArgs = printArgs || {} as TViewOptions;
+		this.printArgs = printArgs || {} as TPrintArgs;
 	}
 
 	getParentView(): AnyView {
 		return this.parentView;
 	}
 
-	getId(): string { return this.id; }
+	getId(): string {
+		return this.id;
+	}
+
 	build(): void { } // overridable
 
 	getValidationStatus(): ValidationStatus {
