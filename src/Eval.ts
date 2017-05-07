@@ -11,6 +11,7 @@ import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Read } from './commands/Read';
 import { Update } from './commands/Update';
+import { Create } from './commands/Create';
 
 import { ButtonView } from "./views/ButtonView";
 import { StructView } from "./views/StructView";
@@ -242,6 +243,7 @@ export class Eval {
 		this.registerCommand("alert", () => new Alert(this));
 		this.registerCommand("input", () => new Input(this));
 		this.registerCommand("read", () => new Read(this));
+		this.registerCommand("create", () => new Create(this));
 		this.registerCommand("update", () => new Update(this));
 		this.registerCommand("index", () => new Index(this));
 		//		this.registerCommand("delete", () => new Crud(this, "delete"));
