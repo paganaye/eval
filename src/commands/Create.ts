@@ -15,14 +15,14 @@ export class Create extends Update {
 
 	getDescription(): CommandDescription {
 		return new CommandDescription()
-			.addParameter("tableName", "stringOrVariableName");
+			.addParameter("pageName", "stringOrVariableName");
 	}
 
 	run(output: Output) {
-		this.tableName = (this.tableName || "").toLowerCase();
+		this.pageName = (this.pageName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, "Update " + this.tableName + " " + this.recordId, (elt, output2) => {
+		output.printAsync("div", {}, "Update " + this.pageName + " " + this.recordId, (elt, output2) => {
 			output2.printInput({ id: "recordId" }, "", { _kind: "string" }, (elt) => { });
 			this.showForm(output2);
 		});

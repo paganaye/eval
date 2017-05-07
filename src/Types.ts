@@ -5,7 +5,7 @@ export interface TypeDefinition<T> {
 	validate?: (value: T) => ValidationResult;
 	editView?: string;
 	printView?: string;
-	tableName?: string;
+	pageName?: string;
 	mandatory?: boolean;
 	description?: string;
 	tab?: string;
@@ -151,7 +151,7 @@ export interface ShowMessageAction {
 
 export interface AddRecordAction {
 	_kind: "addRecord"
-	tableName: string;
+	pageName: string;
 }
 
 export type Action = ShowMessageAction | AddRecordAction | AlertAction;

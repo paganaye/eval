@@ -36,7 +36,7 @@ The system sends email to relevant parties when something happens;
 
 ## Step 2 - Tables
 
-How many tables do I need to create?
+How many pages do I need to create?
 We could have:
 
    - Employee

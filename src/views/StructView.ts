@@ -10,9 +10,9 @@ export class StructView extends ObjectView {
 	printArgs: PrintArgs;
 
 	build(): void {
-		var structName = this.type.tableName;
+		var structName = this.type.pageName;
 		this.type.visibility = Visibility.TitleInBox;
-		this.evalContext.database.on("tables/struct/" + structName, (data, error) => {
+		this.evalContext.database.on("eval/struct/" + structName, (data, error) => {
 			if (data) {
 				this.type = data;
 				super.build();

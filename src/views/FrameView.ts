@@ -7,16 +7,16 @@ import { ObjectView } from "../views/ObjectView";
 
 export class FrameView extends View<Object, ObjectType, PrintArgs> {
 	printArgs: PrintArgs;
-	tableName: string;
+	pageName: string;
 	frameView: AnyView;
 	frameType: Type;
 	customOutput: Output;
 
 
 	build(): void {
-		this.tableName = this.type.tableName;
+		this.pageName = this.type.pageName;
 		this.type.visibility = Visibility.TitleInBox;
-		this.evalContext.database.on("tables/table/" + this.tableName, (data, error) => {
+		this.evalContext.database.on("eval/page/" + this.pageName, (data, error) => {
 			if (data) {
 				this.frameType = data;
 				this.frameView = this.evalContext.instantiate({}, this.frameType, this, true);
@@ -41,9 +41,9 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 
 		if (this.frameView) {
 			this.frameView.render(this.customOutput);
-			this.customOutput.printButton({ buttonText: "Add " + this.tableName }, (ev) => {
+			this.customOutput.printButton({ buttonText: "Add " + this.pageName }, (ev) => {
 				var data = this.frameView.getValue();
-				this.evalContext.database.pushData(this.tableName, data);
+				this.evalContext.database.pushData(this.pageName, data);
 
 				this.customOutput.printTag("div", {}, "Thank you.");
 				this.customOutput.domReplace();

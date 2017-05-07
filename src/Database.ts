@@ -51,8 +51,8 @@ export class Database {
 		this.updates = {};
 	}
 
-	pushData(tableName: string, data: any) {
-		var path = "tables/" + tableName;
+	pushData(pageName: string, data: any) {
+		var path = "eval/" + pageName;
 		var postsRef = this.ref(path);
 		var newPostRef = postsRef.push();
 		newPostRef.set(data);

@@ -167,7 +167,7 @@ export class Eval {
 			type: {
 				_kind: "object",
 				properties: [
-					{ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } }]
+					{ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } }]
 			}
 		},
 		{
@@ -228,7 +228,7 @@ export class Eval {
 			type: {
 				_kind: "object",
 				properties: [
-					{ name: "process", type: { _kind: "string", editView: "link", tableName: "process" } }
+					{ name: "process", type: { _kind: "string", editView: "link", pageName: "process" } }
 				]
 			}
 		}];
@@ -342,20 +342,20 @@ export class Eval {
 		});
 
 		this.addType("category", "wiki", "Category", (type, addProperty) => {
-			addProperty({ name: "categoryName", type: { _kind: "string", editView: "link", tableName: "category" } });
+			addProperty({ name: "categoryName", type: { _kind: "string", editView: "link", pageName: "category" } });
 		});
 		this.addType("link", "wiki", "Link", (type, addProperty) => {
-			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
+			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
 		});
 		this.addType("button", "wiki", "Button", (type, addProperty) => {
 			addProperty({ name: "text", type: { _kind: "string" } });
 			addProperty({ name: "onclick", type: this.stepsType });
 		});
 		this.addType("struct", "wiki", "Structure", (type, addProperty) => {
-			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "struct" } });
+			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "struct" } });
 		});
 		this.addType("frame", "wiki", "Frame", (type, addProperty) => {
-			addProperty({ name: "tableName", type: { _kind: "string", editView: "link", tableName: "table" } });
+			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
 			type.visibility = Visibility.HiddenLabel;
 		});
 
@@ -379,7 +379,7 @@ export class Eval {
 		this.setTheme(new Bootstrap(this));
 
 
-		// var path = "tables/object/" + this.recordId;
+		// var path = "eval/object/" + this.recordId;
 		// this.evalContext.database.on(path, (data, error) => {
 
 		// }
@@ -557,7 +557,7 @@ export class Eval {
 				};
 				tableType = objectDefinition;
 				break;
-			case "table":
+			case "page":
 				var tableDefinition: ObjectType = {
 					_kind: "object",
 					properties: [
@@ -573,7 +573,7 @@ export class Eval {
 
 				var processDefinition: ObjectType = {
 					_kind: "object",
-					description: "this is the graphcet table",
+					description: "this is the graphcet page",
 					properties: [
 						{ name: "description", type: { _kind: "string" } },
 						{ name: "onclick", type: this.stepsType }
@@ -586,7 +586,7 @@ export class Eval {
 			callback(tableType);
 		}
 		else {
-			this.database.on("tables/table/" + typeName, (data, error) => {
+			this.database.on("eval/page/" + typeName, (data, error) => {
 				var type = data as Type;
 				//var y: Table;
 
@@ -594,7 +594,7 @@ export class Eval {
 				if (!type) {
 					type = {
 						_kind: "const",
-						value: "Table " + typeName + " does not exist."
+						value: "The page \"" + typeName + "\" does not exist."
 					};
 				}
 				callback(type);

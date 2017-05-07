@@ -8,7 +8,7 @@ import { View, AnyView } from "../View";
 import { PrintArgs } from "../Theme";
 
 export class Update extends Command {
-	tableName: string;
+	pageName: string;
 	recordId: string;
 	private innerView: AnyView;
 
@@ -18,15 +18,15 @@ export class Update extends Command {
 
 	getDescription(): CommandDescription {
 		return new CommandDescription()
-			.addParameter("tableName", "stringOrVariableName")
+			.addParameter("pageName", "stringOrVariableName")
 			.addParameter("recordId", "stringOrVariableName");
 	}
 
 	run(output: Output) {
-		this.tableName = (this.tableName || "").toLowerCase();
+		this.pageName = (this.pageName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, "Update " + this.tableName + " " + this.recordId, (elt, output2) => {
+		output.printAsync("div", {}, "Update " + this.pageName + " " + this.recordId, (elt, output2) => {
 			this.showForm(output2);
 		});
 
@@ -37,7 +37,7 @@ export class Update extends Command {
 	}
 
 	showForm(output2: Output) {
-		this.evalContext.getTableType(this.tableName, (type) => {
+		this.evalContext.getTableType(this.pageName, (type) => {
 			var parentView: AnyView = null;
 			if (type && !type._kind) type._kind = "object";
 
@@ -46,8 +46,8 @@ export class Update extends Command {
 				output2.domReplace();
 			}
 			else {
-				var path = "tables/" + this.tableName + "/" + this.recordId;
-				var indexBySizePath = "tables/" + this.tableName + "/_index/bySize/" + this.recordId;
+				var path = "eval/" + this.pageName + "/" + this.recordId;
+				var indexBySizePath = "eval/" + this.pageName + "/_index/bySize/" + this.recordId;
 				this.evalContext.database.on(path, (data, error) => {
 					output2.setEditMode(true);
 					var isNew: boolean = (data === null);
@@ -66,7 +66,7 @@ export class Update extends Command {
 							var json = JSON.stringify(data);
 							this.evalContext.database.addUpdate(indexBySizePath, json.length);
 							this.evalContext.database.runUpdates();
-							console.log("eval", "save", this.tableName, this.recordId, json.length + " bytes", data, json);
+							console.log("eval", "save", this.pageName, this.recordId, json.length + " bytes", data, json);
 							alert("saved " + JSON.stringify(data));
 						});
 					});

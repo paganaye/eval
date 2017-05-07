@@ -202,7 +202,7 @@ class App {
 			onHashChange();
 		}
 
-		//this.evalConsole.processCommand("update table client");
+		//this.evalConsole.processCommand("update page client");
 		//this.evalConsole.processCommand("update client 1");
 	}
 

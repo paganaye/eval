@@ -5,7 +5,7 @@ import { PrintArgs } from "../Theme";
 
 
 export class LinkView extends View<any, ObjectType, PrintArgs> {
-	tableName: string = "dog";
+	pageName: string = "dog";
 	selectedOption: string;
 
 	build(): void {
@@ -16,9 +16,9 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 	onRender(output: Output): void {
 		//  for simplicity we make the id of the input element identical to the id of the view.
 		output.printAsync("div", {}, "...", (elt, output) => {
-			var tableName = this.type.tableName;
-			if (tableName) {
-				this.evalContext.database.on("tables/" + tableName + "/_index",
+			var pageName = this.type.pageName;
+			if (pageName) {
+				this.evalContext.database.on("eval/" + pageName + "/_index",
 					(data, error) => {
 						if (data) {
 							var entries: SelectEntry[] = [];
@@ -36,7 +36,7 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 						output.domReplace();
 					});
 			} else {
-				output.printTag("p", {}, "Link tableName is not set.")
+				output.printTag("p", {}, "Link pageName is not set.")
 				output.domReplace();
 			}
 		});

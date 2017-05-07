@@ -51,8 +51,8 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 				this.contentOutput.domReplace();
 				break;
 			case "addRecord":
-				var structName = step.tableName;
-				this.evalContext.database.on("tables/struct/" + structName, (data, error) => {
+				var structName = step.pageName;
+				this.evalContext.database.on("eval/struct/" + structName, (data, error) => {
 					this.renderStructView(data);
 				});
 				this.running = true;
