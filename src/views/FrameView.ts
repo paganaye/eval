@@ -3,7 +3,6 @@ import { Output } from "../Output";
 import { Type, ObjectType, Visibility } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
 import { ObjectView } from "../views/ObjectView";
-import { Crud } from "../commands/Crud";
 
 
 export class FrameView extends View<Object, ObjectType, PrintArgs> {

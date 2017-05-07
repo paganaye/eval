@@ -7,7 +7,7 @@ import { Output } from "../Output";
 import { View, AnyView } from "../View";
 import { PrintArgs } from "../Theme";
 
-export class Crud extends Command {
+export class Update extends Command {
 	tableName: string;
 	recordId: string;
 	private innerView: AnyView;

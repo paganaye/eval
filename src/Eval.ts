@@ -17,7 +17,8 @@ import { NumberInputView, StringInputView, BooleanInputView, TelInputView, UrlIn
 import { Input } from './commands/Input';
 import { Load } from './commands/Load';
 import { Database } from './Database';
-import { Crud } from './commands/Crud';
+import { Read } from './commands/Read';
+import { Update } from './commands/Update';
 import { Theme, PrintArgs } from "./Theme";
 import { Bootstrap } from "./themes/Bootstrap";
 import { SelectView } from "./views/SelectView";
@@ -237,10 +238,9 @@ export class Eval {
 		this.registerCommand("assign", () => new Assign(this));
 		this.registerCommand("alert", () => new Alert(this));
 		this.registerCommand("input", () => new Input(this));
-		this.registerCommand("create", () => new Crud(this, "create"));
-		this.registerCommand("read", () => new Crud(this, "read"));
-		this.registerCommand("update", () => new Crud(this, "update"));
-		this.registerCommand("delete", () => new Crud(this, "delete"));
+		this.registerCommand("read", () => new Read(this, "read"));
+		this.registerCommand("update", () => new Update(this, "update"));
+//		this.registerCommand("delete", () => new Crud(this, "delete"));
 		this.registerCommand("tests", () => new Tests(this));
 		this.registerCommand("test", () => new Tests(this));
 
