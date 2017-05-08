@@ -330,8 +330,8 @@ export class Bootstrap extends Theme {
 	}
 
 
-	printButton(output: Output, printArgs: ButtonPrintArgs, action: (ev: Event) => void) {
-		var attributes: ElementAttributes = {};
+	printButton(output: Output, printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
+		var attributes: ElementAttributes = { id: printArgs.id };
 		if (printArgs.class) attributes.class = printArgs.class;
 		output.printAsync("button", attributes, printArgs.buttonText, (elt) => {
 			elt.onclick = (ev) => action(ev);

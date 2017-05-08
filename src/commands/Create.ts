@@ -4,39 +4,70 @@ import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type, Visibility } from '../Types';
 import { Output } from "../Output";
-import { View, AnyView } from "../View";
+import { View, AnyView, ValidationStatus } from "../View";
 import { PrintArgs } from "../Theme";
 import { Update } from "../commands/Update";
+import { StringInputView } from "../views/InputView";
 
 export class Create extends Command {
-	recordIdView: AnyView;
+	recordIdView: StringInputView;
+	innerView: AnyView;
 	pageName: string;
 	recordId: string;
+	path: string;
+	saveButtonId: string;
+	saveButtonHelpId: string;
 
 	constructor(evalContext: Eval) {
 		super(evalContext);
+		this.saveButtonId = evalContext.nextId("save-btn");
+		this.saveButtonHelpId = evalContext.nextId("save-btn-help");
 	}
 
 	valueChangedTimer: NodeJS.Timer;
 
 	valueChanged(view: AnyView): void {
-		if (!this.recordIdView) return;
-		this.recordId = this.recordIdView.getValue() as string;
+		switch (view.name) {
+			case "pageName":
+				this.onPageNameChanged();
+				break;
+		}
+	}
 
+	onPageNameChanged() {
+		var saveBtn = document.getElementById(this.saveButtonId) as HTMLInputElement;
+		var saveBtnHelp = document.getElementById(this.saveButtonHelpId) as HTMLSpanElement;
+
+		if (!this.recordIdView) {
+			return;
+		}
+		this.recordId = this.recordIdView.getValue() as string;
+		this.path = null;
 		if (this.valueChangedTimer) clearTimeout(this.valueChangedTimer);
+
 		this.valueChangedTimer = setTimeout(() => {
 			this.valueChangedTimer = null;
-			if (this.pageName) {
+			if (!this.pageName) {
+				this.recordIdView.addValidationMessage(ValidationStatus.danger, "Page type is mandatory");
+			}
+			else if (!this.recordId) {
+				this.recordIdView.addValidationMessage(ValidationStatus.danger, "Page name is mandatory");
+			} else {
 				var path = "eval/" + this.pageName + "/" + this.recordId;
 				this.evalContext.database.on(path, (data, error) => {
 					if (data == null) {
 						// not found
+						this.path = path;
+						if (saveBtn) saveBtn.disabled = false;
 					} else {
-						// page already exists
+						// page already exists						
+						if (saveBtn) saveBtn.disabled = true;
+						this.recordIdView.addValidationMessage(ValidationStatus.danger, "Page already exists");
+						if (saveBtnHelp) saveBtnHelp.innerText = "Page already exists.";
 					}
 				});
 			}
-		}, 500);
+		}, 250);
 	}
 
 	getDescription(): CommandDescription {
@@ -49,38 +80,39 @@ export class Create extends Command {
 
 		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (elt, output2) => {
 			output2.setEditMode(true);
-			this.recordIdView = output2.printProperty(this, { visibility: Visibility.Shown, label: "Page Name" }, "", { _kind: "string" });
+			this.recordIdView = <StringInputView>output2.printProperty(this, { visibility: Visibility.Shown, label: "pageName" }, "", { _kind: "string" });
 			// output2.printInput({ id: "recordId" }, "", , (elt) => { });
 			output2.printHTML("<hr/>");
 
 			this.evalContext.getPageType(this.pageName, (type) => {
-				// var indexBySizePath = "eval/" + this.pageName + "/_index/bySize/" + this.recordId;
 				// 	output2.setEditMode(true);
 				// 	var isNew: boolean = (data === null);
 				// 	if (isNew) {
 				var data = this.evalContext.newInstance(type);
 				//isNew = true;
 				// 	}
-				// 	this.innerView = this.evalContext.instantiate(viewParent, "update::", data, type, true);
-				// 	this.innerView.render(output2);
-				// 	output2.printSection({ name: "crud-update" }, (printArgs) => {
-				// 		output2.printButton({ buttonText: "Cancel" }, () => {
-				// 			window.location.hash = "#" + this.pageName + " " + this.recordId;
-				// 		});
-				// 		output2.printHTML("&nbsp;");
-				// 		output2.printButton({ buttonText: "Save" }, () => {
-				// 			var data = this.innerView.getValue();
-				// 			this.evalContext.database.addUpdate(path, data);
-				// 			var json = JSON.stringify(data);
-				// 			this.evalContext.database.addUpdate(indexBySizePath, json.length);
-				// 			this.evalContext.database.runUpdates();
-				// 			console.log("eval", "save", this.pageName, this.recordId, json.length + " bytes", data, json);
-				// 			alert("saved " + JSON.stringify(data));
-				// 			window.location.hash = "#" + this.pageName + " " + this.recordId;
-				// 		});
-				// 	});
-				//		output2.domReplace();
-				// });
+				this.innerView = this.evalContext.instantiate(this, "update::", data, type, true);
+				this.innerView.render(output2);
+				output2.printSection({ name: "crud-update" }, (printArgs) => {
+					output2.printButton({ buttonText: "Cancel" }, () => {
+						window.location.hash = "#" + this.pageName;
+					});
+					output2.printHTML("&nbsp;");
+
+					output2.printButton({ id: this.saveButtonId, buttonText: "Save" }, () => {
+						var data = this.innerView.getValue();
+						this.evalContext.database.addUpdate(this.path, data);
+						var json = JSON.stringify(data);
+						var indexBySizePath = "eval/" + this.pageName + "/_index/bySize/" + this.recordId;
+						this.evalContext.database.addUpdate(indexBySizePath, json.length);
+						this.evalContext.database.runUpdates();
+						console.log("eval", "save", this.pageName, this.recordId, json.length + " bytes", data, json);
+						alert("saved " + JSON.stringify(data));
+						window.location.hash = "#" + this.pageName;
+					});
+
+					output2.printTag("span", { id: this.saveButtonHelpId }, "");
+				});
 				output2.domReplace();
 			});
 		});

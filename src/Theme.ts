@@ -100,6 +100,7 @@ export class VariantPrintArgs extends PrintArgs {
 }
 
 export class ButtonPrintArgs extends PrintArgs {
+	id?: string;
 	buttonText: string;
 	class?: string;
 }

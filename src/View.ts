@@ -21,7 +21,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	private validationText: string;
 	private description: string;
 
-	constructor(protected evalContext: Eval, private viewParent: ViewParent, name: string) {
+	constructor(protected evalContext: Eval, private viewParent: ViewParent, public readonly name: string) {
 		if (viewParent == null) {
 			debugger;
 		}
