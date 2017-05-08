@@ -2,6 +2,7 @@ import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type, ObjectType, Property, Visibility } from "../Types";
 import { PrintArgs } from "../Theme";
+import { Parser } from "../Parser";
 
 export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	allKeys: string[];
@@ -54,33 +55,55 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	}
 
 	onRender(output: Output): void {
+		if (this.type.template && !output.isEditMode()) {
+			this.printTemplate(output);
+		}
+		else {
+			output.printSection({ name: "object" }, (printArgs) => {
+				if (this.mainProperties.length) {
+					output.printSection({ addHeaderCallback: printArgs.addHeaderCallback, name: "object-properties" }, (printArgs) => {
+						for (var key of this.mainProperties) {
+							this.printProperty(key, output);
+						}
+					});
+				}
+				if (this.groupNames.length) {
+					output.printSection({ name: "property-groups" }, (printArgs) => {
+						var first = true;
+						for (var groupName of this.groupNames) {
+							var group = this.groupByName[groupName];
+							output.printSection({
+								addHeaderCallback: printArgs.addHeaderCallback, name: "property-group",
+								active: first, title: groupName, orphans: (groupName == "orphans")
+							}, (printArgs) => {
+								for (var key of group) {
+									this.printProperty(key, output);
+								}
+							});
+							if (first) first = false;
+						}
+					});
+				}
+				output.printAsync("div", {}, "Preview...",
+					(elt, output) => {
+						this.printTemplate(output);
+						output.domReplace();
+					});
+			});
+		}
+	}
 
-		output.printSection({ name: "object" }, (printArgs) => {
-			if (this.mainProperties.length) {
-				output.printSection({ addHeaderCallback: printArgs.addHeaderCallback, name: "object-properties" }, (printArgs) => {
-					for (var key of this.mainProperties) {
-						this.printProperty(key, output);
-					}
-				});
-			}
-			if (this.groupNames.length) {
-				output.printSection({ name: "property-groups" }, (printArgs) => {
-					var first = true;
-					for (var groupName of this.groupNames) {
-						var group = this.groupByName[groupName];
-						output.printSection({
-							addHeaderCallback: printArgs.addHeaderCallback, name: "property-group",
-							active: first, title: groupName, orphans: (groupName == "orphans")
-						}, (printArgs) => {
-							for (var key of group) {
-								this.printProperty(key, output);
-							}
-						});
-						if (first) first = false;
-					}
-				});
-			}
-		});
+	printTemplate(output: Output) {
+		var html: string;
+		var parser = new Parser(this.evalContext);
+		try {
+			var expr = parser.parseTemplate(this.type.template);
+			this.evalContext.globalVariables = this.data;
+			html = expr.getValue(this.evalContext);
+			output.printHTML(html);
+		} catch (error) {
+			output.printTag("div", { class: "error" }, error);
+		}
 	}
 
 	printProperty(key: string, output: Output) {

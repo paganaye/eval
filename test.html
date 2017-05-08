@@ -1,0 +1,47 @@
+<html lang="en">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- fonts -->
+	<!--<link href="http://fonts.googleapis.com/css?family=Ubuntu|Ubuntu+Mono" rel="stylesheet">-->
+	<link rel="icon" href="favicon.ico" />
+	<link href="app.css" rel="stylesheet" />
+	<!--<link href="libs/jasmine/jasmine.css" rel="stylesheet" />    -->
+</head>
+</head>
+
+<body>
+	<h1>hello</h1>
+	<p>text</p>
+	<input type="text" id="inp1" />
+	<input type="text" id="inp2" />
+	<input type="text" id="inp3" />
+	<input type="text" id="inp4" />
+	<div id="txt1"></div>
+	<script>
+		var data = {
+
+		};
+		var inp1 = document.getElementById("inp1");
+		var inp2 = document.getElementById("inp2");
+		var inp3 = document.getElementById("inp3");
+		var inp4 = document.getElementById("inp4");
+		var txt1 = document.getElementById("txt1");
+		inp1.oninput = function () {
+			data = {
+				x1: inp1.value,
+				x2: inp2.value,
+				x3: inp3.value,
+				x4: inp4.value
+			}
+			txt1.innerText = JSON.stringify(data);
+		}
+		inp2.oninput = inp1.oninput;
+		inp3.oninput = inp1.oninput;
+		inp4.oninput = inp1.oninput;
+	</script>
+</body>
+
+</html>

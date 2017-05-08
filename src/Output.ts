@@ -73,7 +73,7 @@ export class Output {
 	printLabelAndView(printArgs: PropertyPrintArgs, data: any, dataType: Type, parentView: AnyView): AnyView {
 		var view: AnyView;
 
-		view = this.evalContext.instantiate(data, dataType, parentView, this.editMode, printArgs);
+		view = this.evalContext.instantiate(parentView, printArgs.label, data, dataType, this.editMode, printArgs);
 
 		if (!printArgs) printArgs = { visibility: dataType.visibility || Visibility.Shown };
 		if (dataType.visibility > printArgs.visibility) printArgs.visibility = dataType.visibility;

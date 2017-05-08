@@ -74,7 +74,7 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 
 	renderStructView(structType: Type) {
 		var data = {};
-		this.frameView = this.evalContext.instantiate({}, structType, this, true);
+		this.frameView = this.evalContext.instantiate(this, "[struct]", {}, structType, true);
 		this.frameView.render(this.contentOutput);
 
 		this.contentOutput.printButton({ buttonText: "next" },

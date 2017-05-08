@@ -102,7 +102,7 @@ export class Bootstrap extends Theme {
 			}
 		});
 		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
-		var innerView = this.evalContext.instantiate(data, dataType, arrayView, output.isEditMode(), {});
+		var innerView = this.evalContext.instantiate(arrayView, "[" + printArgs.id + ']', data, dataType, output.isEditMode(), {});
 
 		output.printAsync("div", contentAttributes, "...", (elt, output) => {
 			var $: any = window["$"];

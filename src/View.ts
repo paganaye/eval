@@ -17,7 +17,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	private validationText: string;
 	private description: string;
 
-	constructor(protected evalContext: Eval, private parentView: AnyView) {
+	constructor(protected evalContext: Eval, private parentView: AnyView, name: string) {
 		var prefix = ((this as object).constructor as any).name;
 		this.id = evalContext.nextId(prefix);
 	}
@@ -81,6 +81,10 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 			this.evalContext.theme.refreshView(this, { descriptionChanged: true });
 		}
 	}
+
+	valueChanged() {
+		//this.parentView.valueChanged();
+	}
 }
 
 export const enum ValidationStatus {
@@ -92,12 +96,12 @@ export const enum ValidationStatus {
 
 export class ViewFactory {
 
-	constructor(private viewName: string, private viewConstructor: (parent: AnyView) => AnyView) {
+	constructor(private viewName: string, private viewConstructor: (parent: AnyView, name: string) => AnyView) {
 
 	}
 
-	instantiateNewView(parent: AnyView) {
-		return this.viewConstructor(parent);
+	instantiateNewView(parent: AnyView, name: string) {
+		return this.viewConstructor(parent, name);
 	}
 }
 

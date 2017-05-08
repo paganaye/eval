@@ -19,7 +19,7 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 		this.evalContext.database.on("eval/page/" + this.pageName, (data, error) => {
 			if (data) {
 				this.frameType = data;
-				this.frameView = this.evalContext.instantiate({}, this.frameType, this, true);
+				this.frameView = this.evalContext.instantiate(this, "[::frame]", {}, this.frameType, true);
 			}
 			if (this.customOutput) {
 				this.renderView();

@@ -22,7 +22,7 @@ export class Create extends Update {
 		this.pageName = (this.pageName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, "Update " + this.pageName + " " + this.recordId, (elt, output2) => {
+		output.printAsync("div", {}, "Creating " + this.pageName + " " + this.recordId + "...", (elt, output2) => {
 			output2.printLabelAndView({ visibility: Visibility.Shown, label: "Page Name" }, "", { _kind: "string" }, null);
 			//			output2.printInput({ id: "recordId" }, "", , (elt) => { });
 			output2.printHTML("<hr/>");

@@ -45,9 +45,11 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 		this.kind = kind;
 		var entry = this.entriesByKey[kind];
 		if (entry) {
-			var innerView = this.evalContext.instantiate(this.data,
+			var innerView = this.evalContext.instantiate(this,
+				"[:variant]",
+				this.data,
 				entry.type,
-				this, this.targetOutput.isEditMode(), {});
+				this.targetOutput.isEditMode(), {});
 			innerView.render(this.targetOutput);
 			this.innerView = innerView;
 			this.targetOutput.domReplace();

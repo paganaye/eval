@@ -25,6 +25,7 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
 
 	onInput(e: Event) {
 		this.validate();
+		this.valueChanged();
 	}
 
 	protected abstract onValidate(value: TValue);

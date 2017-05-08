@@ -26,7 +26,7 @@ export class Update extends Command {
 		this.pageName = (this.pageName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, "Update " + this.pageName + " " + this.recordId, (elt, output2) => {
+		output.printAsync("div", {}, "Updating " + this.pageName + " " + this.recordId + "...", (elt, output2) => {
 			this.showForm(output2);
 		});
 
@@ -56,11 +56,14 @@ export class Update extends Command {
 						data = this.evalContext.newInstance(type);
 						isNew = true;
 					}
-					this.innerView = this.evalContext.instantiate(data, type, parentView, true);
+					this.innerView = this.evalContext.instantiate(parentView, "update::", data, type, true);
 					this.innerView.render(output2);
 					output2.printSection({ name: "crud-update" }, (printArgs) => {
+						output2.printButton({ buttonText: "Cancel" }, () => {
+							window.location.hash = "#" + this.pageName + " " + this.recordId;
+						});
+						output2.printHTML("&nbsp;");
 						output2.printButton({ buttonText: "Save" }, () => {
-							debugger;
 							var data = this.innerView.getValue();
 							this.evalContext.database.addUpdate(path, data);
 							var json = JSON.stringify(data);
@@ -68,6 +71,7 @@ export class Update extends Command {
 							this.evalContext.database.runUpdates();
 							console.log("eval", "save", this.pageName, this.recordId, json.length + " bytes", data, json);
 							alert("saved " + JSON.stringify(data));
+							window.location.hash = "#" + this.pageName + " " + this.recordId;
 						});
 					});
 					output2.domReplace();
