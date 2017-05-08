@@ -4,7 +4,7 @@ import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
-import { View, AnyView } from "../View";
+import { View, AnyView, ViewParent } from "../View";
 import { PrintArgs } from "../Theme";
 
 export class Update extends Command {
@@ -38,7 +38,7 @@ export class Update extends Command {
 
 	showForm(output2: Output) {
 		this.evalContext.getPageType(this.pageName, (type) => {
-			var parentView: AnyView = null;
+			var parentView: ViewParent = null;
 			if (type && !type._kind) type._kind = "object";
 
 			if (type._kind == "const") {
@@ -75,7 +75,7 @@ export class Update extends Command {
 						});
 					});
 					output2.domReplace();
-				})
+				});
 			}
 		});
 

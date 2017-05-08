@@ -4,6 +4,10 @@ import { Expression } from './Expression';
 import { Eval } from "./Eval";
 import { PrintArgs, ElementAttributes } from "./Theme";
 
+export interface ViewParent {
+
+}
+
 export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintArgs> {
 	protected data: TValue;
 	protected type: TType;
@@ -17,7 +21,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	private validationText: string;
 	private description: string;
 
-	constructor(protected evalContext: Eval, private parentView: AnyView, name: string) {
+	constructor(protected evalContext: Eval, private parentView: ViewParent, name: string) {
 		var prefix = ((this as object).constructor as any).name;
 		this.id = evalContext.nextId(prefix);
 	}
@@ -36,7 +40,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 		this.printArgs = printArgs || {} as TPrintArgs;
 	}
 
-	getParentView(): AnyView {
+	getParentView(): ViewParent {
 		return this.parentView;
 	}
 
@@ -96,11 +100,11 @@ export const enum ValidationStatus {
 
 export class ViewFactory {
 
-	constructor(private viewName: string, private viewConstructor: (parent: AnyView, name: string) => AnyView) {
+	constructor(private viewName: string, private viewConstructor: (parent: ViewParent, name: string) => AnyView) {
 
 	}
 
-	instantiateNewView(parent: AnyView, name: string) {
+	instantiateNewView(parent: ViewParent, name: string) {
 		return this.viewConstructor(parent, name);
 	}
 }

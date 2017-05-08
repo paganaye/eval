@@ -2,7 +2,7 @@ import { app } from "./App";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
 import { Type, SelectEntry, Visibility } from './Types';
-import { View, AnyView } from "./View";
+import { View, AnyView, ViewParent } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions } from "./Theme";
@@ -70,7 +70,7 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printLabelAndView(printArgs: PropertyPrintArgs, data: any, dataType: Type, parentView: AnyView): AnyView {
+	printLabelAndView(printArgs: PropertyPrintArgs, data: any, dataType: Type, parentView: ViewParent): AnyView {
 		var view: AnyView;
 
 		view = this.evalContext.instantiate(parentView, printArgs.label, data, dataType, this.editMode, printArgs);

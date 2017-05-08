@@ -1,5 +1,5 @@
 import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, SelectType, TypeOrString, VariantType, VariantKind, Property, Visibility, SelectEntry } from './Types';
-import { View, AnyView, ViewFactory } from "./View";
+import { View, AnyView, ViewFactory, ViewParent } from "./View";
 import { Command } from "./Command";
 import { Print } from "./commands/Print";
 import { Hello } from "./commands/Hello";
@@ -494,7 +494,7 @@ export class Eval {
 	}
 
 
-	instantiate(parent: AnyView, name: string, expr: any, exprType: Type, editMode: boolean, printArgs?: PrintArgs): AnyView {
+	instantiate(parent: ViewParent, name: string, expr: any, exprType: Type, editMode: boolean, printArgs?: PrintArgs): AnyView {
 		var typeDef = this.getTypeDef(expr, exprType)
 		if (!printArgs) printArgs = {};
 

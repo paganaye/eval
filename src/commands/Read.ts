@@ -4,7 +4,7 @@ import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
-import { View, AnyView } from "../View";
+import { View, AnyView, ViewParent } from "../View";
 import { PrintArgs } from "../Theme";
 
 export class Read extends Command {
@@ -27,7 +27,7 @@ export class Read extends Command {
 		this.recordId = (this.recordId || "").toLowerCase();
 
 		output.printAsync("div", {}, "Reading " + this.pageName + " " + this.recordId + "...", (elt, output2) => {
-			var parentView: AnyView = null;
+			var parentView: ViewParent = null;
 
 			this.evalContext.getPageType(this.pageName, (type) => {
 				if (type && !type._kind) type._kind = "object";

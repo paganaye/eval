@@ -4,7 +4,7 @@ import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
 import { Output } from "../Output";
-import { View, AnyView } from "../View";
+import { View, AnyView, ViewParent } from "../View";
 import { PrintArgs } from "../Theme";
 
 export class Index extends Command {
@@ -23,7 +23,7 @@ export class Index extends Command {
 		this.pageName = (this.pageName || ""); //.toLowerCase();
 
 		output.printAsync("div", {}, "Loading " + this.pageName + " pages...", (elt, output) => {
-			var parentView: AnyView = null;
+			var parentView: ViewParent = null;
 
 			this.evalContext.getPageType(this.pageName, (type) => {
 				if (type && !type._kind) type._kind = "object";
@@ -31,7 +31,7 @@ export class Index extends Command {
 				this.evalContext.database.on("eval/" + this.pageName.toLowerCase() + "/_index", (data, error) => {
 					output.printTag("h1", {}, this.pageName + " Pages");
 					if (!data) data = {};
-					if (data.byLength) data = data.byLength;
+					if (data.bySize) data = data.bySize;
 					var keys = Object.keys(data);
 					if (keys.length == 0) {
 						output.printTag("p", {}, "There are no " + this.pageName + " page yet.");
