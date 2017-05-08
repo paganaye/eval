@@ -23,6 +23,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 
 	constructor(protected evalContext: Eval, private viewParent: ViewParent, public readonly name: string) {
 		if (viewParent == null) {
+			console.error("View has no parent. This is not normal.");
 			debugger;
 		}
 		var prefix = ((this as object).constructor as any).name;

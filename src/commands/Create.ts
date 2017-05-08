@@ -16,12 +16,10 @@ export class Create extends Command {
 	recordId: string;
 	path: string;
 	saveButtonId: string;
-	saveButtonHelpId: string;
 
 	constructor(evalContext: Eval) {
 		super(evalContext);
 		this.saveButtonId = evalContext.nextId("save-btn");
-		this.saveButtonHelpId = evalContext.nextId("save-btn-help");
 	}
 
 	valueChangedTimer: NodeJS.Timer;
@@ -36,7 +34,6 @@ export class Create extends Command {
 
 	onPageNameChanged() {
 		var saveBtn = document.getElementById(this.saveButtonId) as HTMLInputElement;
-		var saveBtnHelp = document.getElementById(this.saveButtonHelpId) as HTMLSpanElement;
 
 		if (!this.recordIdView) {
 			return;
@@ -110,8 +107,6 @@ export class Create extends Command {
 						alert("saved " + JSON.stringify(data));
 						window.location.hash = "#" + this.pageName;
 					});
-
-					output2.printTag("span", { id: this.saveButtonHelpId }, "");
 				});
 				output2.domReplace();
 			});
