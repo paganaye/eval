@@ -60,7 +60,6 @@ export class Create extends Command {
 						// page already exists						
 						if (saveBtn) saveBtn.disabled = true;
 						this.recordIdView.addValidationMessage(ValidationStatus.danger, "Page already exists");
-						if (saveBtnHelp) saveBtnHelp.innerText = "Page already exists.";
 					}
 				});
 			}
@@ -90,21 +89,14 @@ export class Create extends Command {
 				// 	}
 				this.innerView = this.evalContext.instantiate(this, "update::", data, type, true);
 				this.innerView.render(output2);
-				output2.printSection({ name: "crud-update" }, (printArgs) => {
+				output2.printSection({ name: "update" }, (printArgs) => {
 					output2.printButton({ buttonText: "Cancel" }, () => {
 						window.location.hash = "#" + this.pageName;
 					});
 					output2.printHTML("&nbsp;");
 
 					output2.printButton({ id: this.saveButtonId, buttonText: "Save" }, () => {
-						var data = this.innerView.getValue();
-						this.evalContext.database.addUpdate(this.path, data);
-						var json = JSON.stringify(data);
-						var indexBySizePath = "eval/" + this.pageName + "/_index/bySize/" + this.recordId;
-						this.evalContext.database.addUpdate(indexBySizePath, json.length);
-						this.evalContext.database.runUpdates();
-						console.log("eval", "save", this.pageName, this.recordId, json.length + " bytes", data, json);
-						alert("saved " + JSON.stringify(data));
+						this.evalContext.saveRecord(this.pageName, this.recordId, this.innerView.getValue());
 						window.location.hash = "#" + this.pageName;
 					});
 				});

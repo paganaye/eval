@@ -192,7 +192,8 @@ export class Bootstrap extends Theme {
 			case "map-properties":
 			case "variant-control":
 			case "object-properties":
-			case "crud-update":
+			case "create":
+			case "update":
 				output.printStartTag("div", attributes);
 				printContent({});
 				output.printEndTag();

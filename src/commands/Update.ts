@@ -54,24 +54,16 @@ export class Update extends Command {
 					if (isNew) {
 						data = this.evalContext.newInstance(type);
 						isNew = true;
-					}				
-					this.innerView = this.evalContext.instantiate(this, "update::", data, type, true);
+					}
+					this.innerView = this.evalContext.instantiate(this, "Create::", data, type, true);
 					this.innerView.render(output2);
-					output2.printSection({ name: "crud-update" }, (printArgs) => {
+					output2.printSection({ name: "create" }, (printArgs) => {
 						output2.printButton({ buttonText: "Cancel" }, () => {
 							window.location.hash = "#" + this.pageName + " " + this.recordId;
 						});
 						output2.printHTML("&nbsp;");
 						output2.printButton({ buttonText: "Save" }, () => {
-							var data = this.innerView.getValue();
-							if (typeof data === "object" && Object.keys(data).length == 0) data = null;
-							this.evalContext.database.addUpdate(path, data);
-							var json = data == null ? null : JSON.stringify(data);
-							this.evalContext.database.addUpdate(indexBySizePath, json && json.length);
-							this.evalContext.database.runUpdates();
-
-							console.log("eval", "save", this.pageName, this.recordId, json == null ? "deleted" : (json.length + " bytes"), data, json);
-							alert("saved " + JSON.stringify(data));
+							this.evalContext.saveRecord(this.pageName, this.recordId, this.innerView.getValue());
 							window.location.hash = "#" + this.pageName + " " + this.recordId;
 						});
 					});

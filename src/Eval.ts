@@ -380,7 +380,7 @@ export class Eval {
 
 
 		// var path = "eval/object/" + this.recordId;
-		// this.evalContext.database.on(path, (data, error) => {
+		// this.database.on(path, (data, error) => {
 
 		// }
 	}
@@ -663,6 +663,21 @@ export class Eval {
 					return result;
 				} else return {};
 		}
+	}
+
+	saveRecord(pageName: string, recordId: string, data: any) {
+
+		if (typeof data === "object" && Object.keys(data).length == 0) data = null;
+
+		var path = "eval/" + pageName + "/" + recordId;
+
+		this.database.addUpdate(path, data);
+		var json = data == null ? null : JSON.stringify(data);
+		var indexBySizePath = "eval/" + pageName + "/_index/bySize/" + recordId;
+		this.database.addUpdate(indexBySizePath, json && json.length);
+		this.database.runUpdates();
+
+		alert("saved " + JSON.stringify(data));
 	}
 
 	findEntry(entries: SelectEntry[], data: string): string {
