@@ -25,43 +25,26 @@ class App {
 
 		var provider = new firebase.auth.GoogleAuthProvider();
 
-		// firebase.auth().signInWithPopup(googleProvider).then(function (result) {
-		// 	// This gives you a Google Access Token. You can use it to access the Google API.
-		// 	var token = result.credential.accessToken;
-		// 	// The signed-in user info.
-		// 	var user = result.user;
-		// 	// ...
-		// }).catch(function (error: any) {
-		// 	// Handle Errors here.
-		// 	var errorCode = error.code;
-		// 	var errorMessage = error.message;
-		// 	// The email of the user's account used.
-		// 	var email = error.email;
-		// 	// The firebase.auth.AuthCredential type that was used.
-		// 	var credential = error.credential;
-		// 	// ...
-		// });
-
 		var authContainer = document.getElementById("auth-container");
 		var output = new Output(this.evalContext, authContainer);
 
-		output.printAsync("div", {}, "...", (elt, output) => {
+		output.printAsync("span", { class: "eval-login" }, "...", (elt, output) => {
 			var userOutput: Output;
 			var userName = "...";
 			var userId = null;
 
 			var updateUser = () => {
 				if (!userOutput) return;
-				userOutput.printTag("span", {}, userName);
+				userOutput.printText(userName);
 				userOutput.domReplace();
 			}
-			output.printAsync("div", {}, "...", (elt, output) => {
+			output.printAsync("span", {}, "...", (elt, output) => {
 				userOutput = output;
 				updateUser();
 			});
 
 
-			var f1 = firebase.auth().onAuthStateChanged((user) => {
+			firebase.auth().onAuthStateChanged((user) => {
 				userName = user && user.displayName;
 				userId = user && user.uid;
 				if (userName && userId) {
@@ -83,17 +66,6 @@ class App {
 				console.log("doc-auth", "onAuthStateChanged", "completed");
 				// completed
 			})
-
-
-			firebase.auth().getRedirectResult().then(function (result) {
-				// if (result.credential) {
-				// 	// This gives you a Google Access Token. You can use it to access the Google API.
-				// 	var token = result.credential.accessToken;
-				// 	console.log("doc-auth", "redirectResult", result, "token:", token);
-				// }
-			}).catch(function (error: any) {
-				console.log("doc-auth", "redirectResult", "error", error);
-			});
 
 			output.printButton({ buttonText: "Sign in" }, (ev) => {
 				try {
@@ -119,42 +91,11 @@ class App {
 				}
 			});
 
-			output.printButton({ buttonText: "f1" }, (ev) => {
-				try {
-					console.log("doc-auth", "onAuthStateChanged", "f1");
-					f1();
-				} catch (error) {
-					console.log("doc-auth", "onAuthStateChanged", "f1Error", error);
-				}
-			});
-
 			output.domReplace();
 		});
 
 		output.domReplace();
 
-		// 		  // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-		//   var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
-		//     unsubscribe();
-		//     // Check if we are already signed-in Firebase with the correct user.
-		//     if (!isUserEqual(googleUser, firebaseUser)) {
-		//       // Build Firebase credential with the Google ID token.
-		//       var credential = firebase.auth.GoogleAuthProvider.credential(
-		//           googleUser.getAuthResponse().id_token);
-		//       // Sign in with credential from the Google user.
-		//       firebase.auth().signInWithCredential(credential).catch(function(error) {
-		//         // Handle Errors here.
-		//         var errorCode = error.code;
-		//         var errorMessage = error.message;
-		//         // The email of the user's account used.
-		//         var email = error.email;
-		//         // The firebase.auth.AuthCredential type that was used.
-		//         var credential = error.credential;
-		//         // ...
-		//       });
-		//     } else {
-		//       console.log('User already signed-in Firebase.');
-		//     }
 
 	}
 
@@ -201,32 +142,8 @@ class App {
 		} else {
 			onHashChange();
 		}
-
-		//this.evalConsole.processCommand("update page client");
-		//this.evalConsole.processCommand("update client 1");
 	}
 
-	// 	tests() {
-	// 		var tests = new Tests(this.evalConsole);
-
-	// 		//this.testOutput();
-	// 		//this.database.test();
-	// 		try {
-	// 			tests.selfTests();
-	// 		} catch (e) {
-	// 			this.evalConsole.error(e.toString());
-	// 		}
-
-	// 	}
-
-	// 	testOutput() {
-	// 		// this.output.print({
-	// 		// 	x: "ABC",
-	// 		// 	y2: { video: "YBJFirHSS5Q", width: 100, height: 100, type: "youtube" },
-	// 		// 	y: "7Iweue-OcMo", z: 1111
-	// 		// },
-	// 		// 	{ type: "object", properties: { y: "youtube", z: "roman" } });
-	// 	}
 
 }
 

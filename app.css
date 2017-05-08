@@ -16,8 +16,8 @@ h1#logo {
     color: def;
     position: absolute;
     z-index: -100;
-    right: 5px;
-    top: -75px;
+    right: 15px;
+    top: -25px;
     user-select: none;
     margin: 0;
 }
@@ -99,4 +99,14 @@ input[type="color"] {
 
 .notif-buttons > button {
     margin: 3px;
+}
+
+.eval-login {
+	text-align: right;
+}
+
+#auth-container {
+    text-align: right;
+    background-color: #002;
+    color: white;
 }
