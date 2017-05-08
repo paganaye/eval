@@ -5,7 +5,7 @@ import { Eval } from "./Eval";
 import { PrintArgs, ElementAttributes } from "./Theme";
 
 export interface ViewParent {
-
+	valueChanged(view: AnyView): void;
 }
 
 export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintArgs> {
@@ -21,7 +21,10 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	private validationText: string;
 	private description: string;
 
-	constructor(protected evalContext: Eval, private parentView: ViewParent, name: string) {
+	constructor(protected evalContext: Eval, private viewParent: ViewParent, name: string) {
+		if (viewParent == null) {
+			debugger;
+		}
 		var prefix = ((this as object).constructor as any).name;
 		this.id = evalContext.nextId(prefix);
 	}
@@ -40,8 +43,8 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 		this.printArgs = printArgs || {} as TPrintArgs;
 	}
 
-	getParentView(): ViewParent {
-		return this.parentView;
+	getViewParent(): ViewParent {
+		return this.viewParent;
 	}
 
 	getId(): string {
@@ -86,8 +89,10 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 		}
 	}
 
-	valueChanged() {
-		//this.parentView.valueChanged();
+	valueChanged(view?: AnyView) {
+		if (this.viewParent) {
+			this.viewParent.valueChanged(view || this);
+		}
 	}
 }
 

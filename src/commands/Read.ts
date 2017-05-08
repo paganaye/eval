@@ -27,7 +27,7 @@ export class Read extends Command {
 		this.recordId = (this.recordId || "").toLowerCase();
 
 		output.printAsync("div", {}, "Reading " + this.pageName + " " + this.recordId + "...", (elt, output2) => {
-			var parentView: ViewParent = null;
+			var viewParent: ViewParent = null;
 
 			this.evalContext.getPageType(this.pageName, (type) => {
 				if (type && !type._kind) type._kind = "object";
@@ -35,7 +35,7 @@ export class Read extends Command {
 				this.evalContext.database.on("eval/" + this.pageName.toLowerCase()
 					+ "/" + this.recordId.toLowerCase(),
 					(data, error) => {
-						this.innerView = this.evalContext.instantiate(parentView, "read::", data, type, false);
+						this.innerView = this.evalContext.instantiate(viewParent, "read::", data, type, false);
 						this.innerView.render(output2);
 						output2.printTag("a", { href: "#update " + this.pageName + " " + this.recordId }, "edit");
 						output2.domReplace();

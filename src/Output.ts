@@ -70,10 +70,10 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printLabelAndView(printArgs: PropertyPrintArgs, data: any, dataType: Type, parentView: ViewParent): AnyView {
+	printProperty(viewParent: ViewParent, printArgs: PropertyPrintArgs, data: any, dataType: Type): AnyView {
 		var view: AnyView;
 
-		view = this.evalContext.instantiate(parentView, printArgs.label, data, dataType, this.editMode, printArgs);
+		view = this.evalContext.instantiate(viewParent, printArgs.label, data, dataType, this.editMode, printArgs);
 
 		if (!printArgs) printArgs = { visibility: dataType.visibility || Visibility.Shown };
 		if (dataType.visibility > printArgs.visibility) printArgs.visibility = dataType.visibility;

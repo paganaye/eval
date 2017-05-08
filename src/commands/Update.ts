@@ -38,7 +38,7 @@ export class Update extends Command {
 
 	showForm(output2: Output) {
 		this.evalContext.getPageType(this.pageName, (type) => {
-			var parentView: ViewParent = null;
+			var viewParent: ViewParent = null;
 			if (type && !type._kind) type._kind = "object";
 
 			if (type._kind == "const") {
@@ -56,7 +56,7 @@ export class Update extends Command {
 						data = this.evalContext.newInstance(type);
 						isNew = true;
 					}
-					this.innerView = this.evalContext.instantiate(parentView, "update::", data, type, true);
+					this.innerView = this.evalContext.instantiate(viewParent, "update::", data, type, true);
 					this.innerView.render(output2);
 					output2.printSection({ name: "crud-update" }, (printArgs) => {
 						output2.printButton({ buttonText: "Cancel" }, () => {
