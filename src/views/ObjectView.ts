@@ -13,6 +13,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	groupByName: { [key: string]: string[] };
 	groupNames: string[];
 	mainProperties: string[];
+	previewOutput: Output;
 
 	build(): void {
 		this.properties = (this.type.properties) || [];
@@ -54,6 +55,16 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		}
 	}
 
+
+	valueChanged(view: AnyView): void {
+		if (this.previewOutput) {
+			this.printTemplate(this.previewOutput);
+			this.previewOutput.domReplace();
+		}
+		console.log("valueChanged in object view");
+	}
+
+
 	onRender(output: Output): void {
 		if (this.type.template && !output.isEditMode()) {
 			this.printTemplate(output);
@@ -86,6 +97,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 				}
 				output.printAsync("div", {}, "Preview...",
 					(elt, output) => {
+						this.previewOutput = output;
 						this.printTemplate(output);
 						output.domReplace();
 					});
@@ -98,6 +110,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		var parser = new Parser(this.evalContext);
 		try {
 			var expr = parser.parseTemplate(this.type.template);
+			this.data = this.getValue();
 			this.evalContext.globalVariables = this.data;
 			html = expr.getValue(this.evalContext);
 			output.printHTML(html);

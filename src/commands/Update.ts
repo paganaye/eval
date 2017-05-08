@@ -22,6 +22,9 @@ export class Update extends Command {
 			.addParameter("recordId", "stringOrVariableName");
 	}
 
+	valueChanged(view: AnyView): void {
+	}
+	
 	run(output: Output) {
 		this.pageName = (this.pageName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
