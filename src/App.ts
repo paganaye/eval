@@ -28,71 +28,72 @@ class App {
 		var authContainer = document.getElementById("auth-container");
 		var output = new Output(this.evalContext, authContainer);
 
-		output.printAsync("span", { class: "eval-login" }, "...", (elt, output) => {
-			var userOutput: Output;
-			var userName = "...";
-			var userId = null;
+		output.printNavbar({});
+		// output.printAsync("span", { class: "eval-login" }, "...", (elt, output) => {
+		// 	var userOutput: Output;
+		// 	var userName = "...";
+		// 	var userId = null;
 
-			var updateUser = () => {
-				if (!userOutput) return;
-				userOutput.printText(userName);
-				userOutput.domReplace();
-			}
-			output.printAsync("span", {}, "...", (elt, output) => {
-				userOutput = output;
-				updateUser();
-			});
+		// 	var updateUser = () => {
+		// 		if (!userOutput) return;
+		// 		userOutput.printText(userName);
+		// 		userOutput.domReplace();
+		// 	}
+		// 	output.printAsync("span", {}, "...", (elt, output) => {
+		// 		userOutput = output;
+		// 		updateUser();
+		// 	});
 
 
-			firebase.auth().onAuthStateChanged((user) => {
-				userName = user && user.displayName;
-				userId = user && user.uid;
-				if (userName && userId) {
-					console.log("doc-auth", "signed in", userName, userId);
-					this.evalContext.userName = userName;
-					this.evalContext.userId = userId;
-					updateUser();
-					if (userId) {
-						this.evalContext.database.on("users/" + userId + "/messages", (data, error) => {
-							// message here
-							// alert("Message added")
-						})
-					}
-				}
-			}, (err) => {
-				console.log("doc-auth", "onAuthStateChanged", "error", err);
-				// error
-			}, () => {
-				console.log("doc-auth", "onAuthStateChanged", "completed");
-				// completed
-			})
+		// 	firebase.auth().onAuthStateChanged((user) => {
+		// 		userName = user && user.displayName;
+		// 		userId = user && user.uid;
+		// 		if (userName && userId) {
+		// 			console.log("doc-auth", "signed in", userName, userId);
+		// 			this.evalContext.userName = userName;
+		// 			this.evalContext.userId = userId;
+		// 			updateUser();
+		// 			if (userId) {
+		// 				this.evalContext.database.on("users/" + userId + "/messages", (data, error) => {
+		// 					// message here
+		// 					// alert("Message added")
+		// 				})
+		// 			}
+		// 		}
+		// 	}, (err) => {
+		// 		console.log("doc-auth", "onAuthStateChanged", "error", err);
+		// 		// error
+		// 	}, () => {
+		// 		console.log("doc-auth", "onAuthStateChanged", "completed");
+		// 		// completed
+		// 	})
 
-			output.printButton({ buttonText: "Sign in" }, (ev) => {
-				try {
-					console.log("doc-auth", "signInWithRedirect");
-					firebase.auth().signInWithRedirect(provider);
-				} catch (error) {
-					console.log("doc-auth", "signInWithRedirect", "error", error);
-				}
-			});
+		// 	output.printButton({ buttonText: "Sign in" }, (ev) => {
+		// 		try {
+		// 			console.log("doc-auth", "signInWithRedirect");
+		// 			firebase.auth().signInWithRedirect(provider);
+		// 		} catch (error) {
+		// 			console.log("doc-auth", "signInWithRedirect", "error", error);
+		// 		}
+		// 	});
 
-			output.printButton({ buttonText: "Sign out" }, (ev) => {
-				try {
-					console.log("doc-auth", "signOut");
-					firebase.auth().signOut().then(function (a) {
-						// Sign-out successful.
-						console.log("doc-auth", "signOut", "success", a);
-					}).catch(function (error) {
-						// An error happened
-						console.log("doc-auth", "signOut", "error", error);
-					})
-				} catch (error) {
-					console.log("doc-auth", "signOut", "error2", error);
-				}
-			});
+		// 	output.printButton({ buttonText: "Sign out" }, (ev) => {
+		// 		try {
+		// 			console.log("doc-auth", "signOut");
+		// 			firebase.auth().signOut().then(function (a) {
+		// 				// Sign-out successful.
+		// 				console.log("doc-auth", "signOut", "success", a);
+		// 			}).catch(function (error) {
+		// 				// An error happened
+		// 				console.log("doc-auth", "signOut", "error", error);
+		// 			})
+		// 		} catch (error) {
+		// 			console.log("doc-auth", "signOut", "error2", error);
+		// 		}
+		// 	});
 
-			output.domReplace();
-		});
+		//    output.domReplace();
+		// });
 
 		output.domReplace();
 

@@ -101,12 +101,3 @@ input[type="color"] {
     margin: 3px;
 }
 
-.eval-login {
-	text-align: right;
-}
-
-#auth-container {
-    text-align: right;
-    background-color: #002;
-    color: white;
-}

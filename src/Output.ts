@@ -119,6 +119,10 @@ export class Output {
 		this.html.push(Output.escapeHtml(text));
 	}
 
+	printNavbar(printArgs: NavbarOptions) {
+		this.evalContext.theme.printNavbar(this, printArgs);
+	}
+
 	toString(): string {
 		return this.html.join("");
 	}

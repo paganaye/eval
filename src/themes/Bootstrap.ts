@@ -443,4 +443,30 @@ export class Bootstrap extends Theme {
 			if (data.text) output.printTag("div", {}, data.text);
 		});
 	}
+
+	printNavbar(output: Output, printArgs: NavbarOptions) {
+		output.printHTML('<nav class="navbar navbar-toggleable-md navbar-light bg-faded">');
+		output.printHTML('  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">');
+		output.printHTML('    <span class="navbar-toggler-icon"></span>');
+		output.printHTML('  </button>');
+		output.printHTML('  <a class="navbar-brand" href="#">Navbar</a>');
+		output.printHTML('  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">');
+		output.printHTML('    <ul class="navbar-nav mr-auto mt-2 mt-md-0">');
+		output.printHTML('        <li class="nav-item active">');
+		output.printHTML('          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>');
+		output.printHTML('        </li>');
+		output.printHTML('        <li class="nav-item">');
+		output.printHTML('          <a class="nav-link" href="#">Link</a>');
+		output.printHTML('        </li>');
+		output.printHTML('        <li class="nav-item">');
+		output.printHTML('          <a class="nav-link disabled" href="#">Disabled</a>');
+		output.printHTML('        </li>');
+		output.printHTML('    </ul>');
+		output.printHTML('    <form class="form-inline my-2 my-lg-0">');
+		output.printHTML('      <input class="form-control mr-sm-2" type="text" placeholder="Search">');
+		output.printHTML('      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>');
+		output.printHTML('    </form>');
+		output.printHTML('  </div>');
+		output.printHTML('</nav>');
+	}
 }

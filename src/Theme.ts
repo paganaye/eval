@@ -27,6 +27,7 @@ export abstract class Theme {
 	abstract printButtonGroup(output: Output, printArgs: ButtonGroupPrintArgs, action: (ev: Event, text: string) => void): void;
 	abstract printNotification(output: Output, printArgs: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void;
 	abstract refreshView(view: AnyView, refreshOptions: RefreshOptions): void;
+	abstract printNavbar(output: Output, printArgs: NavbarOptions);
 }
 
 export interface RefreshOptions {
