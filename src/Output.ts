@@ -70,21 +70,21 @@ export class Output {
 		this.html.push("</" + this.startedTags.pop() + ">");
 	}
 
-	printProperty(viewParent: ViewParent, printArgs: PropertyPrintArgs, data: any, dataType: Type): AnyView {
+	printProperty(viewParent: ViewParent, propertyPrintArgs: PropertyPrintArgs, data: any, dataType: Type): AnyView {
 		var view: AnyView;
 
-		view = this.evalContext.instantiate(viewParent, printArgs.label, data, dataType, this.editMode, printArgs);
+		view = this.evalContext.instantiate(viewParent, propertyPrintArgs.label, data, dataType, this.editMode, propertyPrintArgs);
 
-		if (!printArgs) printArgs = { visibility: dataType.visibility || Visibility.Shown };
-		if (dataType.visibility > printArgs.visibility) printArgs.visibility = dataType.visibility;
-		this.evalContext.theme.printProperty(this, printArgs, view);
+		if (!propertyPrintArgs) propertyPrintArgs = { visibility: dataType.visibility || Visibility.Shown };
+		if (dataType.visibility > propertyPrintArgs.visibility) propertyPrintArgs.visibility = dataType.visibility;
+		this.evalContext.theme.printProperty(this, propertyPrintArgs, view);
 		return view;
 	}
 
 
 
-	printArrayEntry(arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
-		return this.evalContext.theme.printArrayEntry(this, arrayView, printArgs, data, dataType)
+	printArrayEntry(arrayView: ArrayView<any>, arrayEntryPrintArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
+		return this.evalContext.theme.printArrayEntry(this, arrayView, arrayEntryPrintArgs, data, dataType)
 	}
 
 	printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
