@@ -5,7 +5,7 @@ import { Type, SelectEntry, Visibility } from './Types';
 import { View, AnyView, ViewParent } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions } from "./Theme";
+import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, BreadcrumpPrintArgs, JumbotronPrintArgs } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { VariantView } from "./views/VariantView";
 
@@ -121,6 +121,15 @@ export class Output {
 
 	printNavbar(printArgs: NavbarOptions) {
 		this.evalContext.theme.printNavbar(this, printArgs);
+	}
+
+	printBreadcrump(printArgs: BreadcrumpPrintArgs) {
+		this.evalContext.theme.printBreadcrump(this, printArgs);
+	}
+
+
+	printJumbotron(printArgs: JumbotronPrintArgs) {
+		this.evalContext.theme.printJumbotron(this, printArgs);
 	}
 
 	toString(): string {

@@ -1,4 +1,4 @@
-import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions } from "../Theme";
+import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions, JumbotronPrintArgs, BreadcrumpPrintArgs } from "../Theme";
 import { Output } from "../Output";
 import { Type, Visibility } from "../Types";
 import { Eval } from "../Eval";
@@ -9,6 +9,7 @@ import { VariantView } from "../views/VariantView";
 import { Notification } from "../commands/Notification"
 
 export class Bootstrap extends Theme {
+
 	classPrefix = "evl-";
 
 	constructor(evalContext: Eval, private addScripts: boolean = true) {
@@ -449,7 +450,7 @@ export class Bootstrap extends Theme {
 		output.printHTML('  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">');
 		output.printHTML('    <span class="navbar-toggler-icon"></span>');
 		output.printHTML('  </button>');
-		output.printHTML('  <a class="navbar-brand" href="#">Navbar</a>');
+		output.printHTML('  <a class="navbar-brand" href="#Welcome">Eval</a>');
 		output.printHTML('  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">');
 		output.printHTML('    <ul class="navbar-nav mr-auto mt-2 mt-md-0">');
 		output.printHTML('        <li class="nav-item active">');
@@ -458,6 +459,16 @@ export class Bootstrap extends Theme {
 		output.printHTML('        <li class="nav-item">');
 		output.printHTML('          <a class="nav-link" href="#">Link</a>');
 		output.printHTML('        </li>');
+		output.printHTML('        <li class="nav-item dropdown">');
+		output.printHTML('          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>');
+		output.printHTML('          <div class="dropdown-menu">');
+		output.printHTML('            <a class="dropdown-item" href="#">Action</a>');
+		output.printHTML('            <a class="dropdown-item" href="#">Another action</a>');
+		output.printHTML('            <a class="dropdown-item" href="#">Something else here</a>');
+		output.printHTML('            <div class="dropdown-divider"></div>');
+		output.printHTML('            <a class="dropdown-item" href="#">Separated link</a>');
+		output.printHTML('          </div>');
+		output.printHTML('        </li>')
 		output.printHTML('        <li class="nav-item">');
 		output.printHTML('          <a class="nav-link disabled" href="#">Disabled</a>');
 		output.printHTML('        </li>');
@@ -468,5 +479,23 @@ export class Bootstrap extends Theme {
 		output.printHTML('    </form>');
 		output.printHTML('  </div>');
 		output.printHTML('</nav>');
+	}
+
+	printBreadcrump(output: Output, printArgs: BreadcrumpPrintArgs) {
+		output.printHTML('<nav class="breadcrumb">');
+		output.printHTML('  <a class="breadcrumb-item" href="#">Home</a>');
+		output.printHTML('  <a class="breadcrumb-item" href="#">Library</a>');
+		output.printHTML('  <a class="breadcrumb-item" href="#">Data</a>');
+		output.printHTML('  <span class="breadcrumb-item active">Bootstrap</span>');
+		output.printHTML('</nav>');
+	}
+
+	printJumbotron(output: Output, printArgs: JumbotronPrintArgs) {
+		output.printHTML('<div class="jumbotron jumbotron-fluid">');
+		output.printHTML('  <div class="container">');
+		output.printTag('h1',{class:"display-3"},printArgs.title);;
+		output.printTag('p',{ class:"lead"},printArgs.description);
+		output.printHTML('  </div>');
+		output.printHTML('</div>');
 	}
 }

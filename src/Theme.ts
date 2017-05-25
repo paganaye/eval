@@ -27,7 +27,9 @@ export abstract class Theme {
 	abstract printButtonGroup(output: Output, printArgs: ButtonGroupPrintArgs, action: (ev: Event, text: string) => void): void;
 	abstract printNotification(output: Output, printArgs: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void;
 	abstract refreshView(view: AnyView, refreshOptions: RefreshOptions): void;
-	abstract printNavbar(output: Output, printArgs: NavbarOptions);
+	abstract printNavbar(output: Output, printArgs: NavbarPrintArgs);
+	abstract printBreadcrump(output: Output, printArgs: BreadcrumpPrintArgs);
+	abstract printJumbotron(output: Output, printArgs: JumbotronPrintArgs);
 }
 
 export interface RefreshOptions {
@@ -76,6 +78,19 @@ export class SectionPrintArgs extends PrintArgs {
 	title?: string;
 	orphans?: boolean;
 	active?: boolean;
+}
+
+export class BreadcrumpPrintArgs extends PrintArgs {
+
+}
+
+export class JumbotronPrintArgs extends PrintArgs {
+	title: string;
+	description: string;
+}
+
+export class NavbarPrintArgs extends PrintArgs {
+
 }
 
 export class InputPrintArgs extends PrintArgs {
