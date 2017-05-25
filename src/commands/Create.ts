@@ -22,7 +22,7 @@ export class Create extends Command {
 		this.saveButtonId = evalContext.nextId("save-btn");
 	}
 
-	valueChangedTimer: NodeJS.Timer;
+	valueChangedTimer: any;
 
 	valueChanged(view: AnyView): void {
 		switch (view.name) {

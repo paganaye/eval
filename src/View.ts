@@ -35,6 +35,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 		this.rendered = true;
 	}
 
+	
 	beforeBuild(data: TValue, type: TType, printArgs: TPrintArgs): void {
 		this.type = type || {} as TType;
 		if (this.type._kind === "const" && !this.data) {

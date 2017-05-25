@@ -6,7 +6,7 @@ import { View, AnyView, ViewParent } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
 import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, BreadcrumpPrintArgs, JumbotronPrintArgs, NotificationPrintArgs, RefreshOptions, NavbarPrintArgs } from "./Theme";
-import { ArrayView } from "./views/ArrayView";
+import { ArrayView, ArrayEntryView } from "./views/ArrayView";
 import { VariantView } from "./views/VariantView";
 import { Notification } from "./commands/Notification"
 
@@ -23,7 +23,7 @@ export abstract class Output {
 	constructor(protected evalContext: Eval, private elt?: HTMLElement, private parentOutput?: Output) {
 		this.editMode = (parentOutput && parentOutput.editMode) || false;
 		this.id = "output#" + (++Output.counter);
-		}
+	}
 
 	isEditMode(): boolean {
 		return this.editMode;
@@ -203,13 +203,11 @@ export abstract class Output {
 	}
 
 
-	abstract printPage(printArgs: PagePrintArgs, printContent: (printArgs: PrintArgs) => void): void;
-	abstract printGroup(printArgs: GroupOptions, printContent: (printArgs: PrintArgs) => void): void;
-
-	abstract printSection(printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void);
-
-	abstract printArrayEntry(arrayView: ArrayView<any>,
-		printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView;
+	abstract printPage(printArgs: PagePrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void): void;
+	abstract printGroup(printArgs: GroupOptions, printContent: (output: Output, printArgs: PrintArgs) => void): void;
+	abstract printSection(printArgs: SectionPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void);
+	abstract printArray(arrayView: ArrayView<any>, printArgs: ArrayPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void): void;
+	abstract printArrayEntry(arrayEntryView: ArrayEntryView, printArgs: ArrayEntryPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void): void;
 
 	abstract printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void;
 	abstract printSelect(printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void): void;

@@ -70,7 +70,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 			this.printTemplate(output);
 		}
 		else {
-			output.printSection({ name: "object" }, (printArgs) => {
+			output.printSection({ name: "object" }, (output, printArgs) => {
 				if (this.mainProperties.length) {
 					output.printSection({ addHeaderCallback: printArgs.addHeaderCallback, name: "object-properties" }, (printArgs) => {
 						for (var key of this.mainProperties) {
@@ -79,7 +79,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 					});
 				}
 				if (this.groupNames.length) {
-					output.printSection({ name: "property-groups" }, (printArgs) => {
+					output.printSection({ name: "property-groups" }, (output, printArgs) => {
 						var first = true;
 						for (var groupName of this.groupNames) {
 							var group = this.groupByName[groupName];

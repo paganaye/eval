@@ -4,7 +4,7 @@ import { Type, Visibility } from "../Types";
 import { Eval } from "../Eval";
 import { View, AnyView, ValidationStatus } from "../View";
 import { ObjectView } from "../views/ObjectView";
-import { ArrayView } from "../views/ArrayView";
+import { ArrayView, ArrayEntryView } from "../views/ArrayView";
 import { VariantView } from "../views/VariantView";
 import { Notification } from "../commands/Notification"
 
@@ -135,7 +135,12 @@ export class BootstrapOutput extends Output {
 		this.printEndTag(); // row or card
 	}
 
-	printArrayEntry(arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
+	printArray(arrayView: ArrayView<any>, printArgs: ArrayPrintArgs, printContent: (output, printArgs: PrintArgs) => void): void {
+		printContent(this, printArgs);
+	}
+
+	printArrayEntry(arrayEntryView: ArrayEntryView, printArgs: ArrayEntryPrintArgs, printContent: (output, printArgs: PrintArgs) => void): void {
+
 		this.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
 		Bootstrap.addClass({}, "card-header");
 		Bootstrap.addClass({}, "collapsed");
@@ -154,25 +159,27 @@ export class BootstrapOutput extends Output {
 			}
 		});
 		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
-		var innerView = this.evalContext.instantiate(arrayView, "[" + printArgs.id + ']', data, dataType, this.isEditMode(), {});
+		//var innerView = this.evalContext.instantiate(arrayView, "[" + printArgs.id + ']', data, dataType, this.isEditMode(), {});
 
 		this.printAsync("div", contentAttributes, "...", (output) => {
 			var $: any = window["$"];
-			innerView.render(output);
+			//innerView.render(output);
 			if (printArgs.active) {
 				var $elt = $(output.getOutputElt());
 				//Bootstrap.addClass(contentAttributes, "show");
 				$elt.collapse("show");
 				$elt.siblings().collapse("hide");
 			}
+			printContent(output, {});
 			output.domReplace();
 		})
+
 		// this.printStartTag("div", contentAttributes);
 		//this.printEndTag(); // card-block
 
 		this.printEndTag(); // card
 
-		return innerView;
+		//return innerView;
 	}
 
 
@@ -190,7 +197,7 @@ export class BootstrapOutput extends Output {
 		this.printEndTag();
 	}
 
-	printSection(printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void) {
+	printSection(printArgs: SectionPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
 		Bootstrap.addClass({}, printArgs.name);
 		var attributes: ElementAttributes = { class: Bootstrap.classPrefix + printArgs.name };
 		switch (printArgs.name) {
@@ -224,7 +231,7 @@ export class BootstrapOutput extends Output {
 				/*<!-- Tab panes -->*/
 				Bootstrap.addClass(attributes, "tab-content");
 				this.printStartTag("div", attributes);
-				printContent({
+				printContent(this, {
 					addHeaderCallback: (key, label) => {
 						headers.push({ key: key, label: label });
 					}
@@ -239,14 +246,14 @@ export class BootstrapOutput extends Output {
 			case "create":
 			case "update":
 				this.printStartTag("div", attributes);
-				printContent({});
+				printContent(this, {});
 				this.printEndTag();
 				break;
 
 			case "variant-select-container":
 				Bootstrap.addClass(attributes, "form-group");
 				this.printStartTag("div", attributes);
-				printContent({});
+				printContent(this, {});
 				this.printEndTag();
 				break;
 
@@ -263,11 +270,11 @@ export class BootstrapOutput extends Output {
 					attributes.role = "tabpanel";
 					attributes.id = id;
 					this.printStartTag("div", attributes);
-					printContent({});
+					printContent(this, {});
 					this.printEndTag();
 				} else {
 					this.printStartTag("div", attributes);
-					printContent({});
+					printContent(this, {});
 					this.printEndTag();
 				}
 				break;
@@ -279,13 +286,13 @@ export class BootstrapOutput extends Output {
 			case "array":
 			case "object":
 				// no tag for those but we pass the printArgs along
-				printContent(printArgs);
+				printContent(this, printArgs);
 				break;
 
 			default:
 				console.error("Section " + printArgs.name + " not implemented by Bootstrap Eval theme.");
 				this.printStartTag("div", attributes);
-				printContent({});
+				printContent(this, {});
 				this.printEndTag();
 
 				break;
