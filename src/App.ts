@@ -29,7 +29,7 @@ class App {
 		var output = new Output(this.evalContext, authContainer);
 
 		output.printNavbar({});
-		output.printBreadcrump({});
+		//output.printBreadcrump({});
 		output.printJumbotron({ title: "Title", description: "Description" });
 		// output.printAsync("span", { class: "eval-login" }, "...", (elt, output) => {
 		// 	var userOutput: Output;
