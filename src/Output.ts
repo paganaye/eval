@@ -23,10 +23,7 @@ export abstract class Output {
 	constructor(protected evalContext: Eval, private elt?: HTMLElement, private parentOutput?: Output) {
 		this.editMode = (parentOutput && parentOutput.editMode) || false;
 		this.id = "output#" + (++Output.counter);
-		if (this.id == "output#11") {
-			debugger;
 		}
-	}
 
 	isEditMode(): boolean {
 		return this.editMode;
@@ -174,7 +171,6 @@ export abstract class Output {
 			id = this.evalContext.nextId(tag);
 			attributes.id = id;
 		}
-		if (id == "entries-2") debugger;
 
 		switch (typeof text) {
 			case "undefined":

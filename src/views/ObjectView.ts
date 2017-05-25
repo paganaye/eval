@@ -95,12 +95,14 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 						}
 					});
 				}
+/*
 				output.printAsync("div", {}, "Preview...",
 					(output) => {
 						this.previewOutput = output;
 						this.printTemplate(output);
 						output.domReplace();
 					});
+*/					
 			});
 		}
 	}

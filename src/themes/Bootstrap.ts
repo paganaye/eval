@@ -165,6 +165,7 @@ export class BootstrapOutput extends Output {
 				$elt.collapse("show");
 				$elt.siblings().collapse("hide");
 			}
+			output.domReplace();
 		})
 		// this.printStartTag("div", contentAttributes);
 		//this.printEndTag(); // card-block

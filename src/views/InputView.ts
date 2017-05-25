@@ -18,9 +18,14 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
 		var dataType = this.type;
 		output.printInput({ id: this.inputId }, this.data, dataType, (elt) => {			
 			this.elt = document.getElementById(this.inputId) as HTMLInputElement;
-			this.elt.oninput = (e) => this.onInput(e);
-			this.validate();
-			this.valueChanged();
+			if (this.elt) {
+				this.elt.oninput = (e) => this.onInput(e);
+				this.validate();
+				this.valueChanged();
+			}
+			else {
+				console.error("Cannot find input view control " + this.inputId);
+			}
 		});
 	}
 
