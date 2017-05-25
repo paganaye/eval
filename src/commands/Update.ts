@@ -24,13 +24,13 @@ export class Update extends Command {
 
 	valueChanged(view: AnyView): void {
 	}
-	
+
 	run(output: Output) {
 		this.pageName = (this.pageName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, "Updating " + this.pageName + " " + this.recordId + "...", (elt, output2) => {
-			this.showForm(output2);
+		output.printAsync("div", {}, "Updating " + this.pageName + " " + this.recordId + "...", (output) => {
+			this.showForm(output);
 		});
 
 	}

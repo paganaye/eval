@@ -26,7 +26,7 @@ class App {
 		var provider = new firebase.auth.GoogleAuthProvider();
 
 		var authContainer = document.getElementById("auth-container");
-		var output = new Output(this.evalContext, authContainer);
+		var output = this.evalContext.theme.createOutput(authContainer);
 
 		output.printNavbar({});
 		//output.printBreadcrump({});

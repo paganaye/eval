@@ -35,9 +35,10 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 					(kind) => this.selectionChanged(kind));
 			}
 		});
-		output.printAsync("div", {}, "...", (elt, output) => {
+		output.printAsync("div", {}, "...", (output) => {
 			this.targetOutput = output;
 			this.selectionChanged(this.kind);
+			output.domReplace();
 		});
 	}
 

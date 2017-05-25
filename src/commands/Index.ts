@@ -22,7 +22,8 @@ export class Index extends Command {
 	run(output: Output) {
 		this.pageName = (this.pageName || ""); //.toLowerCase();
 
-		output.printAsync("div", {}, "Loading " + this.pageName + " pages...", (elt, output) => {
+		output.printAsync("div", {}, "Loading " + this.pageName + " pages...", (output) => {
+			
 			var viewParent: ViewParent = null;
 
 			this.evalContext.getPageType(this.pageName, (type) => {

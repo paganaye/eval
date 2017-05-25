@@ -24,9 +24,10 @@ export class StructView extends ObjectView {
 	}
 
 	onRender(output: Output): void {
-		output.printAsync("div", {}, "...", (elt, output) => {
+		output.printAsync("div", {}, "...", (output) => {
 			this.customOutput = output;
 			this.renderView();
+			output.domReplace();
 		});
 	}
 	customOutput: Output;

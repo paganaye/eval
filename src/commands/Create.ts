@@ -74,11 +74,12 @@ export class Create extends Command {
 	run(output: Output) {
 		this.pageName = (this.pageName || "").toLowerCase();
 
-		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (elt, output2) => {
-			output2.setEditMode(true);
-			this.recordIdView = <StringInputView>output2.printProperty(this, { visibility: Visibility.Shown, label: "pageName" }, "", { _kind: "string" });
+		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (elt) => {
+			var output =  output.getOutput();
+			output.setEditMode(true);
+			this.recordIdView = <StringInputView>output.printProperty(this, { visibility: Visibility.Shown, label: "pageName" }, "", { _kind: "string" });
 			// output2.printInput({ id: "recordId" }, "", , (elt) => { });
-			output2.printHTML("<hr/>");
+			output.printHTML("<hr/>");
 
 			this.evalContext.getPageType(this.pageName, (type) => {
 				// 	output2.setEditMode(true);
@@ -88,19 +89,19 @@ export class Create extends Command {
 				//isNew = true;
 				// 	}
 				this.innerView = this.evalContext.instantiate(this, "update::", data, type, true);
-				this.innerView.render(output2);
-				output2.printSection({ name: "update" }, (printArgs) => {
-					output2.printButton({ buttonText: "Cancel" }, () => {
+				this.innerView.render(output);
+				output.printSection({ name: "update" }, (printArgs) => {
+					output.printButton({ buttonText: "Cancel" }, () => {
 						window.location.hash = "#" + this.pageName;
 					});
-					output2.printHTML("&nbsp;");
+					output.printHTML("&nbsp;");
 
-					output2.printButton({ id: this.saveButtonId, buttonText: "Save" }, () => {
+					output.printButton({ id: this.saveButtonId, buttonText: "Save" }, () => {
 						this.evalContext.saveRecord(this.pageName, this.recordId, this.innerView.getValue());
 						window.location.hash = "#" + this.pageName;
 					});
 				});
-				output2.domReplace();
+				output.domReplace();
 			});
 		});
 

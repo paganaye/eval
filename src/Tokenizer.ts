@@ -32,7 +32,7 @@ export class Tokenizer {
 	curChar: string;
 
 	constructor(source: string, public inTemplate: boolean) {
-		this.source = source;
+		this.source = source || "";
 		this.position = -1;
 		this.length = this.source.length;
 		this.nextChar();

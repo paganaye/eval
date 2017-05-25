@@ -1,4 +1,4 @@
-import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions, JumbotronPrintArgs, BreadcrumpPrintArgs } from "../Theme";
+import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions, JumbotronPrintArgs, BreadcrumpPrintArgs, NotificationPrintArgs } from "../Theme";
 import { Output } from "../Output";
 import { Type, Visibility } from "../Types";
 import { Eval } from "../Eval";
@@ -10,7 +10,7 @@ import { Notification } from "../commands/Notification"
 
 export class Bootstrap extends Theme {
 
-	classPrefix = "evl-";
+	static classPrefix = "evl-";
 
 	constructor(evalContext: Eval, private addScripts: boolean = true) {
 		super(evalContext);
@@ -32,95 +32,8 @@ export class Bootstrap extends Theme {
 		}
 	}
 
-	printProperty(output: Output, printArgs: PropertyPrintArgs, view: AnyView) {
-
-		var validationStatus = view.getValidationStatus();
-		var className = this.getClassName(view.getValidationStatus());
-
-		var attrs = { class: "form-group row", id: view.getId() + "-container" };
-		if (className) this.addClass(attrs, className);
-
-		var valueAttributes = {};
-		var titleInBox = false;
-		var visibility = this.evalContext.fixEnum(printArgs.visibility, Visibility);
-		switch (visibility) {
-			case Visibility.Shown:
-				output.printStartTag("div", attrs);
-				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
-				output.printTag("label", labelAttributes,
-					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-				this.addClass(valueAttributes, "col-lg-10");
-				break;
-			case Visibility.TitleInBox:
-				attrs.class = "card";
-				if (className) this.addClass(attrs, className);
-				output.printStartTag("div", attrs);
-				output.printHTML('   <div class="card-header">');
-				output.printTag("label", labelAttributes,
-					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-				output.printHTML('   </div>');
-				output.printHTML('   <div class="card-block">');
-				titleInBox = true;
-				this.addClass(valueAttributes, "col-lg-12");
-				break;
-			default:
-				output.printStartTag("div", attrs);
-				this.addClass(valueAttributes, "col-12");
-				break;
-		}
-
-
-		output.printStartTag("div", valueAttributes);
-		view.render(output);
-
-		output.printTag('div', { class: "form-control-feedback", id: view.getId() + "-validation" },
-			view.getValidationText() || "");
-		output.printTag('small', { class: "form-text text-muted", id: view.getId() + "-description" }, view.getDescription() || "");
-
-		output.printEndTag(); // col-lg-10;
-		if (titleInBox) {
-			output.printHTML('   </div>');
-		}
-		output.printEndTag(); // row or card
-	}
-
-	printArrayEntry(output: Output, arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
-		output.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
-		this.addClass({}, "card-header");
-		this.addClass({}, "collapsed");
-
-		var accordionId = printArgs.entriesElementId
-		output.printTag("a", {
-			href: "#" + printArgs.id + "-content", class: "sort-handle collapsible-title", "data-toggle": "collapse",
-			"data-parent": "#" + accordionId
-		}, (output) => {
-			output.printText(printArgs.label);
-			if (printArgs.deletable) {
-				output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
-					var elt = (ev.target as HTMLElement).parentElement;
-					if (elt) elt.parentElement.remove();
-				});
-			}
-		});
-		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
-		var innerView = this.evalContext.instantiate(arrayView, "[" + printArgs.id + ']', data, dataType, output.isEditMode(), {});
-
-		output.printAsync("div", contentAttributes, "...", (elt, output) => {
-			var $: any = window["$"];
-			innerView.render(output);
-			output.domReplace();
-			if (printArgs.active) {
-				//this.addClass(contentAttributes, "show");
-				$(elt).collapse("show");
-				$(elt).siblings().collapse("hide");
-			}
-		})
-		// output.printStartTag("div", contentAttributes);
-		//output.printEndTag(); // card-block
-
-		output.printEndTag(); // card
-
-		return innerView;
+	createOutput(elt?: HTMLElement, parentOutput?: Output): Output {
+		return new BootstrapOutput(this.evalContext, elt, parentOutput);
 	}
 
 	getArrayEntriesIndex(element: HTMLElement): string[] {
@@ -133,32 +46,161 @@ export class Bootstrap extends Theme {
 		return result;
 	}
 
-	printPage(output: Output, printArgs: PagePrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
-		output.printStartTag("div", { class: "container" });
-		printContent(output, {});
-		output.printEndTag();
+	refreshView(view: AnyView, refreshOptions: RefreshOptions): void {
+		if (refreshOptions.validationTextChanged) {
+			var elt = document.getElementById(view.getId() + "-validation");
+			elt.innerText = view.getValidationText();
+		}
+		if (refreshOptions.validationStatusChanged) {
+			var elt = document.getElementById(view.getId() + "-container");
+			elt.classList.remove("has-success");
+			elt.classList.remove("has-warning");
+			elt.classList.remove("has-danger");
+			var className = BootstrapOutput.getClassName(view.getValidationStatus());
+			if (className) elt.classList.add(className);
+		}
+		if (refreshOptions.valueChanged) {
+			var input = document.getElementById(view.getId()) as HTMLInputElement;
+			input.value = view.getValue();
+		}
+		if (refreshOptions.descriptionChanged) {
+			var elt = document.getElementById(view.getId() + "-description");
+			elt.innerText = view.getValidationText();
+		}
+	}
+
+	static addClass(css: ElementAttributes, newEntry: string): void {
+		if (css.class) {
+			var bits = css.class.split(' ');
+			if (bits.indexOf(newEntry) >= 0) return;
+			bits.push(newEntry);
+			css.class = bits.join(" ");
+
+		} else css.class = newEntry;
+	}
+}
+
+export class BootstrapOutput extends Output {
+
+
+	printPropertyView(printArgs: PropertyPrintArgs, view: AnyView) {
+
+		var validationStatus = view.getValidationStatus();
+		var className = BootstrapOutput.getClassName(view.getValidationStatus());
+
+		var attrs = { class: "form-group row", id: view.getId() + "-container" };
+		if (className) Bootstrap.addClass(attrs, className);
+
+		var valueAttributes = {};
+		var titleInBox = false;
+		var visibility = this.evalContext.fixEnum(printArgs.visibility, Visibility);
+		switch (visibility) {
+			case Visibility.Shown:
+				this.printStartTag("div", attrs);
+				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
+				this.printTag("label", labelAttributes,
+					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
+				Bootstrap.addClass(valueAttributes, "col-lg-10");
+				break;
+			case Visibility.TitleInBox:
+				attrs.class = "card";
+				if (className) Bootstrap.addClass(attrs, className);
+				this.printStartTag("div", attrs);
+				this.printHTML('   <div class="card-header">');
+				this.printTag("label", labelAttributes,
+					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
+				this.printHTML('   </div>');
+				this.printHTML('   <div class="card-block">');
+				titleInBox = true;
+				Bootstrap.addClass(valueAttributes, "col-lg-12");
+				break;
+			default:
+				this.printStartTag("div", attrs);
+				Bootstrap.addClass(valueAttributes, "col-12");
+				break;
+		}
+
+
+		this.printStartTag("div", valueAttributes);
+		view.render(this);
+
+		this.printTag('div', { class: "form-control-feedback", id: view.getId() + "-validation" },
+			view.getValidationText() || "");
+		this.printTag('small', { class: "form-text text-muted", id: view.getId() + "-description" }, view.getDescription() || "");
+
+		this.printEndTag(); // col-lg-10;
+		if (titleInBox) {
+			this.printHTML('   </div>');
+		}
+		this.printEndTag(); // row or card
+	}
+
+	printArrayEntry(arrayView: ArrayView<any>, printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
+		this.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
+		Bootstrap.addClass({}, "card-header");
+		Bootstrap.addClass({}, "collapsed");
+
+		var accordionId = printArgs.entriesElementId
+		this.printTag("a", {
+			href: "#" + printArgs.id + "-content", class: "sort-handle collapsible-title", "data-toggle": "collapse",
+			"data-parent": "#" + accordionId
+		}, (output) => {
+			this.printText(printArgs.label);
+			if (printArgs.deletable) {
+				this.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
+					var elt = (ev.target as HTMLElement).parentElement;
+					if (elt) elt.parentElement.remove();
+				});
+			}
+		});
+		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
+		var innerView = this.evalContext.instantiate(arrayView, "[" + printArgs.id + ']', data, dataType, this.isEditMode(), {});
+
+		this.printAsync("div", contentAttributes, "...", (output) => {
+			var $: any = window["$"];
+			innerView.render(output);
+			if (printArgs.active) {
+				var $elt = $(output.getOutputElt());
+				//Bootstrap.addClass(contentAttributes, "show");
+				$elt.collapse("show");
+				$elt.siblings().collapse("hide");
+			}
+		})
+		// this.printStartTag("div", contentAttributes);
+		//this.printEndTag(); // card-block
+
+		this.printEndTag(); // card
+
+		return innerView;
+	}
+
+
+	printPage(printArgs: PagePrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
+		this.printStartTag("div", { class: "container" });
+		printContent(this, {});
+		this.printEndTag();
 		document.title = printArgs.title;
 	}
 
-	printGroup(output: Output, printArgs: GroupOptions, printContent: (output: Output, printArgs: PrintArgs) => void) {
-		output.printStartTag("div", { class: "group" });
-		output.printHTML("<p>hello</p>")
-		printContent(output, {});
-		output.printEndTag();
+	printGroup(printArgs: GroupOptions, printContent: (output: Output, printArgs: PrintArgs) => void) {
+		this.printStartTag("div", { class: "group" });
+		this.printHTML("<p>hello</p>")
+		printContent(this, {});
+		this.printEndTag();
 	}
 
-	printSection(output: Output, printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void) {
-		this.addClass({}, printArgs.name);
-		var attributes: ElementAttributes = { class: this.classPrefix + printArgs.name };
+	printSection(printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void) {
+		Bootstrap.addClass({}, printArgs.name);
+		var attributes: ElementAttributes = { class: Bootstrap.classPrefix + printArgs.name };
 		switch (printArgs.name) {
 			case "property-groups":
-				// output.printStartTag("div", {});
-				// output.printHTML("...hi...")
-				// output.printEndTag();
-				output.printStartTag("div", { class: "object-body" });
+				// this.printStartTag("div", {});
+				// this.printHTML("...hi...")
+				// this.printEndTag();
+				this.printStartTag("div", { class: "object-body" });
 				var headers: { key: string, label: string }[] = [];
 
-				output.printAsync("div", { class: "form-group" }, "", (elt, output) => {
+				this.printAsync("div", { class: "form-group" }, "", (output) => {
 					if (headers.length) {
 						output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
 						var first = true;
@@ -166,7 +208,7 @@ export class Bootstrap extends Theme {
 							output.printHTML('<li class="nav-item">');
 							var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
 							if (first) {
-								this.addClass(headerAttributes, "active");
+								Bootstrap.addClass(headerAttributes, "active");
 								first = false;
 							}
 							output.printTag('a', headerAttributes, h.label);
@@ -175,19 +217,19 @@ export class Bootstrap extends Theme {
 						output.printEndTag();
 						output.domReplace();
 					} else {
-						elt.remove();
+						output.getOutputElt().remove();
 					}
 				});
 				/*<!-- Tab panes -->*/
-				this.addClass(attributes, "tab-content");
-				output.printStartTag("div", attributes);
+				Bootstrap.addClass(attributes, "tab-content");
+				this.printStartTag("div", attributes);
 				printContent({
 					addHeaderCallback: (key, label) => {
 						headers.push({ key: key, label: label });
 					}
 				});
-				output.printEndTag();
-				output.printEndTag();
+				this.printEndTag();
+				this.printEndTag();
 				break;
 			case "array-buttons":
 			case "map-properties":
@@ -195,16 +237,16 @@ export class Bootstrap extends Theme {
 			case "object-properties":
 			case "create":
 			case "update":
-				output.printStartTag("div", attributes);
+				this.printStartTag("div", attributes);
 				printContent({});
-				output.printEndTag();
+				this.printEndTag();
 				break;
 
 			case "variant-select-container":
-				this.addClass(attributes, "form-group");
-				output.printStartTag("div", attributes);
+				Bootstrap.addClass(attributes, "form-group");
+				this.printStartTag("div", attributes);
 				printContent({});
-				output.printEndTag();
+				this.printEndTag();
 				break;
 
 			case "property-group":
@@ -213,19 +255,19 @@ export class Bootstrap extends Theme {
 					if (printArgs.addHeaderCallback) {
 						printArgs.addHeaderCallback(id, printArgs.title);
 					}
-					this.addClass(attributes, "tab-pane");
+					Bootstrap.addClass(attributes, "tab-pane");
 					if (printArgs.active) {
-						this.addClass(attributes, "active");
+						Bootstrap.addClass(attributes, "active");
 					}
 					attributes.role = "tabpanel";
 					attributes.id = id;
-					output.printStartTag("div", attributes);
+					this.printStartTag("div", attributes);
 					printContent({});
-					output.printEndTag();
+					this.printEndTag();
 				} else {
-					output.printStartTag("div", attributes);
+					this.printStartTag("div", attributes);
 					printContent({});
-					output.printEndTag();
+					this.printEndTag();
 				}
 				break;
 
@@ -241,9 +283,9 @@ export class Bootstrap extends Theme {
 
 			default:
 				console.error("Section " + printArgs.name + " not implemented by Bootstrap Eval theme.");
-				output.printStartTag("div", attributes);
+				this.printStartTag("div", attributes);
 				printContent({});
-				output.printEndTag();
+				this.printEndTag();
 
 				break;
 		}
@@ -278,10 +320,10 @@ export class Bootstrap extends Theme {
 		"week": "Defines a week and year control (no time zone)"
 	};
 
-	printInput(output: Output, printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
+	printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
 		var attributes: ElementAttributes = { value: data };
-		this.addClass(attributes, "form-control");
-		if (!output.isEditMode()) {
+		Bootstrap.addClass(attributes, "form-control");
+		if (!this.isEditMode()) {
 			attributes.readonly = "readonly";
 		}
 		attributes.id = printArgs.id;
@@ -294,33 +336,35 @@ export class Bootstrap extends Theme {
 		// if (typeof data !== "string") {
 		// 	attributes.value = JSON.stringify(data);
 		// }
-		output.printAsync("input", attributes, "", (elt, output) => {
-			callback(elt as HTMLInputElement);
+		this.printAsync("input", attributes, "", (output) => {
+			callback(output.getOutputElt() as HTMLInputElement);
 		});
 	}
 
-	printSelect(output: Output, printArgs: SelectPrintArgs, data: string, datType: Type, onChanged?: (string) => void) {
+	printSelect(printArgs: SelectPrintArgs, data: string, datType: Type, onChanged?: (string) => void) {
 		var attributes: ElementAttributes = { class: "form-control" };
 		attributes.id = printArgs.id;
-		output.printAsync("select", attributes, () => {
+		this.printAsync("select", attributes, () => {
 			var currentGroup = null;
 			for (var entry of printArgs.entries) {
 				if (entry.group != currentGroup) {
-					if (currentGroup) output.printEndTag();
+					if (currentGroup) this.printEndTag();
 					currentGroup = entry.group;
-					output.printStartTag("optgroup", { label: currentGroup });
+					this.printStartTag("optgroup", { label: currentGroup });
 				}
 				var optionAttributes = { key: entry.key };
 				if (data == entry.key) {
 					optionAttributes["selected"] = true;
 				}
-				output.printTag("option", optionAttributes, entry.label || entry.key);
+				this.printTag("option", optionAttributes, entry.label || entry.key);
 			}
 			if (currentGroup) {
-				output.printEndTag();
+				this.printEndTag();
 				currentGroup = null;
 			}
-		}, (selectElement) => {
+
+		}, (output) => {
+			var selectElement = output.getOutputElt();
 			selectElement.onchange = ((a: Event) => {
 				var select = a.target as HTMLSelectElement;
 				var option = select.selectedOptions[0] as HTMLOptionElement;
@@ -332,56 +376,48 @@ export class Bootstrap extends Theme {
 	}
 
 
-	printButton(output: Output, printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
+	printButton(printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
 		var attributes: ElementAttributes = { id: printArgs.id };
 		if (printArgs.class) attributes.class = printArgs.class;
-		output.printAsync("button", attributes, printArgs.buttonText, (elt) => {
+		this.printAsync("button", attributes, printArgs.buttonText, (output) => {
+			var elt = output.getOutputElt();
 			elt.onclick = (ev) => action(ev);
 		});
 	}
 
-	printButtonGroup(output: Output, printArgs: ButtonGroupPrintArgs, action: (ev: Event, string: any) => void) {
-		output.printTag("div", { class: "dropdown" }, () => {
+	printButtonGroup(printArgs: ButtonGroupPrintArgs, action: (ev: Event, string: any) => void) {
+		this.printTag("div", { class: "dropdown" }, () => {
 
-			output.printStartTag("a",
+			this.printStartTag("a",
 				{
 					type: "button", class: "btn btn-secondary dropdown-toggle", "data-toggle": "dropdown",
 					"aria-haspopup": "true", "aria-expanded": "false"
 				});
-			output.printText(printArgs.buttonText);
-			output.printEndTag(); // button
+			this.printText(printArgs.buttonText);
+			this.printEndTag(); // button
 
-			output.printStartTag("div", { class: "dropdown-menu" });
+			this.printStartTag("div", { class: "dropdown-menu" });
 
 			var currentGroup = null;
 			for (let entry of printArgs.entries) {
 				if (entry.group != currentGroup) {
-					output.printHTML("<div class=\"dropdown-divider\"></div>");
-					output.printText(entry.group);
-					output.printHTML("</li>");
+					this.printHTML("<div class=\"dropdown-divider\"></div>");
+					this.printText(entry.group);
+					this.printHTML("</li>");
 				}
 				var optionAttributes = { key: entry.key };
-				output.printAsync("a", { class: "dropdown-item", href: "#" },
-					entry.label || entry.key, (elt) => {
-						elt.onclick = (ev) => {
+				this.printAsync("a", { class: "dropdown-item", href: "#" },
+					entry.label || entry.key, (output) => {
+						output.getOutputElt().onclick = (ev) => {
 							ev.preventDefault();
 							action(ev, entry.key);
 						}
 					});
 			}
-			output.printEndTag(); // dropdown-menu
+			this.printEndTag(); // dropdown-menu
 		});
 	}
 
-	addClass(css: ElementAttributes, newEntry: string): void {
-		if (css.class) {
-			var bits = css.class.split(' ');
-			if (bits.indexOf(newEntry) >= 0) return;
-			bits.push(newEntry);
-			css.class = bits.join(" ");
-
-		} else css.class = newEntry;
-	}
 
 	prepareViewBeforeBuild(view: AnyView): void {
 		if (view instanceof VariantView) {
@@ -391,30 +427,8 @@ export class Bootstrap extends Theme {
 		}
 	}
 
-	refreshView(view: AnyView, refreshOptions: RefreshOptions): void {
-		if (refreshOptions.validationTextChanged) {
-			var elt = document.getElementById(view.getId() + "-validation");
-			elt.innerText = view.getValidationText();
-		}
-		if (refreshOptions.validationStatusChanged) {
-			var elt = document.getElementById(view.getId() + "-container");
-			elt.classList.remove("has-success");
-			elt.classList.remove("has-warning");
-			elt.classList.remove("has-danger");
-			var className = this.getClassName(view.getValidationStatus());
-			if (className) elt.classList.add(className);
-		}
-		if (refreshOptions.valueChanged) {
-			var input = document.getElementById(view.getId()) as HTMLInputElement;
-			input.value = view.getValue();
-		}
-		if (refreshOptions.descriptionChanged) {
-			var elt = document.getElementById(view.getId() + "-description");
-			elt.innerText = view.getValidationText();
-		}
-	}
 
-	getClassName(validationStatus: ValidationStatus): string {
+	static getClassName(validationStatus: ValidationStatus): string {
 		switch (validationStatus) {
 			case ValidationStatus.success:
 				return "has-success";
@@ -428,74 +442,74 @@ export class Bootstrap extends Theme {
 
 	}
 
-	printNotification(output: Output, printArgs: NotificationOptions, data: Notification, callback: (notification: Notification, id: string) => void): void {
-		output.printTag("div", { class: "notification" }, (output) => {
-			output.printStartTag("div", { class: "notification-buttons" });
+	printNotification(printArgs: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void {
+		this.printTag("div", { class: "notification" }, (output) => {
+			this.printStartTag("div", { class: "notification-buttons" });
 			if (data.buttons && data.buttons.length) {
 				for (var b of data.buttons) {
-					output.printStartTag("div", { class: "notification-button" });
+					this.printStartTag("div", { class: "notification-button" });
 				}
 			}
 			if (data.closable) {
-				output.printStartTag("div", { class: "close-button" });
+				this.printStartTag("div", { class: "close-button" });
 			}
-			output.printEndTag();
-			output.printTag("div", {}, data.title);
-			if (data.text) output.printTag("div", {}, data.text);
+			this.printEndTag();
+			this.printTag("div", {}, data.title);
+			if (data.text) this.printTag("div", {}, data.text);
 		});
 	}
 
-	printNavbar(output: Output, printArgs: NavbarOptions) {
-		output.printHTML('<nav class="navbar navbar-toggleable-md navbar-light bg-faded">');
-		output.printHTML('  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">');
-		output.printHTML('    <span class="navbar-toggler-icon"></span>');
-		output.printHTML('  </button>');
-		output.printHTML('  <a class="navbar-brand" href="#Welcome">Eval</a>');
-		output.printHTML('  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">');
-		output.printHTML('    <ul class="navbar-nav mr-auto mt-2 mt-md-0">');
-		output.printHTML('        <li class="nav-item active">');
-		output.printHTML('          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>');
-		output.printHTML('        </li>');
-		output.printHTML('        <li class="nav-item">');
-		output.printHTML('          <a class="nav-link" href="#">Link</a>');
-		output.printHTML('        </li>');
-		output.printHTML('        <li class="nav-item dropdown">');
-		output.printHTML('          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>');
-		output.printHTML('          <div class="dropdown-menu">');
-		output.printHTML('            <a class="dropdown-item" href="#">Action</a>');
-		output.printHTML('            <a class="dropdown-item" href="#">Another action</a>');
-		output.printHTML('            <a class="dropdown-item" href="#">Something else here</a>');
-		output.printHTML('            <div class="dropdown-divider"></div>');
-		output.printHTML('            <a class="dropdown-item" href="#">Separated link</a>');
-		output.printHTML('          </div>');
-		output.printHTML('        </li>')
-		output.printHTML('        <li class="nav-item">');
-		output.printHTML('          <a class="nav-link disabled" href="#">Disabled</a>');
-		output.printHTML('        </li>');
-		output.printHTML('    </ul>');
-		output.printHTML('    <form class="form-inline my-2 my-lg-0">');
-		output.printHTML('      <input class="form-control mr-sm-2" type="text" placeholder="Search">');
-		output.printHTML('      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>');
-		output.printHTML('    </form>');
-		output.printHTML('  </div>');
-		output.printHTML('</nav>');
+	printNavbar(printArgs: NavbarOptions) {
+		this.printHTML('<nav class="navbar navbar-toggleable-md navbar-light bg-faded">');
+		this.printHTML('  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">');
+		this.printHTML('    <span class="navbar-toggler-icon"></span>');
+		this.printHTML('  </button>');
+		this.printHTML('  <a class="navbar-brand" href="#Welcome">Eval</a>');
+		this.printHTML('  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">');
+		this.printHTML('    <ul class="navbar-nav mr-auto mt-2 mt-md-0">');
+		this.printHTML('        <li class="nav-item active">');
+		this.printHTML('          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>');
+		this.printHTML('        </li>');
+		this.printHTML('        <li class="nav-item">');
+		this.printHTML('          <a class="nav-link" href="#">Link</a>');
+		this.printHTML('        </li>');
+		this.printHTML('        <li class="nav-item dropdown">');
+		this.printHTML('          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>');
+		this.printHTML('          <div class="dropdown-menu">');
+		this.printHTML('            <a class="dropdown-item" href="#">Action</a>');
+		this.printHTML('            <a class="dropdown-item" href="#">Another action</a>');
+		this.printHTML('            <a class="dropdown-item" href="#">Something else here</a>');
+		this.printHTML('            <div class="dropdown-divider"></div>');
+		this.printHTML('            <a class="dropdown-item" href="#">Separated link</a>');
+		this.printHTML('          </div>');
+		this.printHTML('        </li>')
+		this.printHTML('        <li class="nav-item">');
+		this.printHTML('          <a class="nav-link disabled" href="#">Disabled</a>');
+		this.printHTML('        </li>');
+		this.printHTML('    </ul>');
+		this.printHTML('    <form class="form-inline my-2 my-lg-0">');
+		this.printHTML('      <input class="form-control mr-sm-2" type="text" placeholder="Search">');
+		this.printHTML('      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>');
+		this.printHTML('    </form>');
+		this.printHTML('  </div>');
+		this.printHTML('</nav>');
 	}
 
-	printBreadcrump(output: Output, printArgs: BreadcrumpPrintArgs) {
-		output.printHTML('<nav class="breadcrumb">');
-		output.printHTML('  <a class="breadcrumb-item" href="#">Home</a>');
-		output.printHTML('  <a class="breadcrumb-item" href="#">Library</a>');
-		output.printHTML('  <a class="breadcrumb-item" href="#">Data</a>');
-		output.printHTML('  <span class="breadcrumb-item active">Bootstrap</span>');
-		output.printHTML('</nav>');
+	printBreadcrump(printArgs: BreadcrumpPrintArgs) {
+		this.printHTML('<nav class="breadcrumb">');
+		this.printHTML('  <a class="breadcrumb-item" href="#">Home</a>');
+		this.printHTML('  <a class="breadcrumb-item" href="#">Library</a>');
+		this.printHTML('  <a class="breadcrumb-item" href="#">Data</a>');
+		this.printHTML('  <span class="breadcrumb-item active">Bootstrap</span>');
+		this.printHTML('</nav>');
 	}
 
-	printJumbotron(output: Output, printArgs: JumbotronPrintArgs) {
-		output.printHTML('<div class="jumbotron jumbotron-fluid">');
-		output.printHTML('  <div class="container">');
-		output.printTag('h1',{class:"display-3"},printArgs.title);;
-		output.printTag('p',{ class:"lead"},printArgs.description);
-		output.printHTML('  </div>');
-		output.printHTML('</div>');
+	printJumbotron(printArgs: JumbotronPrintArgs) {
+		this.printHTML('<div class="jumbotron jumbotron-fluid">');
+		this.printHTML('  <div class="container">');
+		this.printTag('h1', { class: "display-3" }, printArgs.title);;
+		this.printTag('p', { class: "lead" }, printArgs.description);
+		this.printHTML('  </div>');
+		this.printHTML('</div>');
 	}
 }

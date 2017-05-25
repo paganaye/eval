@@ -15,7 +15,8 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 
 	onRender(output: Output): void {
 		//  for simplicity we make the id of the input element identical to the id of the view.
-		output.printAsync("div", {}, "...", (elt, output) => {
+		output.printAsync("div", {}, "...", (output) => {
+
 			var pageName = this.type.pageName;
 			if (pageName) {
 				this.evalContext.database.on("eval/" + pageName + "/_index",
@@ -38,7 +39,7 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 			} else {
 				output.printTag("p", {}, "Link pageName is not set.")
 				output.domReplace();
-			}
+			}			
 		});
 	}
 

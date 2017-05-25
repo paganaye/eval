@@ -7,29 +7,14 @@ import { ObjectView } from "./views/ObjectView";
 import { Notification } from "./commands/Notification"
 
 export abstract class Theme {
+
+	abstract createOutput(elt?: HTMLElement, parentOutput?: Output): Output;
+
 	constructor(public readonly evalContext: Eval) { }
 	abstract initialize(output: Output): void;
-	abstract prepareViewBeforeBuild(view: AnyView): void;
-
-	abstract printPage(output: Output, printArgs: PagePrintArgs, printContent: (printArgs: PrintArgs) => void): void;
-	abstract printGroup(output: Output, printArgs: GroupOptions, printContent: (printArgs: PrintArgs) => void): void;
-	abstract printProperty(output: Output, printArgs: PropertyPrintArgs, view: AnyView): void;
-
-	abstract printSection(output: Output, printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void);
-
-	abstract printArrayEntry(output: Output, arrayView: ArrayView<any>,
-		printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView;
 	abstract getArrayEntriesIndex(element: HTMLElement): string[];
-
-	abstract printInput(output: Output, printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void;
-	abstract printSelect(output: Output, printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void): void;
-	abstract printButton(output: Output, printArgs: ButtonPrintArgs, action: (ev: Event) => void): void;
-	abstract printButtonGroup(output: Output, printArgs: ButtonGroupPrintArgs, action: (ev: Event, text: string) => void): void;
-	abstract printNotification(output: Output, printArgs: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void;
 	abstract refreshView(view: AnyView, refreshOptions: RefreshOptions): void;
-	abstract printNavbar(output: Output, printArgs: NavbarPrintArgs);
-	abstract printBreadcrump(output: Output, printArgs: BreadcrumpPrintArgs);
-	abstract printJumbotron(output: Output, printArgs: JumbotronPrintArgs);
+
 }
 
 export interface RefreshOptions {

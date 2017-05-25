@@ -509,7 +509,6 @@ export class Eval {
 		if (!printArgs) printArgs = {};
 
 		view.beforeBuild(actualValue, typeDef, printArgs);
-		this.theme.prepareViewBeforeBuild(view);
 		view.build();
 		return view;
 	}
@@ -622,7 +621,7 @@ export class Eval {
 		const themeStart = "<!--Eval Theme Start-->\n";
 		const themeEnd = "<!--Eval Theme End-->";
 		this.theme = newTheme;
-		var themeoutput = new Output(this);
+		var themeoutput = newTheme.createOutput();
 		themeoutput.printHTML(themeStart);
 		this.theme.initialize(themeoutput);
 		themeoutput.printHTML(themeEnd);

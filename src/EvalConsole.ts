@@ -18,8 +18,8 @@ export class EvalConsole {
 	public processCommand(commandString: string) {
 		try {
 			var res = this.parser.parseCommand(commandString)
-			var output = new Output(this.evalContext, this.outputElement)
-			this.evalContext.theme.printPage(output, { title: commandString }, () => res.run(output));
+			var output = this.evalContext.theme.createOutput(this.outputElement)
+			output.printPage({ title: commandString }, () => res.run(output));
 			output.domReplace();
 		} catch (error) {
 			console.error(error);

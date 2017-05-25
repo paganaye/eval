@@ -5,18 +5,27 @@ import { Type, SelectEntry, Visibility } from './Types';
 import { View, AnyView, ViewParent } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, BreadcrumpPrintArgs, JumbotronPrintArgs } from "./Theme";
+import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, BreadcrumpPrintArgs, JumbotronPrintArgs, NotificationPrintArgs, RefreshOptions, NavbarPrintArgs } from "./Theme";
 import { ArrayView } from "./views/ArrayView";
 import { VariantView } from "./views/VariantView";
+import { Notification } from "./commands/Notification"
 
 
-export class Output {
+export abstract class Output {
+	arrayEntriesOutput
 	public html: String[] = [];
 	private editMode: boolean;
 	private afterDomCreatedCallbacks: ((elt: HTMLElement) => void)[] = [];
+	private id: string;
+	static counter: number = 0;
 
-	constructor(private evalContext: Eval, private elt?: HTMLElement, private parentOutput?: Output) {
+
+	constructor(protected evalContext: Eval, private elt?: HTMLElement, private parentOutput?: Output) {
 		this.editMode = (parentOutput && parentOutput.editMode) || false;
+		this.id = "output#" + (++Output.counter);
+		if (this.id == "output#11") {
+			debugger;
+		}
 	}
 
 	isEditMode(): boolean {
@@ -77,59 +86,15 @@ export class Output {
 
 		if (!propertyPrintArgs) propertyPrintArgs = { visibility: dataType.visibility || Visibility.Shown };
 		if (dataType.visibility > propertyPrintArgs.visibility) propertyPrintArgs.visibility = dataType.visibility;
-		this.evalContext.theme.printProperty(this, propertyPrintArgs, view);
+
+		this.printPropertyView(propertyPrintArgs, view);
 		return view;
 	}
 
-
-
-	printArrayEntry(arrayView: ArrayView<any>, arrayEntryPrintArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView {
-		return this.evalContext.theme.printArrayEntry(this, arrayView, arrayEntryPrintArgs, data, dataType)
-	}
-
-	printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
-		this.evalContext.theme.printInput(this, printArgs, data, dataType, callback)
-	}
-
-	printSelect(printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void) {
-		this.evalContext.theme.printSelect(this, printArgs, data, dataType, onChanged)
-	}
-
-	printButton(printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
-		this.evalContext.theme.printButton(this, printArgs, action);
-	}
-
-	printButtonGroup(printArgs: ButtonGroupPrintArgs, action: (ev: Event, string) => void) {
-		this.evalContext.theme.printButtonGroup(this, printArgs, action);
-	}
-
-	printPage(printArgs: PagePrintArgs, printContent: (printArgs: PrintArgs) => void) {
-		this.evalContext.theme.printPage(this, printArgs, printContent)
-	}
-
-	printGroup(printArgs: GroupOptions, printContent: (printArgs: PrintArgs) => void) {
-		this.evalContext.theme.printGroup(this, printArgs, printContent)
-	}
-
-	printSection(printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void) {
-		this.evalContext.theme.printSection(this, printArgs, printContent)
-	}
+	abstract printPropertyView(propertyPrintArgs: PropertyPrintArgs, view: AnyView): void;
 
 	printText(text: string) {
 		this.html.push(Output.escapeHtml(text));
-	}
-
-	printNavbar(printArgs: NavbarOptions) {
-		this.evalContext.theme.printNavbar(this, printArgs);
-	}
-
-	printBreadcrump(printArgs: BreadcrumpPrintArgs) {
-		this.evalContext.theme.printBreadcrump(this, printArgs);
-	}
-
-
-	printJumbotron(printArgs: JumbotronPrintArgs) {
-		this.evalContext.theme.printJumbotron(this, printArgs);
 	}
 
 	toString(): string {
@@ -158,7 +123,7 @@ export class Output {
 	private raiseAfterDomCreated() {
 		for (var x in this.afterDomCreatedCallbacks) {
 			var callback = this.afterDomCreatedCallbacks[x];
-			callback(this.elt);
+			if (callback && typeof callback === "function") callback(this.elt);
 		}
 		this.afterDomCreatedCallbacks = [];
 	}
@@ -191,24 +156,25 @@ export class Output {
 
 	static escapeHtml(string) {
 		return String(string).replace(/[&<>"]/g, (s) => {
-			return Output.entityMap[s];
+			return this.entityMap[s];
 		});
 	}
 
 	static escapeAttribute(string) {
 		return String(string).replace(/[&<>"]/g, (s) => {
-			return Output.entityMap[s];
+			return this.entityMap[s];
 		});
 	}
 
 
-	printAsync(tag: string, attributes: ElementAttributes, text: string | ((output: Output) => void), callback: (elt: HTMLElement, output: Output) => void): void {
+	printAsync(tag: string, attributes: ElementAttributes, text: string | ((output: Output) => void), callback: (output: Output) => void): void {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
 			id = this.evalContext.nextId(tag);
 			attributes.id = id;
 		}
+		if (id == "entries-2") debugger;
 
 		switch (typeof text) {
 			case "undefined":
@@ -223,21 +189,39 @@ export class Output {
 				this.printEndTag();
 				break;
 		}
-		var elt = document.getElementById(id);
 
 		this.afterDomCreatedCallbacks.push(() => {
-			var elt = document.getElementById(id);
+			var elt: HTMLElement = document.getElementById(id);
 			if (elt) {
-				var output = new Output(this.evalContext, elt, this);
-				callback(elt, output);
+				var newOutput = this.evalContext.theme.createOutput(elt, this);
+				callback(newOutput);
 			} else {
 				console.error("Could not find element " + id);
 			}
 		});
 	}
 
+
 	getOutputElt(): HTMLElement {
 		return this.elt;
 	}
+
+
+	abstract printPage(printArgs: PagePrintArgs, printContent: (printArgs: PrintArgs) => void): void;
+	abstract printGroup(printArgs: GroupOptions, printContent: (printArgs: PrintArgs) => void): void;
+
+	abstract printSection(printArgs: SectionPrintArgs, printContent: (printArgs: PrintArgs) => void);
+
+	abstract printArrayEntry(arrayView: ArrayView<any>,
+		printArgs: ArrayEntryPrintArgs, data: any, dataType: Type): AnyView;
+
+	abstract printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void;
+	abstract printSelect(printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void): void;
+	abstract printButton(printArgs: ButtonPrintArgs, action: (ev: Event) => void): void;
+	abstract printButtonGroup(printArgs: ButtonGroupPrintArgs, action: (ev: Event, text: string) => void): void;
+	abstract printNotification(printArgs: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void;
+	abstract printNavbar(printArgs: NavbarPrintArgs);
+	abstract printBreadcrump(printArgs: BreadcrumpPrintArgs);
+	abstract printJumbotron(printArgs: JumbotronPrintArgs);
 }
 

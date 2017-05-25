@@ -96,7 +96,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 					});
 				}
 				output.printAsync("div", {}, "Preview...",
-					(elt, output) => {
+					(output) => {
 						this.previewOutput = output;
 						this.printTemplate(output);
 						output.domReplace();

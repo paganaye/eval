@@ -37,8 +37,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		output.printSection({ name: "array" }, (printArgs) => {
 
 
-			output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...", (elt, output) => {
-				//    printContent(output, { class: "gosh" });
+			output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...", (output) => {
 				this.arrayEntriesOutput = output;
 
 				if (Array.isArray(this.data)) {
@@ -51,12 +50,13 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 
 				this.arrayEntriesOutput.domReplace();
 
-
+				// after dom replace
 				var Sortable = (window as any).Sortable;
-				var sortable = Sortable.create(elt, {
+				var sortable = Sortable.create(output.getOutputElt(), {
 					animation: 200,
 					handle: ".sort-handle"
 				});
+				
 			});
 			output.printSection({ name: "array-buttons" }, (printArgs) => {
 				// we won't use HTML tables because sorting does not work well on table.
