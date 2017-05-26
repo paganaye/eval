@@ -118,7 +118,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 						entries: this.addButtonEntries
 					}, (ev, str) => {
 						var index = this.buildOne(null, str, true);
-						this.renderOne(index, output);
+						this.renderOne(index, this.arrayEntriesOutput);
 						this.arrayEntriesOutput.domAppend();
 					});
 				} else {

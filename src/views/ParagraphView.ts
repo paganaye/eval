@@ -23,16 +23,17 @@ export class ParagraphView extends View<IParagraph, Type, PrintArgs> {
 	}
 
 	onRender(output: Output): void {
-		this.renderParagraph(output, this.data, 1);
+		this.renderParagraph(output, this.data, 1, "");
 	}
 
-	renderParagraph(output: Output, p: IParagraph, level: number) {
+	renderParagraph(output: Output, p: IParagraph, level: number, prefix: string) {
 		if (!p) return;
-		if (p.title) output.printTag("h" + level, {}, p.title);
+		if (p.title) output.printTag("h" + level, {}, (prefix ? prefix + " - " : "") + p.title);
 		if (p.text) output.printTag("p", {}, p.text);
+		if (prefix) prefix += ".";
 		if (p.children) {
 			for (var i = 0; i < p.children.length; i++) {
-				this.renderParagraph(output, p.children[i], level + 1);
+				this.renderParagraph(output, p.children[i], level + 1, prefix + (i + 1));
 			}
 		}
 	}

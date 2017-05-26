@@ -126,21 +126,6 @@ export class Eval {
 		visibility: Visibility.HiddenLabel
 	};
 
-	variantKindsType: ArrayType<any> = {
-		_kind: "array",
-		entryType: {
-			_kind: "object",
-			properties: [
-				{ name: "key", type: { _kind: "string" } },
-				{ name: "group", type: { _kind: "string" } },
-				{ name: "label", type: { _kind: "string" } },
-				{ name: "type", type: this.variantType }
-			],
-			template: "{key} ({type._kind})"
-		},
-		visibility: Visibility.HiddenLabel
-	};
-
 	stepType: VariantType = {
 		_kind: "variant",
 		kinds: null /*soon processActionKinds*/
@@ -325,19 +310,28 @@ export class Eval {
 
 			addProperty({ name: "properties", type: this.propertiesType });
 			addProperty({ name: "template", type: { _kind: "string" } });
-
-			//addProperty({ name: "minimumCount", type: { _kind: "number", tab: "behaviour" } });
-			//addProperty({ name: "maximumCount", type: { _kind: "number", tab: "behaviour" } });
-			//addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "behaviour" } });
-			//addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "behaviour" } });
 		});
 
 		this.addType("variant", "advanced", "Variant", (type, addProperty) => {
 			type.editView = "variant";
 			var variantType = (type as VariantType);
 			variantType.kinds = [];
+			var variantKindsType: ArrayType<any> = {
+				_kind: "array",
+				entryType: {
+					_kind: "object",
+					properties: [
+						{ name: "key", type: { _kind: "string" } },
+						{ name: "group", type: { _kind: "string" } },
+						{ name: "label", type: { _kind: "string" } },
+						{ name: "type", type: this.variantType }
+					],
+					template: "{key} ({type._kind})"
+				},
+				visibility: Visibility.HiddenLabel
+			};
 
-			addProperty({ name: "kinds", type: this.variantKindsType });
+			addProperty({ name: "kinds", type: variantKindsType });
 
 		});
 
@@ -359,7 +353,34 @@ export class Eval {
 			type.visibility = Visibility.HiddenLabel;
 		});
 
-
+		this.addType("illustration", "wiki", "Illustration", (type, addProperty) => {
+			type.editView = 'object';
+			var illustrationProperties: Property[] = [{
+				name: "url",
+				type: { _kind: "string" }
+			},
+			{
+				name: "legend",
+				type: { _kind: "string" }
+			}];
+			(type as ObjectType).properties = illustrationProperties;			
+		});
+		this.addType("quote", "wiki", "Quote", (type, addProperty) => {
+			type.editView = 'object';
+			var illustrationProperties: Property[] = [{
+				name: "text",
+				type: { _kind: "string" }
+			},
+			{
+				name: "author",
+				type: { _kind: "string" }
+			},			
+			{
+				name: "details",
+				type: { _kind: "string" }
+			}];
+			(type as ObjectType).properties = illustrationProperties;			
+		});
 
 		this.addType("paragraph", "wiki", "Paragraph", (type, addProperty) => {
 			type.editView = 'object';
@@ -376,8 +397,12 @@ export class Eval {
 				name: "children",
 				type: {
 					_kind: "array", entryType: {
-						_kind: "object",
-						properties: paragraphProperties
+						_kind: "variant",
+						kinds: [
+							{ key: "paragraph", type: type },
+							{ key: "illustration", type: type },
+							{ key: "quote", type: type }
+						] // will come later
 					}
 				}
 			});
@@ -668,6 +693,8 @@ export class Eval {
 				var variantResult = this.newInstance(instanceType.kinds[0].type);
 				if (typeof variantResult == "object") variantResult._kind = instanceType.kinds[0].key;
 				return variantResult;
+			case "array":
+				return [];
 			default:
 				if ((instanceType as ObjectType).properties) {
 					var result = {};
