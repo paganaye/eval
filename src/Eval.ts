@@ -417,11 +417,6 @@ export class Eval {
 		this.database = new Database(this);
 		this.setTheme(new Bootstrap(this));
 
-
-		// var path = "eval/object/" + this.recordId;
-		// this.database.on(path, (data, error) => {
-
-		// }
 	}
 
 	addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): void {
@@ -577,7 +572,7 @@ export class Eval {
 					]
 				}
 				break;
-			case "object":
+			case "structure":
 				var objectDefinition: ObjectType = {
 					_kind: "object",
 					properties: [{
