@@ -360,7 +360,33 @@ export class Eval {
 		});
 
 
+
+		this.addType("paragraph", "wiki", "Paragraph", (type, addProperty) => {
+			type.editView = 'object';
+			var paragraphProperties: Property[] = [{
+				name: "title",
+				type: { _kind: "string" }
+			}];
+
+			paragraphProperties.push({
+				name: "content",
+				type: {
+					_kind: "array", entryType: {
+						_kind: "object",
+						properties: paragraphProperties
+					}
+				}
+			});
+			paragraphProperties.push({
+				name: "text",
+				type: { _kind: "string" }
+			});
+			(type as ObjectType).properties = paragraphProperties;
+		});
+
+
 		this.variantType.kinds = this.variantKinds;
+
 		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {
 		// 	type.editView = "object";
 		// 	(type as ObjectType).properties = [
@@ -579,6 +605,7 @@ export class Eval {
 					]
 				};
 				tableType = processDefinition;
+				break;
 		}
 
 		if (tableType) {
