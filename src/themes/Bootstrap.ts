@@ -93,27 +93,27 @@ export class BootstrapOutput extends Output {
 
 		var valueAttributes = {};
 		var titleInBox = false;
-		var visibility = this.evalContext.fixEnum(printArgs.visibility, Visibility);
+		var visibility = printArgs.visibility;
 		switch (visibility) {
-			case Visibility.Shown:
+			case "visible":
 				this.printStartTag("div", attrs);
 				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
 				this.printTag("label", labelAttributes,
 					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
 				Bootstrap.addClass(valueAttributes, "col-lg-10");
 				break;
-			case Visibility.TitleInBox:
-				attrs.class = "card";
-				if (className) Bootstrap.addClass(attrs, className);
-				this.printStartTag("div", attrs);
-				this.printHTML('   <div class="card-header">');
-				this.printTag("label", labelAttributes,
-					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-				this.printHTML('   </div>');
-				this.printHTML('   <div class="card-block">');
-				titleInBox = true;
-				Bootstrap.addClass(valueAttributes, "col-lg-12");
-				break;
+			// case Visibility.TitleInBox:
+			// 	attrs.class = "card";
+			// 	if (className) Bootstrap.addClass(attrs, className);
+			// 	this.printStartTag("div", attrs);
+			// 	this.printHTML('   <div class="card-header">');
+			// 	this.printTag("label", labelAttributes,
+			// 		printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
+			// 	this.printHTML('   </div>');
+			// 	this.printHTML('   <div class="card-block">');
+			// 	titleInBox = true;
+			// 	Bootstrap.addClass(valueAttributes, "col-lg-12");
+			// 	break;
 			default:
 				this.printStartTag("div", attrs);
 				Bootstrap.addClass(valueAttributes, "col-12");

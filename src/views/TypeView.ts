@@ -6,13 +6,14 @@ import { ObjectView } from "../views/ObjectView";
 import { Parser } from "../Parser";
 
 
-export class StructView extends ObjectView {
+export class TypeView extends ObjectView {
 	printArgs: PrintArgs;
-
+S
 	build(): void {
 		var structName = this.type.pageName;
-		this.type.visibility = Visibility.TitleInBox;
-		this.evalContext.database.on("eval/struct/" + structName, (data, error) => {
+		this.type.visibility = "visible";
+		this.evalContext.database.on("eval/type/" + structName, (data, error) => {
+			debugger;
 			if (data) {
 				this.type = data;
 				super.build();
@@ -27,16 +28,17 @@ export class StructView extends ObjectView {
 		output.printAsync("div", {}, "...", (output) => {
 			this.customOutput = output;
 			this.renderView();
-			output.domReplace();
 		});
 	}
 	customOutput: Output;
 
 	renderView() {
+		debugger;
 		if (this.customOutput.isEditMode()) {
 			if (this.type.properties) {
 				super.onRender(this.customOutput)
-			}
+				this.customOutput.domReplace();
+			}			
 		} else {
 			var data = this.data || {};
 			var template = this.type.template;
@@ -56,8 +58,8 @@ export class StructView extends ObjectView {
 				text = JSON.stringify(data);
 			}
 			this.customOutput.printHTML(text);
+			this.customOutput.domReplace();
 		}
-		this.customOutput.domReplace();
 	}
 
 	getValue(): any {

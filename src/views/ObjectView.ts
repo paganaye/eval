@@ -33,6 +33,9 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		for (var key in this.data) {
 			if (key === "_kind") continue;
 			if (this.typeByName[key] !== undefined) continue;
+			var value = this.data[key];
+			if (typeof value==="string"  && value.length==0) continue;
+			if (typeof value==="object" && Object.keys(value).length==0) continue;
 			this.typeByName[key] = { _kind: "string" }
 			this.addKey(key, "orphans");
 		}
@@ -124,8 +127,8 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	printProperty(key: string, output: Output) {
 		var value = this.data[key];
 		var vtype = this.typeByName[key] || {} as Type;
-		var visibility = vtype.visibility || Visibility.Shown;
-		if (visibility != Visibility.Hidden) {
+		var visibility = vtype.visibility || "visible";
+		if (visibility != "hidden") {
 			this.views[key] = output.printProperty(this, { label: key, visibility: visibility }, value, vtype);
 		}
 	}

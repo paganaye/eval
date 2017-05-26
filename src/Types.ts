@@ -13,12 +13,7 @@ export interface TypeDefinition<T> {
 	template?: string;
 }
 
-export enum Visibility {
-	Shown,
-	HiddenLabel,
-	TitleInBox,
-	Hidden,
-}
+export type Visibility  = "visible" | "hiddenLabel" | "hidden";
 
 export interface ValidationResult {
 	valid: boolean;
@@ -121,7 +116,7 @@ export interface ButtonType extends TypeDefinition<any> {
 	_kind: "button";
 	text: string;
 	onclick: Action[];
-	visibility: Visibility.HiddenLabel;
+	visibility: Visibility;
 }
 
 export interface VariantKind extends SelectEntry {

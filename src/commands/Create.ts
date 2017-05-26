@@ -75,9 +75,9 @@ export class Create extends Command {
 		this.pageName = (this.pageName || "").toLowerCase();
 
 		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (elt) => {
-			var output =  output.getOutput();
+			var output = output.getOutput();
 			output.setEditMode(true);
-			this.recordIdView = <StringInputView>output.printProperty(this, { visibility: Visibility.Shown, label: "pageName" }, "", { _kind: "string" });
+			this.recordIdView = <StringInputView>output.printProperty(this, { visibility: "visible", label: "pageName" }, "", { _kind: "string" });
 			// output2.printInput({ id: "recordId" }, "", , (elt) => { });
 			output.printHTML("<hr/>");
 

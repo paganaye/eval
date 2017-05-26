@@ -19,7 +19,7 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 
 			var pageName = this.type.pageName;
 			if (pageName) {
-				this.evalContext.database.on("eval/" + pageName + "/_index",
+				this.evalContext.database.on("eval/" + pageName + "/_index/bySize",
 					(data, error) => {
 						if (data) {
 							var entries: SelectEntry[] = [];

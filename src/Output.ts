@@ -81,7 +81,7 @@ export abstract class Output {
 
 		view = this.evalContext.instantiate(viewParent, propertyPrintArgs.label, data, dataType, this.editMode, propertyPrintArgs);
 
-		if (!propertyPrintArgs) propertyPrintArgs = { visibility: dataType.visibility || Visibility.Shown };
+		if (!propertyPrintArgs) propertyPrintArgs = { visibility: dataType.visibility || "visible" };
 		if (dataType.visibility > propertyPrintArgs.visibility) propertyPrintArgs.visibility = dataType.visibility;
 
 		this.printPropertyView(propertyPrintArgs, view);

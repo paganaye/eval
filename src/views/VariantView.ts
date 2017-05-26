@@ -22,7 +22,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 
 	onRender(output: Output): void {
 		var variantKinds: VariantKind[] = this.type.kinds;
-		var printArgs: PropertyPrintArgs = { visibility: Visibility.Shown };
+		var printArgs: PropertyPrintArgs = { visibility: "visible" };
 		var id: string = this.evalContext.nextId("select");
 
 		output.printSection({ name: "variant-select-container" }, (printArgs) => {

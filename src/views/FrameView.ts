@@ -15,7 +15,7 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 
 	build(): void {
 		this.pageName = this.type.pageName;
-		this.type.visibility = Visibility.TitleInBox;
+		this.type.visibility = "visible";
 		this.evalContext.database.on("eval/page/" + this.pageName, (data, error) => {
 			if (data) {
 				this.frameType = data;

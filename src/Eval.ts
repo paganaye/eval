@@ -14,7 +14,7 @@ import { Update } from './commands/Update';
 import { Create } from './commands/Create';
 
 import { ButtonView } from "./views/ButtonView";
-import { StructView } from "./views/StructView";
+import { TypeView } from "./views/TypeView";
 import { FrameView } from "./views/FrameView";
 import { SelectView } from "./views/SelectView";
 import { VariantView } from "./views/VariantView";
@@ -69,7 +69,7 @@ export class Eval {
 	linkViewFactory = this.addViewFactory("link", (parent: AnyView, name: string) => new LinkView(this, parent, name));
 	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView, name: string) => new ParagraphView(this, parent, name));
 	buttonViewFactory = this.addViewFactory("button", (parent: AnyView, name: string) => new ButtonView(this, parent, name));
-	structViewFactory = this.addViewFactory("struct", (parent: AnyView, name: string) => new StructView(this, parent, name));
+	typeViewFactory = this.addViewFactory("type", (parent: AnyView, name: string) => new TypeView(this, parent, name));
 	frameViewFactory = this.addViewFactory("frame", (parent: AnyView, name: string) => new FrameView(this, parent, name));
 
 	private types: { [key: string]: Type } = {};
@@ -108,7 +108,7 @@ export class Eval {
 	variantType: VariantType = {
 		_kind: "variant",
 		kinds: [], // will come later
-		visibility: Visibility.HiddenLabel
+		visibility: "hiddenLabel"
 	};
 
 	propertiesType: ArrayType<object> = {
@@ -123,7 +123,7 @@ export class Eval {
 			],
 			template: "{name} ({type._kind})"
 		},
-		visibility: Visibility.HiddenLabel
+		visibility: "hiddenLabel"
 	};
 
 	stepType: VariantType = {
@@ -286,10 +286,10 @@ export class Eval {
 			var entryTypeDefinition: VariantType = {
 				_kind: "variant",
 				kinds: this.variantKinds,
-				visibility: Visibility.HiddenLabel
+				visibility: "hiddenLabel"
 			};
 			entryTypeDefinition.tab = "entryType";
-			entryTypeDefinition.visibility = Visibility.HiddenLabel
+			entryTypeDefinition.visibility = "hiddenLabel"
 
 			addProperty({
 				name: "entryType", type: entryTypeDefinition
@@ -306,7 +306,7 @@ export class Eval {
 			var objectType = (type as ObjectType);
 			objectType.properties = [];
 			objectType.tab = "objectType";
-			objectType.visibility = Visibility.HiddenLabel
+			objectType.visibility = "hiddenLabel"
 
 			addProperty({ name: "properties", type: this.propertiesType });
 			addProperty({ name: "template", type: { _kind: "string" } });
@@ -328,7 +328,7 @@ export class Eval {
 					],
 					template: "{key} ({type._kind})"
 				},
-				visibility: Visibility.HiddenLabel
+				visibility: "hiddenLabel"
 			};
 
 			addProperty({ name: "kinds", type: variantKindsType });
@@ -345,15 +345,15 @@ export class Eval {
 			addProperty({ name: "text", type: { _kind: "string" } });
 			addProperty({ name: "onclick", type: this.stepsType });
 		});
-		this.addType("struct", "wiki", "Structure", (type, addProperty) => {
-			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "struct" } });
+		this.addType("type", "wiki", "Type", (type, addProperty) => {
+			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "type" } });
 		});
 		this.addType("frame", "wiki", "Frame", (type, addProperty) => {
 			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
-			type.visibility = Visibility.HiddenLabel;
+			type.visibility = "hiddenLabel";
 		});
 
-		this.addType("illustration", "wiki", "Illustration", (type, addProperty) => {
+		var illustrationType: Type = this.addType("illustration", "wiki", "Illustration", (type, addProperty) => {
 			type.editView = 'object';
 			var illustrationProperties: Property[] = [{
 				name: "url",
@@ -363,9 +363,10 @@ export class Eval {
 				name: "legend",
 				type: { _kind: "string" }
 			}];
-			(type as ObjectType).properties = illustrationProperties;			
+			(type as ObjectType).properties = illustrationProperties;
 		});
-		this.addType("quote", "wiki", "Quote", (type, addProperty) => {
+
+		var quoteType: Type = this.addType("quote", "wiki", "Quote", (type, addProperty) => {
 			type.editView = 'object';
 			var illustrationProperties: Property[] = [{
 				name: "text",
@@ -374,12 +375,12 @@ export class Eval {
 			{
 				name: "author",
 				type: { _kind: "string" }
-			},			
+			},
 			{
 				name: "details",
 				type: { _kind: "string" }
 			}];
-			(type as ObjectType).properties = illustrationProperties;			
+			(type as ObjectType).properties = illustrationProperties;
 		});
 
 		this.addType("paragraph", "wiki", "Paragraph", (type, addProperty) => {
@@ -400,8 +401,8 @@ export class Eval {
 						_kind: "variant",
 						kinds: [
 							{ key: "paragraph", type: type },
-							{ key: "illustration", type: type },
-							{ key: "quote", type: type }
+							{ key: "illustration", type: illustrationType },
+							{ key: "quote", type: quoteType }
 						] // will come later
 					}
 				}
@@ -419,7 +420,7 @@ export class Eval {
 
 	}
 
-	addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): void {
+	addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): Type {
 		var type = { _kind: key, editView: key, printView: key } as Type;
 		if (this.types[key]) {
 			console.warn("type " + key + " is already declared.");
@@ -452,14 +453,13 @@ export class Eval {
 			name: "visibility", type: {
 				_kind: "select", description: "Property visibility.", tab: "display",
 				entries: [
-					{ key: "Hidden", label: "Hidden" },
-					{ key: "HiddenLabel", label: "Label hidden" },
-					{ key: "Shown", label: "Normal" },
-					{ key: "TitleInBox", label: "Title in box" }
+					{ key: "visible", label: "Visible" },
+					{ key: "hiddenLabel", label: "Hidden label" },
+					{ key: "hidden", label: "Hidden" }
 				]
 			}
 		});
-
+		return type;
 	}
 
 	nextId(prefix: string) {
@@ -572,20 +572,17 @@ export class Eval {
 					]
 				}
 				break;
-			case "structure":
+			case "type":
 				var objectDefinition: ObjectType = {
 					_kind: "object",
 					properties: [{
-						name: "_kind",
+						name: "type",
 						type: {
 							_kind: "variant",
 							kinds: this.variantKinds,
-							visibility: Visibility.HiddenLabel
+							visibility: "hiddenLabel"
 						}
-					},
-					{ name: "description", type: { _kind: "string" } },
-					{ name: "properties", type: this.propertiesType },
-					{ name: "template", type: { _kind: "string" } },
+					}
 					]
 				};
 				tableType = objectDefinition;
@@ -594,7 +591,7 @@ export class Eval {
 				var tableDefinition: ObjectType = {
 					_kind: "object",
 					properties: [
-						{ name: "_kind", type: { _kind: "const", value: "object", visibility: Visibility.Hidden } },
+						{ name: "_kind", type: { _kind: "const", value: "object", visibility: "hidden" } },
 						{ name: "description", type: { _kind: "string" } },
 						{ name: "properties", type: this.propertiesType },
 						{ name: "template", type: { _kind: "string" } },

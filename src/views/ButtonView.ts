@@ -53,8 +53,8 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 				break;
 			case "addRecord":
 				var structName = step.pageName;
-				this.evalContext.database.on("eval/struct/" + structName, (data, error) => {
-					this.renderStructView(data);
+				this.evalContext.database.on("eval/type/" + structName, (data, error) => {
+					this.renderTypeView(data);
 				});
 				this.running = true;
 				break;
@@ -73,9 +73,9 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 		this.contentOutput.domReplace();
 	}
 
-	renderStructView(structType: Type) {
+	renderTypeView(structType: Type) {
 		var data = {};
-		this.frameView = this.evalContext.instantiate(this, "[struct]", {}, structType, true);
+		this.frameView = this.evalContext.instantiate(this, "[type]", {}, structType, true);
 		this.frameView.render(this.contentOutput);
 
 		this.contentOutput.printButton({ buttonText: "next" },
