@@ -6,7 +6,7 @@ import { PrintArgs } from "../Theme";
 
 export interface IParagraph {
 	title: string;
-	content: string;
+	text: string;
 	children: IParagraph[];
 }
 
@@ -17,8 +17,8 @@ export class ParagraphView extends View<IParagraph, Type, PrintArgs> {
 		if (typeof this.data.title === "undefined") {
 			this.data.title = "Paragraph title";
 		}
-		if (typeof this.data.content === "undefined") {
-			this.data.content = "The content of the paragraph. It can be as short or as long as you wish."
+		if (typeof this.data.text === "undefined") {
+			this.data.text = "The content of the paragraph. It can be as short or as long as you wish."
 		}
 	}
 
@@ -29,7 +29,7 @@ export class ParagraphView extends View<IParagraph, Type, PrintArgs> {
 	renderParagraph(output: Output, p: IParagraph, level: number) {
 		if (!p) return;
 		if (p.title) output.printTag("h" + level, {}, p.title);
-		if (p.content) output.printTag("p", {}, p.content);
+		if (p.text) output.printTag("p", {}, p.text);
 		if (p.children) {
 			for (var i = 0; i < p.children.length; i++) {
 				this.renderParagraph(output, p.children[i], level + 1);

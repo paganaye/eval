@@ -366,10 +366,14 @@ export class Eval {
 			var paragraphProperties: Property[] = [{
 				name: "title",
 				type: { _kind: "string" }
+			},
+			{
+				name: "text",
+				type: { _kind: "string" }
 			}];
 
 			paragraphProperties.push({
-				name: "content",
+				name: "children",
 				type: {
 					_kind: "array", entryType: {
 						_kind: "object",
@@ -377,27 +381,11 @@ export class Eval {
 					}
 				}
 			});
-			paragraphProperties.push({
-				name: "text",
-				type: { _kind: "string" }
-			});
 			(type as ObjectType).properties = paragraphProperties;
 		});
 
 
 		this.variantType.kinds = this.variantKinds;
-
-		// this.addType("paragraph", "Paragraphs", (type, addProperty) => {
-		// 	type.editView = "object";
-		// 	(type as ObjectType).properties = [
-		// 		{ name: "title", type: { _kind: "string" } },
-		// 		{ name: "content", type: { _kind: "string" } },
-		// 		{
-		// 			name: "children",
-		// 			type: { _kind: "array", entryType: type }
-		// 		}
-		// 	];
-		// });
 
 		this.stepType.kinds = this.stepKinds;
 
