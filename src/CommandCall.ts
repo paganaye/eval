@@ -8,9 +8,10 @@ export class CommandCall {
 	private command: Command;
 
 	constructor(private evalContext: Eval, private source: string, private commandName, private expressions: { [key: string]: Expression<any> }) {
-		var getNew = evalContext.commands[commandName.toLowerCase()];
+		var getNew = Command.getConstructor(commandName.toLowerCase());
 		if (getNew) {
-			this.command = getNew(evalContext);
+			this.command = getNew();
+			this.command.initialize(evalContext);
 		}
 	}
 

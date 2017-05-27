@@ -2,10 +2,7 @@ import { Command } from './Command';
 import { Database } from './Database';
 import { EvalFunction } from './EvalFunction';
 import { Expression } from './Expression';
-import { AbsFunction, RandomFunction, RoundFunction } from './functions/Math';
-import { NowFunction } from './functions/Time';
 import { PrintArgs, Theme } from './Theme';
-import { Bootstrap } from './themes/Bootstrap';
 import { ArrayType, ObjectType, Property, SelectEntry, SelectType, Type, TypeOrString, VariantKind, VariantType } from './Types';
 import { AnyView, View, ViewFactory, ViewParent } from './View';
 import { JSONView } from './views/JSONView';
@@ -19,8 +16,6 @@ export class Eval {
 
 	private types: { [key: string]: Type } = {};
 
-	commands: { [key: string]: (evalContext: Eval) => Command } = {};
-	functions: { [key: string]: (parent: Expression<any>) => EvalFunction<any> } = {};
 	variantKinds: VariantKind[];
 
 
@@ -167,10 +162,6 @@ export class Eval {
 	constructor() {
 
 
-		this.registerFunctions("abs", (parent: Expression<any>) => new AbsFunction(parent));
-		this.registerFunctions("round", (parent: Expression<any>) => new RoundFunction(parent));
-		this.registerFunctions("random", (parent: Expression<any>) => new RandomFunction(parent));
-		this.registerFunctions("now", (parent: Expression<any>) => new NowFunction(parent));
 
 		this.variantKinds = [];
 
@@ -348,7 +339,6 @@ export class Eval {
 		this.stepType.kinds = this.stepKinds;
 
 		this.database = new Database(this);
-		this.setTheme(new Bootstrap(this));
 
 	}
 
@@ -358,7 +348,7 @@ export class Eval {
 			console.warn("type " + key + " is already declared.");
 		}
 
-		this.registerType(key, type);
+		this.types[key] = type;
 		var properties: Property[] = [];
 		if (label != null) {
 
@@ -410,18 +400,6 @@ export class Eval {
 			}
 		}
 		actions.length = 0;
-	}
-
-	registerCommand(name: string, getNew: () => Command) {
-		this.commands[name] = getNew;
-	}
-
-	registerFunctions(name: string, getNew: (parent: Expression<any>) => EvalFunction<any>) {
-		this.functions[name] = getNew;
-	}
-
-	registerType<T>(name: string, newType: Type) {
-		this.types[name] = newType;
 	}
 
 	getVariable(variableName: string): any {

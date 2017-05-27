@@ -162,9 +162,12 @@ export class FunctionCall extends Expression<any> {
 
 	constructor(evalContext: Eval, private functionName, private expressions: { [key: string]: Expression<any> }) {
 		super();
-		var getNew = evalContext.functions[functionName.toLowerCase()];
-		if (getNew) this.functionInstance = getNew(this);
-		if (!this.functionInstance) {
+		var getNew = EvalFunction.getConstructor(functionName);
+		if (getNew) this.functionInstance = getNew();
+		if (this.functionInstance) {
+			this.functionInstance.initialize(evalContext, this);
+		}
+		else {
 			throw "Unknown function " + functionName;
 		}
 	}

@@ -1,3 +1,4 @@
+import { Command } from './Command';
 import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from "./CommandCall";
 import { Eval } from "./Eval";
@@ -211,13 +212,13 @@ export class Parser {
 			parameters["variableName"] = new Const(commandName);
 		}
 		else {
-			if (!this.evalContext.commands[commandName]) {
+			if (!Command.getConstructor(commandName)) {
 				// If the first character is not a read command 
 				parameters["pageName"] = new Const(commandName);
 				commandName = (this.token.type == TokenType.EOF)
 					? "index" : "read";
 			}
-		}""
+		}
 		this.parseParameters(parameters, false);
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}

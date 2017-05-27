@@ -22,8 +22,8 @@ export abstract class Command implements ViewParent {
 		Command.CommandFactories[commandName] = commandConstructor;
 	}
 
-	public static instantiate(viewName: string): Command {
-		var constructorFunction = Command.CommandFactories[viewName];
-		return constructorFunction();
+	public static getConstructor(commandName: string): () => Command {
+		var constructorFunction = Command.CommandFactories[commandName];
+		return constructorFunction;
 	}
 }

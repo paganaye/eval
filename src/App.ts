@@ -4,8 +4,6 @@ import { View, AnyView } from "./View";
 import { Output } from "./Output";
 import { Type } from "./Types";
 import { Eval } from "./Eval";
-import { RomanView } from "./views/RomanView";
-import { Expression } from './Expression';
 import "firebase";
 import './views/ArrayView';
 import "./views/ButtonView";
@@ -29,6 +27,10 @@ import "./commands/Read";
 import "./commands/Tests";
 import "./commands/Update";
 
+import "./functions/Math";
+import "./functions/Time";
+import { Bootstrap } from "./themes/Bootstrap";
+
 class App {
 	//output: Output;
 	evalConsole: EvalConsole;
@@ -39,7 +41,8 @@ class App {
 	run() {
 
 		this.detectIncrementReload();
-		this.initEval();
+		this.evalContext = new Eval();
+		this.evalContext.setTheme(new Bootstrap(this.evalContext));
 		this.initConsole();
 		console.log("firebase", firebase);
 
@@ -128,9 +131,6 @@ class App {
 		document.body.setAttribute("data-reload", this.reload.toString());
 	}
 
-	initEval() {
-		this.evalContext = new Eval();
-	}
 
 	initConsole() {
 		var consoleElt = document.getElementById("console1") as HTMLElement;

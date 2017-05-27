@@ -40,3 +40,6 @@ export class RandomFunction extends EvalFunction<Number> {
 	}
 }
 
+EvalFunction.registerFunction("abs", () => new AbsFunction());
+EvalFunction.registerFunction("round", () => new RoundFunction());
+EvalFunction.registerFunction("random", () => new RandomFunction());

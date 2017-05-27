@@ -17,3 +17,4 @@ export class NowFunction extends EvalFunction<number> {
 	}
 }
 
+EvalFunction.registerFunction("now", () => new NowFunction());

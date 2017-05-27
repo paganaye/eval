@@ -111,7 +111,6 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	}
 
 	public static getViewFactory(viewName: string): ViewFactory {
-		debugger;
 		return View.viewFactories[viewName];
 	}
 
