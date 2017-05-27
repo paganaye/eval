@@ -1,16 +1,22 @@
 #!/usr/bin/env node
 
-const FuseboxLibrary = require("fuse-box");
-const FuseBox = FuseboxLibrary.FuseBox;
-
+const { FuseBox } = require("fuse-box");
 const fuse = FuseBox.init({
-	homeDir: "src/",
-	outFile: "./app.js",
-	sourceMap: {
-		bundleReference: "app.js.map",
-		outFile: "app.js.map",
-	}
+    homeDir: "src",
+    output: "$name.js",
+	 sourceMaps: true
 });
 
-fuse.devServer("> App.ts", {});
+fuse.bundle("app")
+    .instructions(`>App.ts`)
+	 .watch();
+
+fuse.run();
+
+fuse.dev();
+
+//	sourceMap: {
+//		bundleReference: "app.js.map",
+//		outFile: "app.js.map",
+//fuse.devServer("> App.ts", {});
 

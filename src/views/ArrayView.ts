@@ -1,4 +1,4 @@
-import { View, AnyView } from "../View";
+import { AnyView, View, ViewParent } from '../View';
 import { Output } from "../Output";
 import { Type, ArrayType, SelectEntry, VariantObject, ObjectType, Visibility } from "../Types";
 import { ArrayPrintArgs, PrintArgs, ElementAttributes, ArrayEntryPrintArgs } from "../Theme";
@@ -11,6 +11,7 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 
 	constructor(evalContext: Eval, private parentView: ArrayView<any>, private index: number, private active: boolean) {
 		super()
+		this.initialize(evalContext, parentView, "#" + index);
 	}
 
 	build() {
@@ -18,7 +19,6 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 	}
 
 	protected onRender(output: Output): void {
-
 		var template = this.type.template;
 		var label: string;
 		if (template) {

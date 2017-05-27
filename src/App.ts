@@ -164,8 +164,6 @@ class App {
 			onHashChange();
 		}
 	}
-
-
 }
 
 export var app: App;
