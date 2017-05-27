@@ -3,6 +3,7 @@ import { Output } from "../Output";
 import { Type, ObjectType, Visibility } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
 import { ObjectView } from "../views/ObjectView";
+import { Eval } from "../Eval";
 
 
 export class FrameView extends View<Object, ObjectType, PrintArgs> {
@@ -57,6 +58,7 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 		return null;
 	}
 }
+View.registerViewFactory("frame", () => new FrameView());
 
 
 

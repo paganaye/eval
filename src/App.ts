@@ -7,7 +7,17 @@ import { Eval } from "./Eval";
 import { RomanView } from "./views/RomanView";
 import { Expression } from './Expression';
 import "firebase";
-
+import './views/ArrayView';
+import "./views/ButtonView";
+import "./views/FrameView";
+import "./views/InputView";
+import "./views/JSONView";
+import "./views/LinkView";
+import "./views/ObjectView";
+import "./views/ParagraphView"
+import "./views/SelectView";
+import "./views/TypeView";
+import "./views/VariantView";
 
 class App {
 	//output: Output;
@@ -110,8 +120,6 @@ class App {
 
 	initEval() {
 		this.evalContext = new Eval();
-		this.evalContext.registerView("roman", () => new RomanView());
-		this.evalContext.registerType("roman", { _kind: "number", printView: "roman" });
 	}
 
 	initConsole() {

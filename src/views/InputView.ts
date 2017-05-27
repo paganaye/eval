@@ -16,7 +16,7 @@ export abstract class BaseInputView<TValue, TType extends Type> extends View<TVa
 		this.inputId = this.evalContext.nextId(this.getTag());
 		this.setDescription(this.type.description);
 		var dataType = this.type;
-		output.printInput({ id: this.inputId }, this.data, dataType, (elt) => {			
+		output.printInput({ id: this.inputId }, this.data, dataType, (elt) => {
 			this.elt = document.getElementById(this.inputId) as HTMLInputElement;
 			if (this.elt) {
 				this.elt.oninput = (e) => this.onInput(e);
@@ -92,6 +92,7 @@ export class StringInputView extends BaseInputView<string, StringType> {
 		return this.getValueString();
 	}
 }
+View.registerViewFactory("string", () => new StringInputView());
 
 export class NumberInputView extends BaseInputView<number, NumberType> {
 	getTag() { return "number-input"; }
@@ -118,6 +119,8 @@ export class NumberInputView extends BaseInputView<number, NumberType> {
 		return parseInt(this.getValueString(), 10);
 	}
 }
+View.registerViewFactory("number", () => new NumberInputView());
+
 
 export class BooleanInputView extends BaseInputView<boolean, BooleanType> {
 	getTag() { return "boolean-input"; }
@@ -135,43 +138,54 @@ export class BooleanInputView extends BaseInputView<boolean, BooleanType> {
 		}
 	}
 }
+View.registerViewFactory("boolean", () => new BooleanInputView());
 
 export class TelInputView extends StringInputView {
 	getTag() { return "tel-input"; }
 }
+View.registerViewFactory("tel", () => new TelInputView());
 
 export class UrlInputView extends StringInputView {
 	getTag() { return "url-input"; }
 }
+View.registerViewFactory("url", () => new UrlInputView());
 
 export class DateTimeInputView extends StringInputView {
 	getTag() { return "datetime-input"; }
 }
+View.registerViewFactory("datetime", () => new DateTimeInputView());
 
 export class DateInputView extends StringInputView {
 	getTag() { return "date-input"; }
 }
+View.registerViewFactory("date", () => new DateInputView());
 
 export class TimeInputView extends StringInputView {
 	getTag() { return "time-input"; }
 }
+View.registerViewFactory("time", () => new TimeInputView());
 
 export class MonthInputView extends StringInputView {
 	getTag() { return "month-input"; }
 }
+View.registerViewFactory("month", () => new MonthInputView());
 
 export class WeekInputView extends StringInputView {
 	getTag() { return "week-input"; }
 }
+View.registerViewFactory("Week", () => new WeekInputView());
 
 export class ColorInputView extends StringInputView {
 	getTag() { return "color-input"; }
 }
+View.registerViewFactory("color", () => new ColorInputView());
 
 export class RangeInputView extends StringInputView {
 	getTag() { return "range-input"; }
 }
+View.registerViewFactory("range", () => new RangeInputView());
 
 export class PasswordInputView extends StringInputView {
 	getTag() { return "password-input"; }
 }
+View.registerViewFactory("password", () => new PasswordInputView());

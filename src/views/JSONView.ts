@@ -2,6 +2,7 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { PrintArgs } from "../Theme";
+import { Eval } from "../Eval";
 
 export class JSONView extends View<any, any, PrintArgs> {
 	data: any;
@@ -27,3 +28,4 @@ export class JSONView extends View<any, any, PrintArgs> {
 		return this.data;
 	}
 }
+View.registerViewFactory("json", () => new JSONView());

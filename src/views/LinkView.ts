@@ -2,6 +2,7 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberType, ObjectType, SelectEntry } from "../Types";
 import { PrintArgs } from "../Theme";
+import { Eval } from "../Eval";
 
 
 export class LinkView extends View<any, ObjectType, PrintArgs> {
@@ -47,3 +48,4 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 		return this.selectedOption;
 	}
 }
+View.registerViewFactory("link", () => new LinkView());

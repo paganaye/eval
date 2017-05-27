@@ -192,3 +192,5 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	}
 }
 
+View.registerViewFactory("array", () => new ArrayView<any>());
+

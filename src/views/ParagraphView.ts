@@ -2,6 +2,7 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberType } from "../Types";
 import { PrintArgs } from "../Theme";
+import { Eval } from "../Eval";
 
 
 export interface IParagraph {
@@ -42,3 +43,4 @@ export class ParagraphView extends View<IParagraph, Type, PrintArgs> {
 		return this.data;
 	}
 }
+View.registerViewFactory("paragraph", () => new ParagraphView());

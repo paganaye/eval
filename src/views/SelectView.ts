@@ -36,3 +36,4 @@ export class SelectView extends View<string, SelectType, SelectPrintArgs> {
 		return this.selectedOption;
 	}
 }
+View.registerViewFactory("select", () => new SelectView());

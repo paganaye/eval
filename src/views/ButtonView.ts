@@ -5,6 +5,7 @@ import { PrintArgs, ButtonPrintArgs } from "../Theme";
 import { Parser } from "../Parser";
 import { ObjectView } from "../views/ObjectView";
 import { FrameView } from "../views/FrameView";
+import { Eval } from "../Eval";
 
 export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 	data: any;
@@ -91,3 +92,5 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 		return null;
 	}
 }
+
+View.registerViewFactory("button", () => new ButtonView());

@@ -65,3 +65,4 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 		return result;
 	}
 }
+View.registerViewFactory("variant", () => new VariantView());

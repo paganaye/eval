@@ -3,6 +3,7 @@ import { Output } from "../Output";
 import { Type, ObjectType, Property, Visibility } from "../Types";
 import { PrintArgs } from "../Theme";
 import { Parser } from "../Parser";
+import { Eval } from "../Eval";
 
 export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	allKeys: string[];
@@ -147,3 +148,4 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		return result;
 	}
 }
+View.registerViewFactory("object", () => new ObjectView());

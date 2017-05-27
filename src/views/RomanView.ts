@@ -2,6 +2,7 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { Type, NumberType } from "../Types";
 import { PrintArgs } from "../Theme";
+import { Eval } from "../Eval";
 
 export class RomanView extends View<number, NumberType, PrintArgs> {
 	result: string;
@@ -36,3 +37,4 @@ export class RomanView extends View<number, NumberType, PrintArgs> {
 		return this.data;
 	}
 }
+View.registerViewFactory("roman", () => new RomanView());

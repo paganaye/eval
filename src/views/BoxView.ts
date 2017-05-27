@@ -2,6 +2,7 @@ import { View, AnyView } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { PrintArgs } from "../Theme";
+import { Eval } from "../Eval";
 
 export class BoxView extends View<any, Type, PrintArgs> {
 
@@ -19,3 +20,5 @@ export class BoxView extends View<any, Type, PrintArgs> {
 		return this.data;
 	}
 }
+
+View.registerViewFactory("box", () => new BoxView());

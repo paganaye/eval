@@ -2,6 +2,7 @@ import { View } from "../View";
 import { Output } from "../Output";
 import { Type } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
+import { Eval } from "../Eval";
 
 interface ImageSource {
 	src?: string;
@@ -30,4 +31,4 @@ export class ImageView extends View<ImageSource, any, PrintArgs> {
 		return this.data;
 	}
 }
-
+View.registerViewFactory("image", () => new ImageView());

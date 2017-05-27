@@ -9,6 +9,7 @@ export interface ViewParent {
 }
 
 export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintArgs> {
+	static viewFactories: { [key: string]: ViewFactory } = {};
 	protected data: TValue;
 	protected type: TType;
 	public printArgs: TPrintArgs;
@@ -103,6 +104,17 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 			this.viewParent.valueChanged(view || this);
 		}
 	}
+
+	public static registerViewFactory(viewName: string, viewConstructor: () => AnyView): ViewFactory {
+		return (View.viewFactories[viewName] = new ViewFactory(viewName, viewConstructor));
+
+	}
+
+	public static getViewFactory(viewName: string): ViewFactory {
+		debugger;
+		return View.viewFactories[viewName];
+	}
+
 }
 
 export const enum ValidationStatus {
@@ -126,3 +138,5 @@ export class ViewFactory {
 }
 
 export type AnyView = View<any, Type, PrintArgs>;
+
+

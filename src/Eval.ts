@@ -1,76 +1,31 @@
-import { Type, BooleanType, StringType, NumberType, ObjectType, ArrayType, SelectType, TypeOrString, VariantType, VariantKind, Property, Visibility, SelectEntry } from './Types';
-import { View, AnyView, ViewFactory, ViewParent } from "./View";
-import { Command } from "./Command";
-import { Print } from "./commands/Print";
-import { Hello } from "./commands/Hello";
-import { Tests } from "./commands/Tests";
-import { Assign } from "./commands/Assign";
-import { Index } from "./commands/Index";
-import { Alert } from "./commands/Alert";
-import { Input } from './commands/Input';
-import { Load } from './commands/Load';
-import { Read } from './commands/Read';
-import { Update } from './commands/Update';
+import { Command } from './Command';
+import { Alert } from './commands/Alert';
+import { Assign } from './commands/Assign';
 import { Create } from './commands/Create';
-
-import { ButtonView } from "./views/ButtonView";
-import { TypeView } from "./views/TypeView";
-import { FrameView } from "./views/FrameView";
-import { SelectView } from "./views/SelectView";
-import { VariantView } from "./views/VariantView";
-import { LinkView } from "./views/LinkView";
-import { JSONView } from "./views/JSONView";
-import { ObjectView } from './views/ObjectView';
-import { ArrayView } from './views/ArrayView';
-import { ParagraphView, IParagraph } from "./views/ParagraphView"
-
-import { Expression } from './Expression';
-import { Output } from './Output';
-import { NumberInputView, StringInputView, BooleanInputView, TelInputView, UrlInputView, DateTimeInputView, DateInputView, MonthInputView, TimeInputView, WeekInputView, ColorInputView, RangeInputView, PasswordInputView } from './views/InputView';
+import { Hello } from './commands/Hello';
+import { Index } from './commands/Index';
+import { Input } from './commands/Input';
+import { Print } from './commands/Print';
+import { Read } from './commands/Read';
+import { Tests } from './commands/Tests';
+import { Update } from './commands/Update';
 import { Database } from './Database';
-import { Theme, PrintArgs } from "./Theme";
-import { Bootstrap } from "./themes/Bootstrap";
-
-import { EvalFunction } from "./EvalFunction";
-import { AbsFunction, RoundFunction, RandomFunction } from './functions/Math';
+import { EvalFunction } from './EvalFunction';
+import { Expression } from './Expression';
+import { AbsFunction, RandomFunction, RoundFunction } from './functions/Math';
 import { NowFunction } from './functions/Time';
+import { PrintArgs, Theme } from './Theme';
+import { Bootstrap } from './themes/Bootstrap';
+import { ArrayType, ObjectType, Property, SelectEntry, SelectType, Type, TypeOrString, VariantKind, VariantType } from './Types';
+import { AnyView, View, ViewFactory, ViewParent } from './View';
+import { JSONView } from './views/JSONView';
 
 
 export class Eval {
 	globalVariables: { [key: string]: any } = {};
-	viewFactories: { [key: string]: ViewFactory } = {};
 	userName: string = "guest";
 	userId: string = null;
-
-	addViewFactory(viewName: string, viewConstructor: () => AnyView): ViewFactory {
-		return (this.viewFactories[viewName] = new ViewFactory(viewName, viewConstructor));
-	}
-
-	jsonViewFactory = this.addViewFactory("json", () => new JSONView());
-	objectViewFactory = this.addViewFactory("object", () => new ObjectView());
-	arrayViewFactory = this.addViewFactory("array", () => new ArrayView());
-
-	numberInputViewFactory = this.addViewFactory("number", () => new NumberInputView());
-	stringInputViewFactory = this.addViewFactory("string", () => new StringInputView());
-	booleanInputViewFactory = this.addViewFactory("boolean", () => new BooleanInputView());
-	telInputViewFactory = this.addViewFactory("tel", () => new TelInputView());
-	urlViewFactory = this.addViewFactory("url", () => new UrlInputView());
-	datetimeViewFactory = this.addViewFactory("datetime", () => new DateTimeInputView());
-	dateViewFactory = this.addViewFactory("date", () => new DateInputView());
-	timeViewFactory = this.addViewFactory("time", () => new TimeInputView());
-	monthViewFactory = this.addViewFactory("month", () => new MonthInputView());
-	weekViewFactory = this.addViewFactory("week", () => new WeekInputView());
-	colorViewFactory = this.addViewFactory("color", () => new ColorInputView());
-	rangeViewFactory = this.addViewFactory("range", () => new RangeInputView());
-	passwordViewFactory = this.addViewFactory("password", () => new PasswordInputView());
-
-	selectViewFactory = this.addViewFactory("select", () => new SelectView());
-	variantViewFactory = this.addViewFactory("variant", () => new VariantView());
-	linkViewFactory = this.addViewFactory("link", () => new LinkView());
-	paragraphViewFactory = this.addViewFactory("paragraph", () => new ParagraphView());
-	buttonViewFactory = this.addViewFactory("button", () => new ButtonView());
-	typeViewFactory = this.addViewFactory("type", () => new TypeView());
-	frameViewFactory = this.addViewFactory("frame", () => new FrameView());
+	defaultViewFactory: ViewFactory = new ViewFactory("default", () => new JSONView());
 
 	private types: { [key: string]: Type } = {};
 
@@ -484,10 +439,6 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: () => AnyView) {
-		this.viewFactories[name] = new ViewFactory(name, getNew);
-	}
-
 	registerFunctions(name: string, getNew: (parent: Expression<any>) => EvalFunction<any>) {
 		this.functions[name] = getNew;
 	}
@@ -533,7 +484,7 @@ export class Eval {
 		if (!printArgs) printArgs = {};
 
 		var viewName = (editMode ? typeDef.editView : typeDef.printView) || typeDef._kind;
-		var viewFactory = this.viewFactories[viewName] || this.jsonViewFactory;
+		var viewFactory = View.getViewFactory(viewName) || this.defaultViewFactory;
 		var view = viewFactory.instantiateNewView(this, parent, name);
 
 		var actualValue = (expr && expr.getValue)
