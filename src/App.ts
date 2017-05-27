@@ -110,7 +110,7 @@ class App {
 
 	initEval() {
 		this.evalContext = new Eval();
-		this.evalContext.registerView("roman", (parent: AnyView, name: string) => new RomanView(this.evalContext, parent, name));
+		this.evalContext.registerView("roman", () => new RomanView());
 		this.evalContext.registerType("roman", { _kind: "number", printView: "roman" });
 	}
 

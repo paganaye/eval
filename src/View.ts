@@ -13,15 +13,22 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	protected type: TType;
 	public printArgs: TPrintArgs;
 
-	private readonly id: string;
+	protected id: string;
 	protected abstract onRender(output: Output): void;
 	abstract getValue(): TValue;
 	private rendered = false;
 	private validationStatus: ValidationStatus = ValidationStatus.none;
 	private validationText: string;
 	private description: string;
+	public evalContext: Eval;
+	public viewParent: ViewParent;
+	public name: string;
 
-	constructor(protected evalContext: Eval, private viewParent: ViewParent, public readonly name: string) {
+	initialize(evalContext: Eval, viewParent: ViewParent, name: string) {
+		this.evalContext = evalContext;
+		this.viewParent = viewParent;
+		this.name = name;
+
 		if (viewParent == null) {
 			console.error("View has no parent. This is not normal.");
 			debugger;
@@ -35,7 +42,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 		this.rendered = true;
 	}
 
-	
+
 	beforeBuild(data: TValue, type: TType, printArgs: TPrintArgs): void {
 		this.type = type || {} as TType;
 		if (this.type._kind === "const" && !this.data) {
@@ -107,12 +114,14 @@ export const enum ValidationStatus {
 
 export class ViewFactory {
 
-	constructor(private viewName: string, private viewConstructor: (parent: ViewParent, name: string) => AnyView) {
+	constructor(private viewName: string, private viewConstructor: () => AnyView) {
 
 	}
 
-	instantiateNewView(parent: ViewParent, name: string) {
-		return this.viewConstructor(parent, name);
+	instantiateNewView(evalContext: Eval, parent: ViewParent, name: string): AnyView {
+		var result = this.viewConstructor();
+		result.initialize(evalContext, parent, name);
+		return result;
 	}
 }
 

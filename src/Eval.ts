@@ -42,35 +42,35 @@ export class Eval {
 	userName: string = "guest";
 	userId: string = null;
 
-	addViewFactory(viewName: string, viewConstructor: (parent: AnyView, name: string) => AnyView): ViewFactory {
+	addViewFactory(viewName: string, viewConstructor: () => AnyView): ViewFactory {
 		return (this.viewFactories[viewName] = new ViewFactory(viewName, viewConstructor));
 	}
 
-	jsonViewFactory = this.addViewFactory("json", (parent: AnyView, name: string) => new JSONView(this, parent, name));
-	objectViewFactory = this.addViewFactory("object", (parent: AnyView, name: string) => new ObjectView(this, parent, name));
-	arrayViewFactory = this.addViewFactory("array", (parent: AnyView, name: string) => new ArrayView(this, parent, name));
+	jsonViewFactory = this.addViewFactory("json", () => new JSONView());
+	objectViewFactory = this.addViewFactory("object", () => new ObjectView());
+	arrayViewFactory = this.addViewFactory("array", () => new ArrayView());
 
-	numberInputViewFactory = this.addViewFactory("number", (parent: AnyView, name: string) => new NumberInputView(this, parent, name));
-	stringInputViewFactory = this.addViewFactory("string", (parent: AnyView, name: string) => new StringInputView(this, parent, name));
-	booleanInputViewFactory = this.addViewFactory("boolean", (parent: AnyView, name: string) => new BooleanInputView(this, parent, name));
-	telInputViewFactory = this.addViewFactory("tel", (parent: AnyView, name: string) => new TelInputView(this, parent, name));
-	urlViewFactory = this.addViewFactory("url", (parent: AnyView, name: string) => new UrlInputView(this, parent, name));
-	datetimeViewFactory = this.addViewFactory("datetime", (parent: AnyView, name: string) => new DateTimeInputView(this, parent, name));
-	dateViewFactory = this.addViewFactory("date", (parent: AnyView, name: string) => new DateInputView(this, parent, name));
-	timeViewFactory = this.addViewFactory("time", (parent: AnyView, name: string) => new TimeInputView(this, parent, name));
-	monthViewFactory = this.addViewFactory("month", (parent: AnyView, name: string) => new MonthInputView(this, parent, name));
-	weekViewFactory = this.addViewFactory("week", (parent: AnyView, name: string) => new WeekInputView(this, parent, name));
-	colorViewFactory = this.addViewFactory("color", (parent: AnyView, name: string) => new ColorInputView(this, parent, name));
-	rangeViewFactory = this.addViewFactory("range", (parent: AnyView, name: string) => new RangeInputView(this, parent, name));
-	passwordViewFactory = this.addViewFactory("password", (parent: AnyView, name: string) => new PasswordInputView(this, parent, name));
+	numberInputViewFactory = this.addViewFactory("number", () => new NumberInputView());
+	stringInputViewFactory = this.addViewFactory("string", () => new StringInputView());
+	booleanInputViewFactory = this.addViewFactory("boolean", () => new BooleanInputView());
+	telInputViewFactory = this.addViewFactory("tel", () => new TelInputView());
+	urlViewFactory = this.addViewFactory("url", () => new UrlInputView());
+	datetimeViewFactory = this.addViewFactory("datetime", () => new DateTimeInputView());
+	dateViewFactory = this.addViewFactory("date", () => new DateInputView());
+	timeViewFactory = this.addViewFactory("time", () => new TimeInputView());
+	monthViewFactory = this.addViewFactory("month", () => new MonthInputView());
+	weekViewFactory = this.addViewFactory("week", () => new WeekInputView());
+	colorViewFactory = this.addViewFactory("color", () => new ColorInputView());
+	rangeViewFactory = this.addViewFactory("range", () => new RangeInputView());
+	passwordViewFactory = this.addViewFactory("password", () => new PasswordInputView());
 
-	selectViewFactory = this.addViewFactory("select", (parent: AnyView, name: string) => new SelectView(this, parent, name));
-	variantViewFactory = this.addViewFactory("variant", (parent: AnyView, name: string) => new VariantView(this, parent, name));
-	linkViewFactory = this.addViewFactory("link", (parent: AnyView, name: string) => new LinkView(this, parent, name));
-	paragraphViewFactory = this.addViewFactory("paragraph", (parent: AnyView, name: string) => new ParagraphView(this, parent, name));
-	buttonViewFactory = this.addViewFactory("button", (parent: AnyView, name: string) => new ButtonView(this, parent, name));
-	typeViewFactory = this.addViewFactory("type", (parent: AnyView, name: string) => new TypeView(this, parent, name));
-	frameViewFactory = this.addViewFactory("frame", (parent: AnyView, name: string) => new FrameView(this, parent, name));
+	selectViewFactory = this.addViewFactory("select", () => new SelectView());
+	variantViewFactory = this.addViewFactory("variant", () => new VariantView());
+	linkViewFactory = this.addViewFactory("link", () => new LinkView());
+	paragraphViewFactory = this.addViewFactory("paragraph", () => new ParagraphView());
+	buttonViewFactory = this.addViewFactory("button", () => new ButtonView());
+	typeViewFactory = this.addViewFactory("type", () => new TypeView());
+	frameViewFactory = this.addViewFactory("frame", () => new FrameView());
 
 	private types: { [key: string]: Type } = {};
 
@@ -484,7 +484,7 @@ export class Eval {
 		this.commands[name] = getNew;
 	}
 
-	registerView(name: string, getNew: (parent: AnyView, name: string) => AnyView) {
+	registerView(name: string, getNew: () => AnyView) {
 		this.viewFactories[name] = new ViewFactory(name, getNew);
 	}
 
@@ -534,7 +534,7 @@ export class Eval {
 
 		var viewName = (editMode ? typeDef.editView : typeDef.printView) || typeDef._kind;
 		var viewFactory = this.viewFactories[viewName] || this.jsonViewFactory;
-		var view = viewFactory.instantiateNewView(parent, name);
+		var view = viewFactory.instantiateNewView(this, parent, name);
 
 		var actualValue = (expr && expr.getValue)
 			? expr.getValue(this)

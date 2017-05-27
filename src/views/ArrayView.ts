@@ -9,8 +9,8 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 {
 	innerView: AnyView;
 
-	constructor(evalContext: Eval, private parentView: ArrayView<any>, name: string, private index: number, private active: boolean) {
-		super(evalContext, parentView, name)
+	constructor(evalContext: Eval, private parentView: ArrayView<any>, private index: number, private active: boolean) {
+		super()
 	}
 
 	build() {
@@ -162,7 +162,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		else {
 			label = "#" + (this.views.length + 1);
 		}
-		var view = new ArrayEntryView(this.evalContext, this, label, index, active);
+		var view = new ArrayEntryView(this.evalContext, this, index, active);
 		view.beforeBuild(entry, this.entryType, {});
 		view.build();
 		this.viewById[view.getId()] = view;
