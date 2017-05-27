@@ -42,7 +42,7 @@ class App {
 
 		this.detectIncrementReload();
 		this.evalContext = new Eval();
-		this.evalContext.setTheme(new Bootstrap(this.evalContext));
+		//this.evalContext.setTheme(new Bootstrap(this.evalContext));
 		this.initConsole();
 		console.log("firebase", firebase);
 

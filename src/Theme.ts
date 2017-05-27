@@ -6,14 +6,44 @@ import { ArrayView } from "./views/ArrayView";
 import { ObjectView } from "./views/ObjectView";
 import { Notification } from "./commands/Notification"
 
-export abstract class Theme {
-
-	abstract createOutput(elt?: HTMLElement, parentOutput?: Output): Output;
-
+export class Theme {
 	constructor(public readonly evalContext: Eval) { }
-	abstract initialize(output: Output): void;
-	abstract getArrayEntriesIndex(element: HTMLElement): string[];
-	abstract refreshView(view: AnyView, refreshOptions: RefreshOptions): void;
+
+	createOutput(elt?: HTMLElement, parentOutput?: Output): Output {
+		var result = new Output(this.evalContext, elt, parentOutput);
+		return result;
+	}
+
+	initialize(output: Output): void {
+
+	}
+
+	getArrayEntriesIndex(element: HTMLElement): string[] {
+		var children = element.children;
+		var result = [];
+		for (var i = 0; i < children.length; i++) {
+			var child = children[i];
+			result.push(child.id);
+		}
+		return result;
+	}
+
+	refreshView(view: AnyView, refreshOptions: RefreshOptions): void {
+		if (refreshOptions.validationTextChanged) {
+			var elt = document.getElementById(view.getId() + "-validation");
+			elt.innerText = view.getValidationText();
+		}
+		if (refreshOptions.validationStatusChanged) {
+		}
+		if (refreshOptions.valueChanged) {
+			var input = document.getElementById(view.getId()) as HTMLInputElement;
+			input.value = view.getValue();
+		}
+		if (refreshOptions.descriptionChanged) {
+			var elt = document.getElementById(view.getId() + "-description");
+			elt.innerText = view.getValidationText();
+		}
+	}
 
 }
 
@@ -118,3 +148,4 @@ export class NotificationPrintArgs extends PrintArgs {
 export class FormButton {
 	text: string;
 }
+

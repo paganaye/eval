@@ -340,6 +340,8 @@ export class Eval {
 
 		this.database = new Database(this);
 
+		this.setTheme(new Theme(this));
+
 	}
 
 	addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): Type {

@@ -1,4 +1,4 @@
-import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions, JumbotronPrintArgs, BreadcrumpPrintArgs, NotificationPrintArgs } from "../Theme";
+import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions, JumbotronPrintArgs, BreadcrumpPrintArgs, NotificationPrintArgs, NavbarPrintArgs } from "../Theme";
 import { Output } from "../Output";
 import { Type, Visibility } from "../Types";
 import { Eval } from "../Eval";
@@ -36,16 +36,6 @@ export class Bootstrap extends Theme {
 		return new BootstrapOutput(this.evalContext, elt, parentOutput);
 	}
 
-	getArrayEntriesIndex(element: HTMLElement): string[] {
-		var children = element.children;
-		var result = [];
-		for (var i = 0; i < children.length; i++) {
-			var child = children[i];
-			result.push(child.id);
-		}
-		return result;
-	}
-
 	refreshView(view: AnyView, refreshOptions: RefreshOptions): void {
 		if (refreshOptions.validationTextChanged) {
 			var elt = document.getElementById(view.getId() + "-validation");
@@ -68,16 +58,6 @@ export class Bootstrap extends Theme {
 			elt.innerText = view.getValidationText();
 		}
 	}
-
-	static addClass(css: ElementAttributes, newEntry: string): void {
-		if (css.class) {
-			var bits = css.class.split(' ');
-			if (bits.indexOf(newEntry) >= 0) return;
-			bits.push(newEntry);
-			css.class = bits.join(" ");
-
-		} else css.class = newEntry;
-	}
 }
 
 export class BootstrapOutput extends Output {
@@ -89,7 +69,7 @@ export class BootstrapOutput extends Output {
 		var className = BootstrapOutput.getClassName(view.getValidationStatus());
 
 		var attrs = { class: "form-group row", id: view.getId() + "-container" };
-		if (className) Bootstrap.addClass(attrs, className);
+		if (className) Output.addClass(attrs, className);
 
 		var valueAttributes = {};
 		var titleInBox = false;
@@ -100,23 +80,11 @@ export class BootstrapOutput extends Output {
 				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
 				this.printTag("label", labelAttributes,
 					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-				Bootstrap.addClass(valueAttributes, "col-lg-10");
+				Output.addClass(valueAttributes, "col-lg-10");
 				break;
-			// case Visibility.TitleInBox:
-			// 	attrs.class = "card";
-			// 	if (className) Bootstrap.addClass(attrs, className);
-			// 	this.printStartTag("div", attrs);
-			// 	this.printHTML('   <div class="card-header">');
-			// 	this.printTag("label", labelAttributes,
-			// 		printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-			// 	this.printHTML('   </div>');
-			// 	this.printHTML('   <div class="card-block">');
-			// 	titleInBox = true;
-			// 	Bootstrap.addClass(valueAttributes, "col-lg-12");
-			// 	break;
 			default:
 				this.printStartTag("div", attrs);
-				Bootstrap.addClass(valueAttributes, "col-12");
+				Output.addClass(valueAttributes, "col-12");
 				break;
 		}
 
@@ -142,8 +110,8 @@ export class BootstrapOutput extends Output {
 	printArrayEntry(arrayEntryView: ArrayEntryView, printArgs: ArrayEntryPrintArgs, printContent: (output, printArgs: PrintArgs) => void): void {
 
 		this.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
-		Bootstrap.addClass({}, "card-header");
-		Bootstrap.addClass({}, "collapsed");
+		Output.addClass({}, "card-header");
+		Output.addClass({}, "collapsed");
 
 		var accordionId = printArgs.entriesElementId
 		this.printTag("a", {
@@ -166,7 +134,7 @@ export class BootstrapOutput extends Output {
 			//innerView.render(output);
 			if (printArgs.active) {
 				var $elt = $(output.getOutputElt());
-				//Bootstrap.addClass(contentAttributes, "show");
+				//Output.addClass(contentAttributes, "show");
 				$elt.collapse("show");
 				$elt.siblings().collapse("hide");
 			}
@@ -198,7 +166,7 @@ export class BootstrapOutput extends Output {
 	}
 
 	printSection(printArgs: SectionPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
-		Bootstrap.addClass({}, printArgs.name);
+		Output.addClass({}, printArgs.name);
 		var attributes: ElementAttributes = { class: Bootstrap.classPrefix + printArgs.name };
 		switch (printArgs.name) {
 			case "property-groups":
@@ -216,7 +184,7 @@ export class BootstrapOutput extends Output {
 							output.printHTML('<li class="nav-item">');
 							var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
 							if (first) {
-								Bootstrap.addClass(headerAttributes, "active");
+								Output.addClass(headerAttributes, "active");
 								first = false;
 							}
 							output.printTag('a', headerAttributes, h.label);
@@ -229,7 +197,7 @@ export class BootstrapOutput extends Output {
 					}
 				});
 				/*<!-- Tab panes -->*/
-				Bootstrap.addClass(attributes, "tab-content");
+				Output.addClass(attributes, "tab-content");
 				this.printStartTag("div", attributes);
 				printContent(this, {
 					addHeaderCallback: (key, label) => {
@@ -251,7 +219,7 @@ export class BootstrapOutput extends Output {
 				break;
 
 			case "variant-select-container":
-				Bootstrap.addClass(attributes, "form-group");
+				Output.addClass(attributes, "form-group");
 				this.printStartTag("div", attributes);
 				printContent(this, {});
 				this.printEndTag();
@@ -263,9 +231,9 @@ export class BootstrapOutput extends Output {
 					if (printArgs.addHeaderCallback) {
 						printArgs.addHeaderCallback(id, printArgs.title);
 					}
-					Bootstrap.addClass(attributes, "tab-pane");
+					Output.addClass(attributes, "tab-pane");
 					if (printArgs.active) {
-						Bootstrap.addClass(attributes, "active");
+						Output.addClass(attributes, "active");
 					}
 					attributes.role = "tabpanel";
 					attributes.id = id;
@@ -299,38 +267,9 @@ export class BootstrapOutput extends Output {
 		}
 	}
 
-	inputTypes = {
-		boolean: "checkbox"
-	}
-
-	htmlInputType = {
-		"button": "Defines a clickable button (mostly used with a JavaScript to activate a script)",
-		"checkbox": "Defines a checkbox",
-		"color": "Defines a color picker",
-		"date": "Defines a date control (year, month and day (no time))",
-		"datetime-local": "Defines a date and time control (year, month, day, hour, minute, second, and fraction of a second (no time zone)",
-		"email": "Defines a field for an e-mail address",
-		"file": "Defines a file-select field and a \"Browse...\" button (for file uploads)",
-		"hidden": "Defines a hidden input field",
-		"image": "Defines an image as the submit button",
-		"month": "Defines a month and year control (no time zone)",
-		"number": "Defines a field for entering a number",
-		"password": "Defines a password field (characters are masked)",
-		"radio": "Defines a radio button",
-		"range": "Defines a control for entering a number whose exact value is not important (like a slider control).Default range is from 0 to 100",
-		"reset": "Defines a reset button (resets all form values to default values)",
-		"search": "Defines a text field for entering a search string",
-		"submit": "Defines a submit button",
-		"tel": "Defines a field for entering a telephone number",
-		"text": "Default. Defines a single- line text field (default width is 20 characters)",
-		"time": "Defines a control for entering a time (no time zone)",
-		"url": "Defines a field for entering a URL",
-		"week": "Defines a week and year control (no time zone)"
-	};
-
 	printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
 		var attributes: ElementAttributes = { value: data };
-		Bootstrap.addClass(attributes, "form-control");
+		Output.addClass(attributes, "form-control");
 		if (!this.isEditMode()) {
 			attributes.readonly = "readonly";
 		}
@@ -467,7 +406,7 @@ export class BootstrapOutput extends Output {
 		});
 	}
 
-	printNavbar(printArgs: NavbarOptions) {
+	printNavbar(printArgs: NavbarPrintArgs) {
 		this.printHTML('<nav class="navbar navbar-toggleable-md navbar-light bg-faded">');
 		this.printHTML('  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">');
 		this.printHTML('    <span class="navbar-toggler-icon"></span>');
