@@ -42,7 +42,7 @@ export class Eval {
 				{ name: "message", type: { _kind: "string" } }
 			]
 		},
-		tab: "value"
+		tab: "validation"
 	};
 
 	variantType: VariantType = {
@@ -161,8 +161,6 @@ export class Eval {
 
 	constructor() {
 
-
-
 		this.variantKinds = [];
 
 		//this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
@@ -170,13 +168,13 @@ export class Eval {
 		this.addType("string", "standard", "String", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "string", tab: "value" } });
 			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ name: "cols", type: { _kind: "number", tab: "update" } });
-			addProperty({ name: "rows", type: { _kind: "number", tab: "update" } });
+			addProperty({ name: "cols", type: { _kind: "number", tab: "display" } });
+			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
 		this.addType("number", "standard", "Number", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "number", tab: "value" } });
-			addProperty({ name: "minimum", type: { _kind: "number", tab: "value" } });
-			addProperty({ name: "maximum", type: { _kind: "number", tab: "value" } });
+			addProperty({ name: "minimum", type: { _kind: "number", tab: "validation" } });
+			addProperty({ name: "maximum", type: { _kind: "number", tab: "validation" } });
 			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
 
@@ -217,10 +215,10 @@ export class Eval {
 			addProperty({
 				name: "entryType", type: entryTypeDefinition
 			});
-			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "behaviour" } });
-			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "behaviour" } });
-			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "behaviour" } });
-			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "behaviour" } });
+			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "validation" } });
+			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "validation" } });
+			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "validation" } });
+			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "validation" } });
 		});
 
 
@@ -372,17 +370,21 @@ export class Eval {
 			name: "tab", type: {
 				_kind: "string", description: "Each group is displayed on its own tab.", tab: "display"
 			}
-		});
-		properties.push({
-			name: "visibility", type: {
-				_kind: "select", description: "Property visibility.", tab: "display",
-				entries: [
-					{ key: "visible", label: "Visible" },
-					{ key: "hiddenLabel", label: "Hidden label" },
-					{ key: "hidden", label: "Hidden" }
-				]
-			}
-		});
+		},
+			{
+				name: "visibility", type: {
+					_kind: "select", description: "Property visibility.", tab: "display",
+					entries: [
+						{ key: "visible", label: "Visible" },
+						{ key: "hiddenLabel", label: "Hidden label" },
+						{ key: "hidden", label: "Hidden" }
+					]
+				}
+			},
+			{
+				name: "indexed", type: { _kind: "boolean", "tab": "advanced" }
+			});
+
 		return type;
 	}
 
