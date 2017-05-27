@@ -10,8 +10,6 @@ import { Notification } from "../commands/Notification"
 
 export class Bootstrap extends Theme {
 
-	static classPrefix = "evl-";
-
 	constructor(evalContext: Eval, private addScripts: boolean = true) {
 		super(evalContext);
 	}
@@ -61,8 +59,6 @@ export class Bootstrap extends Theme {
 }
 
 export class BootstrapOutput extends Output {
-
-
 	printPropertyView(printArgs: PropertyPrintArgs, view: AnyView) {
 
 		var validationStatus = view.getValidationStatus();
@@ -74,16 +70,15 @@ export class BootstrapOutput extends Output {
 		var valueAttributes = {};
 		var titleInBox = false;
 		var visibility = printArgs.visibility;
+		this.printStartTag("div", attrs);
 		switch (visibility) {
 			case "visible":
-				this.printStartTag("div", attrs);
 				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
 				this.printTag("label", labelAttributes,
 					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
 				Output.addClass(valueAttributes, "col-lg-10");
 				break;
 			default:
-				this.printStartTag("div", attrs);
 				Output.addClass(valueAttributes, "col-12");
 				break;
 		}
@@ -167,7 +162,7 @@ export class BootstrapOutput extends Output {
 
 	printSection(printArgs: SectionPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
 		Output.addClass({}, printArgs.name);
-		var attributes: ElementAttributes = { class: Bootstrap.classPrefix + printArgs.name };
+		var attributes: ElementAttributes = { class: super.getClassPrefix() + printArgs.name };
 		switch (printArgs.name) {
 			case "property-groups":
 				// this.printStartTag("div", {});
@@ -364,16 +359,6 @@ export class BootstrapOutput extends Output {
 			this.printEndTag(); // dropdown-menu
 		});
 	}
-
-
-	prepareViewBeforeBuild(view: AnyView): void {
-		if (view instanceof VariantView) {
-			// not sure about this
-			// at all
-			// view.printArgs.freezeType = true;
-		}
-	}
-
 
 	static getClassName(validationStatus: ValidationStatus): string {
 		switch (validationStatus) {

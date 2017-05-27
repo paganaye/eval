@@ -94,15 +94,12 @@ export class Output {
 
 		var valueAttributes = {};
 		var visibility = printArgs.visibility;
+		this.printStartTag("div", attrs);
 		switch (visibility) {
 			case "visible":
-				this.printStartTag("div", attrs);
 				var labelAttributes = { for: view.getId() };
 				this.printTag("label", labelAttributes,
 					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-				break;
-			default:
-				this.printStartTag("div", attrs);
 				break;
 		}
 		this.printStartTag("div", valueAttributes);
@@ -113,7 +110,7 @@ export class Output {
 		this.printTag('small', { id: view.getId() + "-description" }, view.getDescription() || "");
 
 		this.printEndTag();
-		this.printEndTag(); // row or card
+		this.printEndTag(); 
 	}
 
 	printText(text: string) {
@@ -243,7 +240,7 @@ export class Output {
 		this.printEndTag();
 	}
 
-	getClassPrefix() {
+	public getClassPrefix() {
 		return "eval-";
 	}
 

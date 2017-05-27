@@ -26,7 +26,7 @@ import "./commands/Print";
 import "./commands/Read";
 import "./commands/Tests";
 import "./commands/Update";
-
+import "./hmr";
 import "./functions/Math";
 import "./functions/Time";
 import { Bootstrap } from "./themes/Bootstrap";
@@ -42,7 +42,7 @@ class App {
 
 		this.detectIncrementReload();
 		this.evalContext = new Eval();
-		//this.evalContext.setTheme(new Bootstrap(this.evalContext));
+		this.evalContext.setTheme(new Bootstrap(this.evalContext));
 		this.initConsole();
 		console.log("firebase", firebase);
 
@@ -53,7 +53,7 @@ class App {
 
 		output.printNavbar({});
 		//output.printBreadcrump({});
-		output.printJumbotron({ title: "Title", description: "Description" });
+		// output.printJumbotron({ title: "Title", description: "Description" });
 		// output.printAsync("span", { class: "eval-login" }, "...", (elt, output) => {
 		// 	var userOutput: Output;
 		// 	var userName = "...";
