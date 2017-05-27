@@ -21,4 +21,4 @@ export class Alert extends Command {
 
    }
 }
-
+Command.registerCommand("alert",() =>new Alert())

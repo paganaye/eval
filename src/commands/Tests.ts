@@ -158,3 +158,4 @@ export class Tests extends Command {
 
 	}
 }
+Command.registerCommand("tests",() =>new Tests())

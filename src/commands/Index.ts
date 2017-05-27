@@ -10,10 +10,6 @@ import { PrintArgs } from "../Theme";
 export class Index extends Command {
 	pageName: string;
 
-	constructor(evalContext: Eval) {
-		super(evalContext);
-	}
-
 	getDescription(): CommandDescription {
 		return new CommandDescription()
 			.addParameter("pageName", "stringOrVariableName")
@@ -57,3 +53,5 @@ export class Index extends Command {
 
 	}
 }
+Command.registerCommand("index",() =>new Index())
+

@@ -12,10 +12,6 @@ export class Update extends Command {
 	recordId: string;
 	private innerView: AnyView;
 
-	constructor(evalContext: Eval) {
-		super(evalContext);
-	}
-
 	getDescription(): CommandDescription {
 		return new CommandDescription()
 			.addParameter("pageName", "stringOrVariableName")
@@ -77,3 +73,4 @@ export class Update extends Command {
 
 	}
 }
+Command.registerCommand("update",() =>new Update())

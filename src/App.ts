@@ -18,6 +18,16 @@ import "./views/ParagraphView"
 import "./views/SelectView";
 import "./views/TypeView";
 import "./views/VariantView";
+import "./commands/Alert";
+import "./commands/Assign";
+import "./commands/Create";
+import "./commands/Hello";
+import "./commands/Index";
+import "./commands/Input";
+import "./commands/Print";
+import "./commands/Read";
+import "./commands/Tests";
+import "./commands/Update";
 
 class App {
 	//output: Output;

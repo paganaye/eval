@@ -12,10 +12,6 @@ export class Read extends Command {
 	recordId: string;
 	private innerView: AnyView;
 
-	constructor(evalContext: Eval) {
-		super(evalContext);
-	}
-
 	getDescription(): CommandDescription {
 		return new CommandDescription()
 			.addParameter("pageName", "stringOrVariableName")
@@ -48,3 +44,4 @@ export class Read extends Command {
 
 	}
 }
+Command.registerCommand("read",() =>new Read())

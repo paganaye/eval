@@ -24,3 +24,4 @@ export class Print extends Command {
 	}
 }
 
+Command.registerCommand("print",() =>new Print())

@@ -1,14 +1,4 @@
 import { Command } from './Command';
-import { Alert } from './commands/Alert';
-import { Assign } from './commands/Assign';
-import { Create } from './commands/Create';
-import { Hello } from './commands/Hello';
-import { Index } from './commands/Index';
-import { Input } from './commands/Input';
-import { Print } from './commands/Print';
-import { Read } from './commands/Read';
-import { Tests } from './commands/Tests';
-import { Update } from './commands/Update';
 import { Database } from './Database';
 import { EvalFunction } from './EvalFunction';
 import { Expression } from './Expression';
@@ -176,19 +166,6 @@ export class Eval {
 
 	constructor() {
 
-		this.registerCommand("print", () => new Print(this));
-		this.registerCommand("hello", () => new Hello(this));
-		this.registerCommand("hi", () => new Hello(this));
-		this.registerCommand("assign", () => new Assign(this));
-		this.registerCommand("alert", () => new Alert(this));
-		this.registerCommand("input", () => new Input(this));
-		this.registerCommand("read", () => new Read(this));
-		this.registerCommand("create", () => new Create(this));
-		this.registerCommand("update", () => new Update(this));
-		this.registerCommand("index", () => new Index(this));
-		//		this.registerCommand("delete", () => new Crud(this, "delete"));
-		this.registerCommand("tests", () => new Tests(this));
-		this.registerCommand("test", () => new Tests(this));
 
 		this.registerFunctions("abs", (parent: Expression<any>) => new AbsFunction(parent));
 		this.registerFunctions("round", (parent: Expression<any>) => new RoundFunction(parent));

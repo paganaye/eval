@@ -23,3 +23,4 @@ export class Assign extends Command {
 	}
 }
 
+Command.registerCommand("assign",() =>new Assign())

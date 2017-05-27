@@ -29,4 +29,4 @@ export class Load extends Command {
 
 	}
 }
-
+Command.registerCommand("load",() =>new Load())

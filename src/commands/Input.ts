@@ -23,4 +23,5 @@ export class Input extends Command {
 
 	}
 }
+Command.registerCommand("input",() =>new Input())
 

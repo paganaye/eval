@@ -17,11 +17,11 @@ export class Create extends Command {
 	path: string;
 	saveButtonId: string;
 
-	constructor(evalContext: Eval) {
-		super(evalContext);
+	initialize(evalContext: Eval) {
+		super.initialize(evalContext)
 		this.saveButtonId = evalContext.nextId("save-btn");
 	}
-
+	
 	valueChangedTimer: any;
 
 	valueChanged(view: AnyView): void {
@@ -107,3 +107,5 @@ export class Create extends Command {
 
 	}
 }
+Command.registerCommand("create", () => new Create())
+

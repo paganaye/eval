@@ -26,3 +26,4 @@ export class Hello extends Command {
 
    }
 }
+Command.registerCommand("hello",() =>new Hello())
