@@ -11,8 +11,6 @@ export interface TypeDefinition<T> {
 	template?: string;
 }
 
-export type Visibility = "visible" | "hiddenLabel" | "hidden";
-
 export interface ValidationResult {
 	valid: boolean;
 	code?: string;
@@ -56,6 +54,8 @@ export interface BooleanType extends TypeDefinition<boolean> {
 	defaultValue?: boolean;
 }
 
+export type Visibility = "visible" | "hiddenLabel" | "hidden";
+
 export interface Property {
 	name: string;
 	label?: string;
@@ -74,7 +74,6 @@ export interface Group {
 	entries: SelectEntry[];
 	multiple?: boolean;
 }
-
 
 export interface ArrayType<T> extends TypeDefinition<T[]> {
 	_kind: "array";
@@ -99,7 +98,6 @@ export interface CategoryType extends TypeDefinition<string> {
 	multiple?: boolean;
 	categoryName: string;
 }
-
 
 export interface SelectEntry {
 	group?: string;
@@ -160,40 +158,6 @@ export type TypeOrString = Type | string;
 //  | UrlDefinition | WeekDefinition | ExternalDefinition | MapType
 
 
-class a {
-	f1: string;
-	f2: number;
-	f3: boolean;
-}
-
-
-type Meta<T> = {
-	name: string;
-	properties: {
-		name: keyof (T);
-		type: Type
-	}[];
-}
-
-var xa: Meta<a> = {
-	name: "wrapper for A", properties: [
-		{ name: "f1", type: { _kind: "string" } },
-		{ name: "f2", type: { _kind: "string" } },
-		{ name: "f3", type: { _kind: "string" } }
-	]
-};
 
 
 
-
-
-var b: Promise<number>;
-
-b.then((x) => {
-
-}, (r) => {
-
-}).then(u => {
-}).catch(r => {
-}).catch(u => {
-});
