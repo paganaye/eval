@@ -158,4 +158,7 @@ export class Tests extends Command {
 
 	}
 }
-Command.registerCommand("tests",() =>new Tests())
+Command.registerCommand("tests",{
+	getNew: () => new Tests(),
+	getDescription: () => new CommandDescription()
+});

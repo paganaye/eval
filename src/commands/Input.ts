@@ -8,11 +8,6 @@ import { Output } from "../Output";
 export class Input extends Command {
 	private inputs: Expression<any>[];
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("inputs", "Expression", { multiple: true });
-	}
-
 	run(output: Output) {
 		for (var input of this.inputs) {
 			//output.input(input);
@@ -23,5 +18,9 @@ export class Input extends Command {
 
 	}
 }
-Command.registerCommand("input",() =>new Input())
+Command.registerCommand("input",{
+	getNew: () => new Input(),
+	getDescription: () => new CommandDescription()
+			.addParameter("inputs", "Expression", { multiple: true })
+});
 

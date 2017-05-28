@@ -12,11 +12,6 @@ export class Hello extends Command {
    who: Expression<string>;
 	innerView: AnyView;
 
-   getDescription(): CommandDescription {
-      return new CommandDescription()
-         .addParameter("who", "Expression", "");
-   }
-
    run(output: Output) {
       this.innerView = this.evalContext.instantiate(null, "hello::", this.who, null, true);
       this.innerView.render(output);
@@ -26,4 +21,8 @@ export class Hello extends Command {
 
    }
 }
-Command.registerCommand("hello",() =>new Hello())
+Command.registerCommand("hello",{
+	getNew: () => new Hello(),
+	getDescription: () => new CommandDescription()
+         .addParameter("who", "Expression", "")
+});

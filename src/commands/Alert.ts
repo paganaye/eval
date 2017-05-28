@@ -5,20 +5,19 @@ import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Output } from "../Output";
 
 export class Alert extends Command {
-   private data: string;
-   private type: Type;
+	private data: string;
+	private type: Type;
 
-   getDescription(): CommandDescription {
-      return new CommandDescription()
-         .addParameter("data", "string");
-   }
+	run(output: Output) {
+		alert(this.data);
+	}
 
-   run(output: Output) {
-      alert(this.data);
-   }
+	runTests(output: Output): void {
 
-   runTests(output: Output): void {
-
-   }
+	}
 }
-Command.registerCommand("alert",() =>new Alert())
+Command.registerCommand("alert", {
+	getNew: () => new Alert(),
+	getDescription: () => new CommandDescription()
+		.addParameter("data", "string")
+});

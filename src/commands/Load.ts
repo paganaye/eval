@@ -8,12 +8,6 @@ export class Load extends Command {
 	path: string;
 	type: string;
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("path", "string")
-			.addParameter("type", "string");
-	}
-
 	run(output: Output) {
 		// output.printAsync("div", {}, "Loading...", (output) => {
 		//       var res = this.evalContext.database.on(this.path, (data, error) => {
@@ -29,4 +23,9 @@ export class Load extends Command {
 
 	}
 }
-Command.registerCommand("load",() =>new Load())
+Command.registerCommand("load",{
+	getNew: () => new Load(),
+	getDescription: () => new CommandDescription()
+			.addParameter("path", "string")
+			.addParameter("type", "string")
+});

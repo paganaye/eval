@@ -8,12 +8,6 @@ export class Assign extends Command {
 	variableName: string;
 	variableValue: any;
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("variableName", "string", "")
-			.addParameter("variableValue", "any", "");
-	}
-
 	run(output: Output) {
 		this.evalContext.setVariable(this.variableName, this.variableValue);
 	}
@@ -23,4 +17,9 @@ export class Assign extends Command {
 	}
 }
 
-Command.registerCommand("assign",() =>new Assign())
+Command.registerCommand("assign", {
+	getNew: () => new Assign(),
+	getDescription: () => new CommandDescription()
+			.addParameter("variableName", "string", "")
+			.addParameter("variableValue", "any", "")
+});

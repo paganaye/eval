@@ -12,12 +12,6 @@ export class Update extends Command {
 	recordId: string;
 	private innerView: AnyView;
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("pageName", "stringOrVariableName")
-			.addParameter("recordId", "stringOrVariableName");
-	}
-
 	valueChanged(view: AnyView): void {
 	}
 
@@ -73,4 +67,9 @@ export class Update extends Command {
 
 	}
 }
-Command.registerCommand("update",() =>new Update())
+Command.registerCommand("update",{
+	getNew: () => new Update(),
+	getDescription: () => new CommandDescription()
+			.addParameter("pageName", "stringOrVariableName")
+			.addParameter("recordId", "stringOrVariableName")
+});

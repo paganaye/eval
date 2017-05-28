@@ -12,12 +12,6 @@ export class Read extends Command {
 	recordId: string;
 	private innerView: AnyView;
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("pageName", "stringOrVariableName")
-			.addParameter("recordId", "stringOrVariableName");
-	}
-
 	run(output: Output) {
 		this.pageName = (this.pageName || "");
 		this.recordId = (this.recordId || "").toLowerCase();
@@ -44,4 +38,9 @@ export class Read extends Command {
 
 	}
 }
-Command.registerCommand("read",() =>new Read())
+Command.registerCommand("read",{
+	getNew: () => new Read(),
+	getDescription: () => new CommandDescription()
+			.addParameter("pageName", "stringOrVariableName")
+			.addParameter("recordId", "stringOrVariableName")
+});

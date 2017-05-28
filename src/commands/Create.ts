@@ -21,7 +21,7 @@ export class Create extends Command {
 		super.initialize(evalContext)
 		this.saveButtonId = evalContext.nextId("save-btn");
 	}
-	
+
 	valueChangedTimer: any;
 
 	valueChanged(view: AnyView): void {
@@ -66,11 +66,6 @@ export class Create extends Command {
 		}, 250);
 	}
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("pageName", "stringOrVariableName");
-	}
-
 	run(output: Output) {
 		this.pageName = (this.pageName || "").toLowerCase();
 
@@ -107,5 +102,9 @@ export class Create extends Command {
 
 	}
 }
-Command.registerCommand("create", () => new Create())
+Command.registerCommand("create", {
+	getNew: () => new Create(),
+	getDescription: () => new CommandDescription()
+		.addParameter("pageName", "stringOrVariableName")
+});
 

@@ -18,13 +18,12 @@ export abstract class EvalFunction<T> {
 	protected valueChanged() { }
 
 
-	public static registerFunction(functionName: string, functionConstructor: () => EvalFunction<any>): void {
-		EvalFunction.functionFactories[functionName] = { getNew: functionConstructor };
+	public static registerFunction(functionName: string, functionFactory: CommandFactory): void {
+		EvalFunction.functionFactories[functionName] = functionFactory;
 	}
 
-	public static getConstructor(functionName: string): () => EvalFunction<any> {
-		var constructorFunction = EvalFunction.functionFactories[functionName];
-		return constructorFunction && constructorFunction.getNew;
+	public static getFunctionFactory(functionName: string): CommandFactory {
+		return EvalFunction.functionFactories[functionName];
 	}
 }
 

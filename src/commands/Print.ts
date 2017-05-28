@@ -7,11 +7,6 @@ import { Output } from "../Output";
 export class Print extends Command {
 	private data: Expression<any>[];
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("data", "Expression", { multiple: true });
-	}
-
 	run(output: Output) {
 		for (var item of this.data) {
 			var view = this.evalContext.instantiate(null, "print::", item.getValue(this.evalContext), item.getType(this.evalContext), false);
@@ -24,4 +19,8 @@ export class Print extends Command {
 	}
 }
 
-Command.registerCommand("print",() =>new Print())
+Command.registerCommand("print",{
+	getNew: () => new Print(),
+	getDescription: () => new CommandDescription()
+			.addParameter("data", "Expression", { multiple: true })
+});

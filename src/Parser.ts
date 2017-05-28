@@ -189,7 +189,7 @@ export class Parser {
 		this.nextToken();
 		var parameters = {};
 		var useNamedParameters = false;
-		var functionFactory = EvalFunction.getConstructor(functionName);
+		var functionFactory = EvalFunction.getFunctionFactory(functionName);
 
 		this.parseParameters(parameters, true, functionFactory);
 		return new FunctionCall(this.evalContext, functionName, parameters);
@@ -214,14 +214,15 @@ export class Parser {
 			parameters["variableName"] = new Const(commandName);
 		}
 		else {
-			if (!Command.getConstructor(commandName)) {
+			var commandFactory = Command.getCommandFactory(commandName.toLowerCase());
+			if (!commandFactory) {
 				// If the first character is not a command we infer a "READ"
 				parameters["pageName"] = new Const(commandName);
 				commandName = (this.token.type == TokenType.EOF)
 					? "index" : "read";
+				commandFactory = Command.getCommandFactory(commandName);
 			}
 		}
-		var commandFactory = Command.getConstructor(commandName.toLowerCase());
 		this.parseParameters(parameters, false, commandFactory);
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}

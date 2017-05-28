@@ -7,7 +7,6 @@ import { ViewParent, AnyView } from "./View";
 export abstract class Command implements ViewParent {
 	static CommandFactories: { [key: string]: CommandFactory } = {};
 	public evalContext: Eval
-	abstract getDescription(): CommandDescription;
 	abstract run(output: Output): void;
 
 	valueChanged(view: AnyView): void {
@@ -18,16 +17,16 @@ export abstract class Command implements ViewParent {
 		this.evalContext = evalContext;
 	}
 
-	public static registerCommand(commandName: string, commandConstructor: () => Command): void {
-		Command.CommandFactories[commandName] = { getNew: commandConstructor };
+	public static registerCommand(commandName: string, commandFactory: CommandFactory): void {
+		Command.CommandFactories[commandName] = commandFactory;
 	}
 
-	public static getConstructor(commandName: string): () => Command {
-		var constructorFunction = Command.CommandFactories[commandName];
-		return constructorFunction && constructorFunction.getNew;
+	public static getCommandFactory(commandName: string): CommandFactory {
+		return Command.CommandFactories[commandName];
 	}
 }
 
 export interface CommandFactory {
 	getNew(): any;
+	getDescription(): CommandDescription;
 }

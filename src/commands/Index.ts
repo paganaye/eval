@@ -53,5 +53,8 @@ export class Index extends Command {
 
 	}
 }
-Command.registerCommand("index",() =>new Index())
+Command.registerCommand("index",{
+	getNew: () => new Index(),
+	getDescription: () => new CommandDescription()
+});
 
