@@ -8,7 +8,7 @@ import { Parser } from "../Parser";
 
 export class TypeView extends ObjectView {
 	printArgs: PrintArgs;
-S
+
 	build(): void {
 		var structName = this.type.pageName;
 		this.evalContext.database.on("eval/type/" + structName, (data, error) => {
