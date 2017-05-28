@@ -31,12 +31,15 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		}
 		if (!this.data) this.data = {};
 
+		if (typeof this.data !== "object") {
+			this.data = { value: this.data };
+		}
 		for (var key in this.data) {
 			if (key === "_kind") continue;
 			if (this.typeByName[key] !== undefined) continue;
 			var value = this.data[key];
-			if (typeof value==="string"  && value.length==0) continue;
-			if (typeof value==="object" && Object.keys(value).length==0) continue;
+			if (typeof value === "string" && value.length == 0) continue;
+			if (typeof value === "object" && Object.keys(value).length == 0) continue;
 			this.typeByName[key] = { _kind: "string" }
 			this.addKey(key, "orphans");
 		}
@@ -99,14 +102,14 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 						}
 					});
 				}
-/*
-				output.printAsync("div", {}, "Preview...",
-					(output) => {
-						this.previewOutput = output;
-						this.printTemplate(output);
-						output.domReplace();
-					});
-*/					
+				/*
+								output.printAsync("div", {}, "Preview...",
+									(output) => {
+										this.previewOutput = output;
+										this.printTemplate(output);
+										output.domReplace();
+									});
+				*/
 			});
 		}
 	}

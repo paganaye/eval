@@ -63,6 +63,7 @@ export class Eval {
 			],
 			template: "{name} ({type._kind})"
 		},
+		tab: "properties",
 		visibility: "hiddenLabel"
 	};
 
@@ -165,34 +166,36 @@ export class Eval {
 
 		//this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
 		//this.addType("array", null);
-		this.addType("string", "standard", "String", (type, addProperty) => {
+		this.addType("string", "basic", "String", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "string", tab: "value" } });
 			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
 			addProperty({ name: "cols", type: { _kind: "number", tab: "display" } });
 			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
-		this.addType("number", "standard", "Number", (type, addProperty) => {
+		this.addType("number", "basic", "Number", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "number", tab: "value" } });
 			addProperty({ name: "minimum", type: { _kind: "number", tab: "validation" } });
 			addProperty({ name: "maximum", type: { _kind: "number", tab: "validation" } });
 			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
 		});
 
-		this.addType("boolean", "standard", "Boolean", (type, addProperty) => {
+		this.addType("boolean", "basic", "Boolean", (type, addProperty) => {
 			addProperty({ name: "defaultValue", type: { _kind: "boolean", tab: "value" } });
 		});
 
-		this.addType("color", "html5", "Color");
-		this.addType("date", "html5", "Date");
-		this.addType("datetime", "html5", "Date and time");
-		this.addType("month", "html5", "Month and Year");
-		this.addType("password", "html5", "Password");
-		this.addType("range", "html5", "Range");
-		this.addType("tel", "html5", "Telephone number");
-		this.addType("time", "html5", "Time");
-		this.addType("url", "html5", "URL");
-		this.addType("week", "html5", "Week");
-
+		this.addType("textarea", "html", "Multi-line string");
+		this.addType("pre", "html", "Preformated text");
+		this.addType("color", "html", "Color");
+		this.addType("date", "html", "Date");
+		this.addType("datetime", "html", "Date and time");
+		this.addType("month", "html", "Month and Year");
+		this.addType("password", "html", "Password");
+		this.addType("range", "html", "Range");
+		this.addType("tel", "html", "Telephone number");
+		this.addType("time", "html", "Time");
+		this.addType("url", "html", "URL");
+		this.addType("week", "html", "Week");
+		
 		this.addType("select", "advanced", "Select", (type, addProperty) => {
 			(type as SelectType).entries = [];
 			addProperty({ name: "entries", type: this.arrayOfEnum });
@@ -230,7 +233,7 @@ export class Eval {
 			objectType.visibility = "hiddenLabel"
 
 			addProperty({ name: "properties", type: this.propertiesType });
-			addProperty({ name: "template", type: { _kind: "string" } });
+			addProperty({ name: "template", type: { _kind: "string", tab: "display" } });
 		});
 
 		this.addType("variant", "advanced", "Variant", (type, addProperty) => {
@@ -502,9 +505,11 @@ export class Eval {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "object", visibility: "hidden" } },
-						{ name: "description", type: { _kind: "string" } },
+						{ name: "title", type: { _kind: "string", tab: "display" } },
+						{ name: "description", type: { _kind: "string", tab: "display" } },
+						{ name: "template", type: { _kind: "string", tab: "display" } },
 						{ name: "properties", type: this.propertiesType },
-						{ name: "template", type: { _kind: "string" } },
+						{ name: "index", type: { _kind: "string", tab: "index" } }
 					]
 				};
 				tableType = tableDefinition;

@@ -16,6 +16,7 @@ import "./views/ParagraphView"
 import "./views/SelectView";
 import "./views/TypeView";
 import "./views/VariantView";
+import "./views/TextAreaView";
 import "./commands/Alert";
 import "./commands/Assign";
 import "./commands/Create";
