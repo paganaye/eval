@@ -8,12 +8,10 @@ export interface TypeDefinition<T> {
 	pageName?: string;
 	mandatory?: boolean;
 	description?: string;
-	tab?: string;
-	visibility?: Visibility;
 	template?: string;
 }
 
-export type Visibility  = "visible" | "hiddenLabel" | "hidden";
+export type Visibility = "visible" | "hiddenLabel" | "hidden";
 
 export interface ValidationResult {
 	valid: boolean;
@@ -60,7 +58,10 @@ export interface BooleanType extends TypeDefinition<boolean> {
 
 export interface Property {
 	name: string;
+	label?: string;
 	type: Type;
+	tab?: string;
+	visibility?: Visibility;
 }
 
 export interface ObjectType extends TypeDefinition<object> {
@@ -116,7 +117,6 @@ export interface ButtonType extends TypeDefinition<any> {
 	_kind: "button";
 	text: string;
 	onclick: Action[];
-	visibility: Visibility;
 }
 
 export interface VariantKind extends SelectEntry {
@@ -158,3 +158,42 @@ export type TypeOrString = Type | string;
 //  | EmaiDefinition | MonthDefinition | RangeDefinition | TelDefinition
 //  | TextDefinition | TimeDefinition 
 //  | UrlDefinition | WeekDefinition | ExternalDefinition | MapType
+
+
+class a {
+	f1: string;
+	f2: number;
+	f3: boolean;
+}
+
+
+type Meta<T> = {
+	name: string;
+	properties: {
+		name: keyof (T);
+		type: Type
+	}[];
+}
+
+var xa: Meta<a> = {
+	name: "wrapper for A", properties: [
+		{ name: "f1", type: { _kind: "string" } },
+		{ name: "f2", type: { _kind: "string" } },
+		{ name: "f3", type: { _kind: "string" } }
+	]
+};
+
+
+
+
+
+var b: Promise<number>;
+
+b.then((x) => {
+
+}, (r) => {
+
+}).then(u => {
+}).catch(r => {
+}).catch(u => {
+});

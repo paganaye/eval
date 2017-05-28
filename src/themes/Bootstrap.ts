@@ -71,7 +71,7 @@ export class BootstrapOutput extends Output {
 		var titleInBox = false;
 		var visibility = printArgs.visibility;
 		this.printStartTag("div", attrs);
-		switch (visibility) {
+		switch (visibility || "visible") {
 			case "visible":
 				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
 				this.printTag("label", labelAttributes,

@@ -81,9 +81,6 @@ export class Output {
 
 		view = this.evalContext.instantiate(viewParent, propertyPrintArgs.label, data, dataType, this.editMode, propertyPrintArgs);
 
-		if (!propertyPrintArgs) propertyPrintArgs = { visibility: dataType.visibility || "visible" };
-		if (dataType.visibility > propertyPrintArgs.visibility) propertyPrintArgs.visibility = dataType.visibility;
-
 		this.printPropertyView(propertyPrintArgs, view);
 		return view;
 	}
@@ -110,7 +107,7 @@ export class Output {
 		this.printTag('small', { id: view.getId() + "-description" }, view.getDescription() || "");
 
 		this.printEndTag();
-		this.printEndTag(); 
+		this.printEndTag();
 	}
 
 	printText(text: string) {

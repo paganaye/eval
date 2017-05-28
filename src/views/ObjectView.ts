@@ -10,24 +10,23 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	typedKeys: string[];
 	properties: Property[];
 	views: { [key: string]: AnyView } = {};
-	typeByName: { [key: string]: Type } = {};
-	groupByName: { [key: string]: string[] };
-	groupNames: string[];
-	mainProperties: string[];
+	propertyByName: { [key: string]: Property } = {};
+	tabByName: { [key: string]: Property[] };
+	tabNames: string[];
+	mainProperties: Property[];
 	previewOutput: Output;
 
 	build(): void {
 		this.properties = (this.type.properties) || [];
 		this.allKeys = [];
 		this.typedKeys = [];
-		this.groupByName = {};
-		this.groupNames = [];
-		this.typeByName = {};
+		this.tabByName = {};
+		this.tabNames = [];
+		this.propertyByName = {};
 		this.mainProperties = [];
 
 		for (var p of this.properties) {
-			this.addKey(p.name, p.type.tab);
-			this.typeByName[p.name] = p.type;
+			this.addProperty(p);
 		}
 		if (!this.data) this.data = {};
 
@@ -36,29 +35,28 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		}
 		for (var key in this.data) {
 			if (key === "_kind") continue;
-			if (this.typeByName[key] !== undefined) continue;
+			if (this.propertyByName[key] !== undefined) continue;
 			var value = this.data[key];
 			if (typeof value === "string" && value.length == 0) continue;
 			if (typeof value === "object" && Object.keys(value).length == 0) continue;
-			this.typeByName[key] = { _kind: "string" }
-			this.addKey(key, "orphans");
+			this.addProperty({ name: key, type: { _kind: "string" }, tab: "orphans", visibility: "visible" });
 		}
 	}
 
-	addKey(name: string, tab: string) {
-		this.allKeys.push(name);
-		this.typedKeys.push(name);
-		var groupName = tab;
-		if (groupName) {
-			var group = this.groupByName[groupName];
-			if (!group) {
-				group = [];
-				this.groupByName[groupName] = group;
-				this.groupNames.push(groupName);
+	private addProperty(p: Property) {
+		this.propertyByName[p.name] = p;
+		this.allKeys.push(p.name);
+		this.typedKeys.push(p.name);
+		if (p.tab) {
+			var tab = this.tabByName[p.tab];
+			if (!tab) {
+				tab = [];
+				this.tabByName[p.tab] = tab;
+				this.tabNames.push(p.tab);
 			}
-			group.push(name);
+			tab.push(p);
 		} else {
-			this.mainProperties.push(name);
+			this.mainProperties.push(p);
 		}
 	}
 
@@ -80,22 +78,22 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 			output.printSection({ name: "object" }, (output, printArgs) => {
 				if (this.mainProperties.length) {
 					output.printSection({ addHeaderCallback: printArgs.addHeaderCallback, name: "object-properties" }, (printArgs) => {
-						for (var key of this.mainProperties) {
-							this.printProperty(key, output);
+						for (var property of this.mainProperties) {
+							this.printProperty(property, output);
 						}
 					});
 				}
-				if (this.groupNames.length) {
+				if (this.tabNames.length) {
 					output.printSection({ name: "property-groups" }, (output, printArgs) => {
 						var first = true;
-						for (var groupName of this.groupNames) {
-							var group = this.groupByName[groupName];
+						for (var tabName of this.tabNames) {
+							var tab = this.tabByName[tabName];
 							output.printSection({
 								addHeaderCallback: printArgs.addHeaderCallback, name: "property-group",
-								active: first, title: groupName, orphans: (groupName == "orphans")
+								active: first, title: tabName, orphans: (tabName == "orphans")
 							}, (printArgs) => {
-								for (var key of group) {
-									this.printProperty(key, output);
+								for (var property of tab) {
+									this.printProperty(property, output);
 								}
 							});
 							if (first) first = false;
@@ -128,12 +126,12 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		}
 	}
 
-	printProperty(key: string, output: Output) {
-		var value = this.data[key];
-		var vtype = this.typeByName[key] || {} as Type;
-		var visibility = vtype.visibility || "visible";
-		if (visibility != "hidden") {
-			this.views[key] = output.printProperty(this, { label: key, visibility: visibility }, value, vtype);
+	printProperty(property: Property, output: Output) {
+		//var value = this.data[key];
+		//var vtype = this.typeByName[key] || {} as Type;
+		if (property.visibility != "hidden") {
+			var value = this.data[property.name];
+			this.views[property.name] = output.printProperty(this, { label: property.label || property.name, visibility: property.visibility }, value, property.type);
 		}
 	}
 

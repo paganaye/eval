@@ -1,4 +1,4 @@
-var FuseBox: any = FuseBox || (window as any).FuseBox;
+declare var FuseBox: any; 
 
 const customizedHMRPlugin = {
 	hmrUpdate: ({ type, path, content }) => {
@@ -7,7 +7,7 @@ const customizedHMRPlugin = {
 	}
 }
 
-//var process: any = process || (window as any).process;
+declare var process:any;
 
 let alreadyRegistered = false;
 if (!process.env.hmrRegistered) {

@@ -41,14 +41,12 @@ export class Eval {
 				{ name: "regexp", type: { _kind: "string" } },
 				{ name: "message", type: { _kind: "string" } }
 			]
-		},
-		tab: "validation"
+		}
 	};
 
 	variantType: VariantType = {
 		_kind: "variant",
 		kinds: [], // will come later
-		visibility: "hiddenLabel"
 	};
 
 	propertiesType: ArrayType<object> = {
@@ -57,14 +55,21 @@ export class Eval {
 			_kind: "object",
 			properties: [
 				{ name: "name", type: { _kind: "string" } },
+				{ name: "type", type: this.variantType, tab: "type" },
 				{
-					name: "type", type: this.variantType
-				}
+					name: "visibility", type: {
+						_kind: "select", description: "Property visibility.",
+						entries: [
+							{ key: "visible", label: "Visible" },
+							{ key: "hiddenLabel", label: "Hidden label" },
+							{ key: "hidden", label: "Hidden" }
+						]
+					}, tab: "display"
+				},
+				{ name: "tab", type: { _kind: "string" }, tab: "display" }
 			],
 			template: "{name} ({type._kind})"
-		},
-		tab: "properties",
-		visibility: "hiddenLabel"
+		}
 	};
 
 	stepType: VariantType = {
@@ -167,20 +172,20 @@ export class Eval {
 		//this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
 		//this.addType("array", null);
 		this.addType("string", "basic", "String", (type, addProperty) => {
-			addProperty({ name: "defaultValue", type: { _kind: "string", tab: "value" } });
+			addProperty({ name: "defaultValue", type: { _kind: "string" }, tab: "value" });
 			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ name: "cols", type: { _kind: "number", tab: "display" } });
-			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
+			addProperty({ name: "cols", type: { _kind: "number" }, tab: "display" });
+			addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
 		});
 		this.addType("number", "basic", "Number", (type, addProperty) => {
-			addProperty({ name: "defaultValue", type: { _kind: "number", tab: "value" } });
-			addProperty({ name: "minimum", type: { _kind: "number", tab: "validation" } });
-			addProperty({ name: "maximum", type: { _kind: "number", tab: "validation" } });
-			addProperty({ name: "rows", type: { _kind: "number", tab: "display" } });
+			addProperty({ name: "defaultValue", type: { _kind: "number" }, tab: "value" });
+			addProperty({ name: "minimum", type: { _kind: "number" }, tab: "validation" });
+			addProperty({ name: "maximum", type: { _kind: "number" }, tab: "validation" });
+			addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
 		});
 
 		this.addType("boolean", "basic", "Boolean", (type, addProperty) => {
-			addProperty({ name: "defaultValue", type: { _kind: "boolean", tab: "value" } });
+			addProperty({ name: "defaultValue", type: { _kind: "boolean" }, tab: "value" });
 		});
 
 		this.addType("textarea", "html", "Multi-line string");
@@ -209,19 +214,16 @@ export class Eval {
 
 			var entryTypeDefinition: VariantType = {
 				_kind: "variant",
-				kinds: this.variantKinds,
-				visibility: "hiddenLabel"
+				kinds: this.variantKinds
 			};
-			entryTypeDefinition.tab = "entryType";
-			entryTypeDefinition.visibility = "hiddenLabel"
 
 			addProperty({
 				name: "entryType", type: entryTypeDefinition
 			});
-			addProperty({ name: "minimumCount", type: { _kind: "number", tab: "validation" } });
-			addProperty({ name: "maximumCount", type: { _kind: "number", tab: "validation" } });
-			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean", tab: "validation" } });
-			addProperty({ name: "canReorder", type: { _kind: "boolean", tab: "validation" } });
+			addProperty({ name: "minimumCount", type: { _kind: "number" }, tab: "validation" });
+			addProperty({ name: "maximumCount", type: { _kind: "number" }, tab: "validation" });
+			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean" }, tab: "validation" });
+			addProperty({ name: "canReorder", type: { _kind: "boolean" }, tab: "validation" });
 		});
 
 
@@ -229,11 +231,9 @@ export class Eval {
 			type.editView = "object";
 			var objectType = (type as ObjectType);
 			objectType.properties = [];
-			objectType.tab = "objectType";
-			objectType.visibility = "hiddenLabel"
 
 			addProperty({ name: "properties", type: this.propertiesType });
-			addProperty({ name: "template", type: { _kind: "string", tab: "display" } });
+			addProperty({ name: "template", type: { _kind: "string" }, tab: "display" });
 		});
 
 		this.addType("variant", "advanced", "Variant", (type, addProperty) => {
@@ -251,8 +251,7 @@ export class Eval {
 						{ name: "type", type: this.variantType }
 					],
 					template: "{key} ({type._kind})"
-				},
-				visibility: "hiddenLabel"
+				}
 			};
 
 			addProperty({ name: "kinds", type: variantKindsType });
@@ -274,7 +273,6 @@ export class Eval {
 		});
 		this.addType("frame", "wiki", "Frame", (type, addProperty) => {
 			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
-			type.visibility = "hiddenLabel";
 		});
 
 		var illustrationType: Type = this.addType("illustration", "wiki", "Illustration", (type, addProperty) => {
@@ -354,8 +352,7 @@ export class Eval {
 		this.types[key] = type;
 		var properties: Property[] = [];
 		if (label != null) {
-
-
+			// Labelled type will apear in the type list.
 			var variantKind: VariantKind = {
 				key: key,
 				label: label,
@@ -368,25 +365,6 @@ export class Eval {
 		if (typeCallback) typeCallback(type, (property) => {
 			properties.push(property)
 		});
-
-		properties.push({
-			name: "tab", type: {
-				_kind: "string", description: "Each group is displayed on its own tab.", tab: "display"
-			}
-		},
-			{
-				name: "visibility", type: {
-					_kind: "select", description: "Property visibility.", tab: "display",
-					entries: [
-						{ key: "visible", label: "Visible" },
-						{ key: "hiddenLabel", label: "Hidden label" },
-						{ key: "hidden", label: "Hidden" }
-					]
-				}
-			},
-			{
-				name: "indexed", type: { _kind: "boolean", "tab": "advanced" }
-			});
 
 		return type;
 	}
@@ -490,13 +468,12 @@ export class Eval {
 					_kind: "object",
 					properties: [{
 						name: "type",
+						visibility: "hiddenLabel",
 						type: {
 							_kind: "variant",
 							kinds: this.variantKinds,
-							visibility: "hiddenLabel"
 						}
-					}
-					]
+					}]
 				};
 				tableType = objectDefinition;
 				break;
@@ -504,12 +481,16 @@ export class Eval {
 				var tableDefinition: ObjectType = {
 					_kind: "object",
 					properties: [
-						{ name: "_kind", type: { _kind: "const", value: "object", visibility: "hidden" } },
-						{ name: "title", type: { _kind: "string", tab: "display" } },
-						{ name: "description", type: { _kind: "string", tab: "display" } },
-						{ name: "template", type: { _kind: "string", tab: "display" } },
-						{ name: "properties", type: this.propertiesType },
-						{ name: "index", type: { _kind: "string", tab: "index" } }
+						{ name: "_kind", type: { _kind: "const", value: "object" }, visibility: "hidden" },
+						{ name: "description", type: { _kind: "string" }, tab: "display" },
+						{ name: "template", type: { _kind: "string" }, tab: "display" },
+						{ name: "nameHelp", type: { _kind: "string" }, tab: "name" },
+						{ name: "nameValidation", type: this.arrayOfValidationRegexp, tab: "name" },
+						{ name: "pluralName", type: { _kind: "string" }, tab: "index" },
+						{ name: "indexHelp", type: { _kind: "string" }, tab: "index" },
+						{ name: "indexDescription", type: { _kind: "string" }, tab: "index" },
+						{ name: "properties", type: this.propertiesType, tab: "properties" }
+
 					]
 				};
 				tableType = tableDefinition;

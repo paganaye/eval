@@ -11,7 +11,6 @@ export class TypeView extends ObjectView {
 S
 	build(): void {
 		var structName = this.type.pageName;
-		this.type.visibility = "visible";
 		this.evalContext.database.on("eval/type/" + structName, (data, error) => {
 			debugger;
 			if (data) {
