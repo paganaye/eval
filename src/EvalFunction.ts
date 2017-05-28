@@ -1,9 +1,10 @@
+import { CommandFactory } from './Command';
 import { Eval } from "./Eval";
 import { Subscriber, Expression } from './Expression';
 import { Type } from './Types';
 
 export abstract class EvalFunction<T> {
-	static functionFactories: { [key: string]: () => EvalFunction<any> } = {};
+	static functionFactories: { [key: string]: CommandFactory } = {};
 	protected parent: Expression<any>;
 	public evalContext: Eval
 
@@ -18,12 +19,12 @@ export abstract class EvalFunction<T> {
 
 
 	public static registerFunction(functionName: string, functionConstructor: () => EvalFunction<any>): void {
-		EvalFunction.functionFactories[functionName] = functionConstructor;
+		EvalFunction.functionFactories[functionName] = { getNew: functionConstructor };
 	}
 
 	public static getConstructor(functionName: string): () => EvalFunction<any> {
 		var constructorFunction = EvalFunction.functionFactories[functionName];
-		return constructorFunction;
+		return constructorFunction && constructorFunction.getNew;
 	}
 }
 

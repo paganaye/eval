@@ -22,6 +22,7 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 				this.elt = output.getOutputElt() as HTMLTextAreaElement;
 				if (this.elt) {
 					this.elt.oninput = (e) => this.onInput(e);
+					this.adjustHeight();
 					this.valueChanged();
 				}
 				else {
@@ -29,12 +30,17 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 				}
 			});
 		} else {
-			output.printTag("textarea", { class: "form-control", readonly: "readonly" }, this.data);
+			output.printTag("p", { class: "form-control", readonly: "readonly" }, this.data);
 		}
 	}
 
 	onInput(e: Event) {
 		this.valueChanged();
+	}
+
+	adjustHeight() {
+		this.elt.style.height = "1px";
+		this.elt.style.height = (25 + this.elt.scrollHeight) + "px";
 	}
 
 	getValue(): string {
@@ -45,15 +51,16 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 			throw "HTML TextArea " + this.id + " not found.";
 		}
 	}
-
 }
+
+
 
 export class PreFormattedView extends TextAreaView {
 	onRender(output: Output): void {
 		if (output.isEditMode()) {
 			super.onRender(output);
 		} else {
-			output.printTag("pre", {}, this.data);
+			output.printTag("pre", { class: "form-control" }, this.data);
 		}
 	}
 }

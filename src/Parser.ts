@@ -189,7 +189,9 @@ export class Parser {
 		this.nextToken();
 		var parameters = {};
 		var useNamedParameters = false;
-		this.parseParameters(parameters, true);
+		var functionFactory = EvalFunction.getConstructor(functionName);
+
+		this.parseParameters(parameters, true, functionFactory);
 		return new FunctionCall(this.evalContext, functionName, parameters);
 	}
 
@@ -213,18 +215,20 @@ export class Parser {
 		}
 		else {
 			if (!Command.getConstructor(commandName)) {
-				// If the first character is not a read command 
+				// If the first character is not a command we infer a "READ"
 				parameters["pageName"] = new Const(commandName);
 				commandName = (this.token.type == TokenType.EOF)
 					? "index" : "read";
 			}
 		}
-		this.parseParameters(parameters, false);
+		var commandFactory = Command.getConstructor(commandName.toLowerCase());
+		this.parseParameters(parameters, false, commandFactory);
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}
 
-	parseParameters(parameters: any, requireClosingParenthesis: boolean) {
+	parseParameters(parameters: any, requireClosingParenthesis: boolean, commandFactory: any) {
 		var useNamedParameters = false;
+		var parameterStart = 0;
 		while (this.token.type != TokenType.EOF) {
 			if (requireClosingParenthesis
 				&& this.token.type == TokenType.Operator
@@ -232,9 +236,15 @@ export class Parser {
 				this.nextToken();
 				return;
 			}
+			try {
+				var startPos = this.token.position;
+				var value = this.parseExpression(Priority.None);
+			} catch (error) {
+				this.token = this.tokenizer.getRemaining(startPos);
+				value = new Const<string>(this.token.stringValue);
+				this.nextToken();
+			}
 
-			var value = this.parseExpression(Priority.None);
-			//.parseValue(this.allDelimiters);
 			if ((this.token.type == TokenType.Operator
 				&& this.token.stringValue == ":")
 				&& value instanceof (GetVariable)) {

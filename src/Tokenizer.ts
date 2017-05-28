@@ -58,6 +58,12 @@ export class Tokenizer {
 		return result;
 	}
 
+	public getRemaining(from: number): Token {
+		var result = this.source.substring(from);
+		this.curChar = null;
+		this.position = this.length;
+		return { position: from, type: TokenType.String, stringValue: result };
+	}
 
 	public nextToken(): Token {
 		if (!this.curChar)
@@ -65,6 +71,7 @@ export class Tokenizer {
 
 		if (this.inTemplate) {
 			if (this.curChar === "{") {
+				var startPos = this.position;
 				var op = this.curChar;
 				this.nextChar();
 				return {
