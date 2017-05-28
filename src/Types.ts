@@ -55,7 +55,6 @@ addType("string", "basic", "String", (type, addProperty) => {
 	addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
 });
 
-
 export interface ValidationRegexp {
 	regexp: string;
 	message: string;
@@ -193,7 +192,6 @@ export var propertiesType: ArrayType<object> = {
 		template: "{name} ({type._kind})"
 	}
 };
-
 
 
 function addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): Type {
@@ -385,6 +383,5 @@ addType("paragraph", "wiki", "Paragraph", (type, addProperty) => {
 	});
 	(type as ObjectType).properties = paragraphProperties;
 });
-
 
 variantType.kinds = variantKinds;
