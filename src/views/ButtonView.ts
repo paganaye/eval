@@ -1,6 +1,7 @@
+import { Action, ShowMessageAction } from '../Action';
 import { View, AnyView } from "../View";
 import { Output } from "../Output";
-import { Type, ButtonType, Action, ShowMessageAction } from "../Types";
+import { Type, ButtonType } from "../Types";
 import { PrintArgs, ButtonPrintArgs } from "../Theme";
 import { Parser } from "../Parser";
 import { ObjectView } from "../views/ObjectView";

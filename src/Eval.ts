@@ -1,9 +1,25 @@
+import { stepsType } from './Action';
 import { Command } from './Command';
 import { Database } from './Database';
 import { EvalFunction } from './EvalFunction';
 import { Expression } from './Expression';
 import { PrintArgs, Theme } from './Theme';
-import { ArrayType, ObjectType, Property, SelectEntry, SelectType, Type, TypeOrString, VariantKind, VariantType } from './Types';
+import {
+   arrayOfEnum,
+   arrayOfValidationRegexp,
+   ArrayType,
+   ObjectType,
+   propertiesType,
+   Property,
+   SelectEntry,
+   SelectType,
+   Type,
+   types,
+   VariantKind,
+   variantKinds,
+   VariantType,
+   variantType
+} from './Types';
 import { AnyView, View, ViewFactory, ViewParent } from './View';
 import { JSONView } from './views/JSONView';
 
@@ -14,359 +30,22 @@ export class Eval {
 	userId: string = null;
 	defaultViewFactory: ViewFactory = new ViewFactory("default", () => new JSONView());
 
-	private types: { [key: string]: Type } = {};
 
-	variantKinds: VariantKind[];
 
 
 	database: Database;
 	theme: Theme;
 	private idCounter: { [key: string]: number } = {};
 
-	arrayOfEnum: ArrayType<any> = {
-		_kind: "array", entryType: {
-			_kind: "object",
-			properties: [
-				{ name: "group", type: { _kind: "string" } },
-				{ name: "key", type: { _kind: "string" } },
-				{ name: "label", type: { _kind: "string" } },
-			]
-		}
-	};
-
-	arrayOfValidationRegexp: ArrayType<any> = {
-		_kind: "array", entryType: {
-			_kind: "object",
-			properties: [
-				{ name: "regexp", type: { _kind: "string" } },
-				{ name: "message", type: { _kind: "string" } }
-			]
-		}
-	};
-
-	variantType: VariantType = {
-		_kind: "variant",
-		kinds: [], // will come later
-	};
-
-	propertiesType: ArrayType<object> = {
-		_kind: "array",
-		entryType: {
-			_kind: "object",
-			properties: [
-				{ name: "name", type: { _kind: "string" } },
-				{ name: "type", type: this.variantType, tab: "type" },
-				{
-					name: "visibility", type: {
-						_kind: "select", description: "Property visibility.",
-						entries: [
-							{ key: "visible", label: "Visible" },
-							{ key: "hiddenLabel", label: "Hidden label" },
-							{ key: "hidden", label: "Hidden" }
-						]
-					}, tab: "display"
-				},
-				{ name: "tab", type: { _kind: "string" }, tab: "display" }
-			],
-			template: "{name} ({type._kind})"
-		}
-	};
-
-	stepType: VariantType = {
-		_kind: "variant",
-		kinds: null /*soon processActionKinds*/
-	};
-
-	stepsType: ArrayType<any> = {
-		_kind: "array",
-		entryType: this.stepType
-	};
-
-	stepKinds: VariantKind[] = [
-		{
-			group: "display",
-			key: "showMessage",
-			type: {
-				_kind: "object",
-				properties: [
-					{ name: "text", type: { _kind: "string" } }]
-			}
-		},
-		{
-			group: "data",
-			key: "addRecord",
-			type: {
-				_kind: "object",
-				properties: [
-					{ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } }]
-			}
-		},
-		{
-			group: "display",
-			key: "showForm",
-			type: {
-				_kind: "object",
-				properties: [
-					{ name: "text", type: { _kind: "string" } },
-					{ name: "properties", type: this.propertiesType }]
-			}
-		},
-		{
-			group: "entry",
-			key: "input",
-			type: {
-				_kind: "object",
-				properties: [
-					{ name: "text", type: { _kind: "string" } },
-					{ name: "variableName", type: { _kind: "string" } },]
-			}
-		},
-		{
-			group: "control flow",
-			key: "if",
-			type: {
-				_kind: "object", properties: [
-					{ name: "condition", type: { _kind: "string" } },
-					{ name: "then", type: this.stepsType },
-					{ name: "else", type: this.stepsType }
-				]
-			}
-		},
-		{
-			group: "control flow",
-			key: "while",
-			type: {
-				_kind: "object", properties: [
-					{ name: "condition", type: { _kind: "string" } },
-					{ name: "steps", type: this.stepsType }
-				]
-			}
-		},
-		{
-			group: "control flow",
-			key: "repeat",
-			type: {
-				_kind: "object", properties: [
-					{ name: "steps", type: this.stepsType },
-					{ name: "until", type: { _kind: "string" } }
-				]
-			}
-		},
-		{
-			group: "control flow",
-			key: "run",
-			label: "Run process",
-			type: {
-				_kind: "object",
-				properties: [
-					{ name: "process", type: { _kind: "string", editView: "link", pageName: "process" } }
-				]
-			}
-		}];
-
 
 	constructor() {
 
-		this.variantKinds = [];
 
-		//this.addType("object", null, null, (type) => (type as ObjectType).properties = []);
-		//this.addType("array", null);
-		this.addType("string", "basic", "String", (type, addProperty) => {
-			addProperty({ name: "defaultValue", type: { _kind: "string" }, tab: "value" });
-			addProperty({ name: "validation", type: this.arrayOfValidationRegexp });
-			addProperty({ name: "cols", type: { _kind: "number" }, tab: "display" });
-			addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
-		});
-		this.addType("number", "basic", "Number", (type, addProperty) => {
-			addProperty({ name: "defaultValue", type: { _kind: "number" }, tab: "value" });
-			addProperty({ name: "minimum", type: { _kind: "number" }, tab: "validation" });
-			addProperty({ name: "maximum", type: { _kind: "number" }, tab: "validation" });
-			addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
-		});
-
-		this.addType("boolean", "basic", "Boolean", (type, addProperty) => {
-			addProperty({ name: "defaultValue", type: { _kind: "boolean" }, tab: "value" });
-		});
-
-		this.addType("textarea", "html", "Multi-line string");
-		this.addType("pre", "html", "Preformated text");
-		this.addType("color", "html", "Color");
-		this.addType("date", "html", "Date");
-		this.addType("datetime", "html", "Date and time");
-		this.addType("month", "html", "Month and Year");
-		this.addType("password", "html", "Password");
-		this.addType("range", "html", "Range");
-		this.addType("tel", "html", "Telephone number");
-		this.addType("time", "html", "Time");
-		this.addType("url", "html", "URL");
-		this.addType("week", "html", "Week");
-
-		this.addType("select", "advanced", "Select", (type, addProperty) => {
-			(type as SelectType).entries = [];
-			addProperty({ name: "entries", type: this.arrayOfEnum });
-		});
-
-		this.addType("array", "advanced", "Array", (type, addProperty) => {
-			type.editView = "array";
-			var arrayType = (type as ArrayType<object>);
-			var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
-			entryType._kind = "object";
-
-			var entryTypeDefinition: VariantType = {
-				_kind: "variant",
-				kinds: this.variantKinds
-			};
-
-			addProperty({
-				name: "entryType", type: entryTypeDefinition
-			});
-			addProperty({ name: "minimumCount", type: { _kind: "number" }, tab: "validation" });
-			addProperty({ name: "maximumCount", type: { _kind: "number" }, tab: "validation" });
-			addProperty({ name: "canAddOrDelete", type: { _kind: "boolean" }, tab: "validation" });
-			addProperty({ name: "canReorder", type: { _kind: "boolean" }, tab: "validation" });
-		});
-
-
-		this.addType("object", "advanced", "Object", (type, addProperty) => {
-			type.editView = "object";
-			var objectType = (type as ObjectType);
-			objectType.properties = [];
-
-			addProperty({ name: "properties", type: this.propertiesType });
-			addProperty({ name: "template", type: { _kind: "string" }, tab: "display" });
-		});
-
-		this.addType("variant", "advanced", "Variant", (type, addProperty) => {
-			type.editView = "variant";
-			var variantType = (type as VariantType);
-			variantType.kinds = [];
-			var variantKindsType: ArrayType<any> = {
-				_kind: "array",
-				entryType: {
-					_kind: "object",
-					properties: [
-						{ name: "key", type: { _kind: "string" } },
-						{ name: "group", type: { _kind: "string" } },
-						{ name: "label", type: { _kind: "string" } },
-						{ name: "type", type: this.variantType }
-					],
-					template: "{key} ({type._kind})"
-				}
-			};
-
-			addProperty({ name: "kinds", type: variantKindsType });
-
-		});
-
-		this.addType("category", "wiki", "Category", (type, addProperty) => {
-			addProperty({ name: "categoryName", type: { _kind: "string", editView: "link", pageName: "category" } });
-		});
-		this.addType("link", "wiki", "Link", (type, addProperty) => {
-			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
-		});
-		this.addType("button", "wiki", "Button", (type, addProperty) => {
-			addProperty({ name: "text", type: { _kind: "string" } });
-			addProperty({ name: "onclick", type: this.stepsType });
-		});
-		this.addType("type", "wiki", "Type", (type, addProperty) => {
-			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "type" } });
-		});
-		this.addType("frame", "wiki", "Frame", (type, addProperty) => {
-			addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
-		});
-
-		var illustrationType: Type = this.addType("illustration", "wiki", "Illustration", (type, addProperty) => {
-			type.editView = 'object';
-			var illustrationProperties: Property[] = [{
-				name: "url",
-				type: { _kind: "string" }
-			},
-			{
-				name: "legend",
-				type: { _kind: "string" }
-			}];
-			(type as ObjectType).properties = illustrationProperties;
-		});
-
-		var quoteType: Type = this.addType("quote", "wiki", "Quote", (type, addProperty) => {
-			type.editView = 'object';
-			var illustrationProperties: Property[] = [{
-				name: "text",
-				type: { _kind: "string" }
-			},
-			{
-				name: "author",
-				type: { _kind: "string" }
-			},
-			{
-				name: "details",
-				type: { _kind: "string" }
-			}];
-			(type as ObjectType).properties = illustrationProperties;
-		});
-
-		this.addType("paragraph", "wiki", "Paragraph", (type, addProperty) => {
-			type.editView = 'object';
-			var paragraphProperties: Property[] = [{
-				name: "title",
-				type: { _kind: "string" }
-			},
-			{
-				name: "text",
-				type: { _kind: "string" }
-			}];
-
-			paragraphProperties.push({
-				name: "children",
-				type: {
-					_kind: "array", entryType: {
-						_kind: "variant",
-						kinds: [
-							{ key: "paragraph", type: type },
-							{ key: "illustration", type: illustrationType },
-							{ key: "quote", type: quoteType }
-						] // will come later
-					}
-				}
-			});
-			(type as ObjectType).properties = paragraphProperties;
-		});
-
-
-		this.variantType.kinds = this.variantKinds;
-
-		this.stepType.kinds = this.stepKinds;
 
 		this.database = new Database(this);
 
 		this.setTheme(new Theme(this));
 
-	}
-
-	addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): Type {
-		var type = { _kind: key, editView: key, printView: key } as Type;
-		if (this.types[key]) {
-			console.warn("type " + key + " is already declared.");
-		}
-
-		this.types[key] = type;
-		var properties: Property[] = [];
-		if (label != null) {
-			// Labelled type will apear in the type list.
-			var variantKind: VariantKind = {
-				key: key,
-				label: label,
-				group: group,
-				type: { _kind: "object", properties: properties }
-			}
-			this.variantKinds.push(variantKind);
-		}
-
-		if (typeCallback) typeCallback(type, (property) => {
-			properties.push(property)
-		});
-
-		return type;
 	}
 
 	nextId(prefix: string) {
@@ -403,12 +82,12 @@ export class Eval {
 		return JSON.stringify(expr);
 	}
 
-	getTypeDef(data: any, type: TypeOrString): Type {
-		if (typeof type == "string") type = this.types[type];
-		if (!type) type = this.types[typeof data] || this.types['object'];
+	getTypeDef(data: any, type: Type | string): Type {
+		if (typeof type == "string") type = types[type];
+		if (!type) type = types[typeof data] || types['object'];
 		if (!type.printView) {
 			// inherits from base type
-			var baseType = this.types[type._kind];
+			var baseType = types[type._kind];
 			if (baseType != type) {
 				for (var prop in baseType) {
 					if (!type.hasOwnProperty(prop)) type[prop] = baseType[prop];
@@ -417,7 +96,6 @@ export class Eval {
 		}
 		return type;
 	}
-
 
 	instantiate(parent: ViewParent, name: string, expr: any, exprType: Type, editMode: boolean, printArgs?: PrintArgs): AnyView {
 		var typeDef = this.getTypeDef(expr, exprType)
@@ -448,7 +126,7 @@ export class Eval {
 					_kind: "object",
 					properties: [
 						{ name: "description", type: { _kind: "string" } },
-						{ name: "entries", type: this.arrayOfEnum }
+						{ name: "entries", type: arrayOfEnum }
 					]
 				};
 				break;
@@ -471,7 +149,7 @@ export class Eval {
 						visibility: "hiddenLabel",
 						type: {
 							_kind: "variant",
-							kinds: this.variantKinds,
+							kinds: variantKinds,
 						}
 					}]
 				};
@@ -485,11 +163,11 @@ export class Eval {
 						{ name: "description", type: { _kind: "string" }, tab: "display" },
 						{ name: "template", type: { _kind: "string" }, tab: "display" },
 						{ name: "nameHelp", type: { _kind: "string" }, tab: "name" },
-						{ name: "nameValidation", type: this.arrayOfValidationRegexp, tab: "name" },
+						{ name: "nameValidation", type: arrayOfValidationRegexp, tab: "name" },
 						{ name: "pluralName", type: { _kind: "string" }, tab: "index" },
 						{ name: "indexHelp", type: { _kind: "string" }, tab: "index" },
 						{ name: "indexDescription", type: { _kind: "string" }, tab: "index" },
-						{ name: "properties", type: this.propertiesType, tab: "properties" }
+						{ name: "properties", type: propertiesType, tab: "properties" }
 
 					]
 				};
@@ -502,7 +180,7 @@ export class Eval {
 					description: "this is the graphcet page",
 					properties: [
 						{ name: "description", type: { _kind: "string" } },
-						{ name: "onclick", type: this.stepsType }
+						{ name: "onclick", type: stepsType }
 					]
 				};
 				tableType = processDefinition;

@@ -1,5 +1,9 @@
+import { Action, stepsType } from './Action';
 import { View } from "./View";
 
+
+export var types: { [key: string]: Type } = {};
+export var variantKinds: VariantKind[] = [];
 
 export interface TypeDefinition<T> {
 	validate?: (value: T) => ValidationResult;
@@ -43,6 +47,14 @@ export interface StringType extends TypeDefinition<string> {
 	rows?: number;
 	translate?: boolean;
 }
+
+addType("string", "basic", "String", (type, addProperty) => {
+	addProperty({ name: "defaultValue", type: { _kind: "string" }, tab: "value" });
+	addProperty({ name: "validation", type: arrayOfValidationRegexp });
+	addProperty({ name: "cols", type: { _kind: "number" }, tab: "display" });
+	addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
+});
+
 
 export interface ValidationRegexp {
 	regexp: string;
@@ -132,32 +144,247 @@ export interface VariantObject {
 	//[otherFields: string]: any;
 }
 
-export interface AlertAction {
-	_kind: "alert"
-	text: string;
+
+export var arrayOfEnum: ArrayType<any> = {
+	_kind: "array", entryType: {
+		_kind: "object",
+		properties: [
+			{ name: "group", type: { _kind: "string" } },
+			{ name: "key", type: { _kind: "string" } },
+			{ name: "label", type: { _kind: "string" } },
+		]
+	}
+};
+
+export var arrayOfValidationRegexp: ArrayType<any> = {
+	_kind: "array", entryType: {
+		_kind: "object",
+		properties: [
+			{ name: "regexp", type: { _kind: "string" } },
+			{ name: "message", type: { _kind: "string" } }
+		]
+	}
+};
+
+export var variantType: VariantType = {
+	_kind: "variant",
+	kinds: [], // will come later
+};
+
+export var propertiesType: ArrayType<object> = {
+	_kind: "array",
+	entryType: {
+		_kind: "object",
+		properties: [
+			{ name: "name", type: { _kind: "string" } },
+			{ name: "type", type: variantType, tab: "type" },
+			{
+				name: "visibility", type: {
+					_kind: "select", description: "Property visibility.",
+					entries: [
+						{ key: "visible", label: "Visible" },
+						{ key: "hiddenLabel", label: "Hidden label" },
+						{ key: "hidden", label: "Hidden" }
+					]
+				}, tab: "display"
+			},
+			{ name: "tab", type: { _kind: "string" }, tab: "display" }
+		],
+		template: "{name} ({type._kind})"
+	}
+};
+
+
+
+function addType(key: string, group: string, label: string, typeCallback?: (newType: Type, addProperty: (property: Property) => void) => void): Type {
+	var type = { _kind: key, editView: key, printView: key } as Type;
+	if (types[key]) {
+		console.warn("type " + key + " is already declared.");
+	}
+
+	types[key] = type;
+	var properties: Property[] = [];
+	if (label != null) {
+		// Labelled type will apear in the type list.
+		var variantKind: VariantKind = {
+			key: key,
+			label: label,
+			group: group,
+			type: { _kind: "object", properties: properties }
+		}
+		variantKinds.push(variantKind);
+	}
+
+	if (typeCallback) typeCallback(type, (property) => {
+		properties.push(property)
+	});
+
+	return type;
 }
 
-export interface ShowMessageAction {
-	_kind: "showMessage"
-	text: string;
-}
+addType("string", "basic", "String", (type, addProperty) => {
+	addProperty({ name: "defaultValue", type: { _kind: "string" }, tab: "value" });
+	addProperty({ name: "validation", type: arrayOfValidationRegexp });
+	addProperty({ name: "cols", type: { _kind: "number" }, tab: "display" });
+	addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
+});
 
-export interface AddRecordAction {
-	_kind: "addRecord"
-	pageName: string;
-}
+addType("number", "basic", "Number", (type, addProperty) => {
+	addProperty({ name: "defaultValue", type: { _kind: "number" }, tab: "value" });
+	addProperty({ name: "minimum", type: { _kind: "number" }, tab: "validation" });
+	addProperty({ name: "maximum", type: { _kind: "number" }, tab: "validation" });
+	addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
+});
 
-export type Action = ShowMessageAction | AddRecordAction | AlertAction;
+addType("boolean", "basic", "Boolean", (type, addProperty) => {
+	addProperty({ name: "defaultValue", type: { _kind: "boolean" }, tab: "value" });
+});
 
-export type TypeOrString = Type | string;
+addType("textarea", "html", "Multi-line string");
+addType("pre", "html", "Preformated text");
+addType("color", "html", "Color");
+addType("date", "html", "Date");
+addType("datetime", "html", "Date and time");
+addType("month", "html", "Month and Year");
+addType("password", "html", "Password");
+addType("range", "html", "Range");
+addType("tel", "html", "Telephone number");
+addType("time", "html", "Time");
+addType("url", "html", "URL");
+addType("week", "html", "Week");
 
-// Removed those. They are now in string definitions
-//  | ColorDefinition | DateDefinition | DatetimeLocalDefinition
-//  | EmaiDefinition | MonthDefinition | RangeDefinition | TelDefinition
-//  | TextDefinition | TimeDefinition 
-//  | UrlDefinition | WeekDefinition | ExternalDefinition | MapType
+addType("select", "advanced", "Select", (type, addProperty) => {
+	(type as SelectType).entries = [];
+	addProperty({ name: "entries", type: arrayOfEnum });
+});
+
+addType("array", "advanced", "Array", (type, addProperty) => {
+	type.editView = "array";
+	var arrayType = (type as ArrayType<object>);
+	var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
+	entryType._kind = "object";
+
+	var entryTypeDefinition: VariantType = {
+		_kind: "variant",
+		kinds: variantKinds
+	};
+
+	addProperty({
+		name: "entryType", type: entryTypeDefinition
+	});
+	addProperty({ name: "minimumCount", type: { _kind: "number" }, tab: "validation" });
+	addProperty({ name: "maximumCount", type: { _kind: "number" }, tab: "validation" });
+	addProperty({ name: "canAddOrDelete", type: { _kind: "boolean" }, tab: "validation" });
+	addProperty({ name: "canReorder", type: { _kind: "boolean" }, tab: "validation" });
+});
 
 
+addType("object", "advanced", "Object", (type, addProperty) => {
+	type.editView = "object";
+	var objectType = (type as ObjectType);
+	objectType.properties = [];
+
+	addProperty({ name: "properties", type: propertiesType });
+	addProperty({ name: "template", type: { _kind: "string" }, tab: "display" });
+});
+
+addType("variant", "advanced", "Variant", (type, addProperty) => {
+	type.editView = "variant";
+	var variantKindsType: ArrayType<any> = {
+		_kind: "array",
+		entryType: {
+			_kind: "object",
+			properties: [
+				{ name: "key", type: { _kind: "string" } },
+				{ name: "group", type: { _kind: "string" } },
+				{ name: "label", type: { _kind: "string" } },
+				{ name: "type", type: variantType }
+			],
+			template: "{key} ({type._kind})"
+		}
+	};
+
+	addProperty({ name: "kinds", type: variantKindsType });
+
+});
+
+addType("category", "wiki", "Category", (type, addProperty) => {
+	addProperty({ name: "categoryName", type: { _kind: "string", editView: "link", pageName: "category" } });
+});
+
+addType("link", "wiki", "Link", (type, addProperty) => {
+	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
+});
+
+addType("button", "wiki", "Button", (type, addProperty) => {
+	addProperty({ name: "text", type: { _kind: "string" } });
+	addProperty({ name: "onclick", type: stepsType });
+});
+
+addType("type", "wiki", "Type", (type, addProperty) => {
+	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "type" } });
+});
+
+addType("frame", "wiki", "Frame", (type, addProperty) => {
+	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
+});
+
+var illustrationType: Type = addType("illustration", "wiki", "Illustration", (type, addProperty) => {
+	type.editView = 'object';
+	var illustrationProperties: Property[] = [{
+		name: "url",
+		type: { _kind: "string" }
+	},
+	{
+		name: "legend",
+		type: { _kind: "string" }
+	}];
+	(type as ObjectType).properties = illustrationProperties;
+});
+
+var quoteType: Type = addType("quote", "wiki", "Quote", (type, addProperty) => {
+	type.editView = 'object';
+	var illustrationProperties: Property[] = [{
+		name: "text",
+		type: { _kind: "string" }
+	},
+	{
+		name: "author",
+		type: { _kind: "string" }
+	},
+	{
+		name: "details",
+		type: { _kind: "string" }
+	}];
+	(type as ObjectType).properties = illustrationProperties;
+});
+
+addType("paragraph", "wiki", "Paragraph", (type, addProperty) => {
+	type.editView = 'object';
+	var paragraphProperties: Property[] = [{
+		name: "title",
+		type: { _kind: "string" }
+	},
+	{
+		name: "text",
+		type: { _kind: "string" }
+	}];
+
+	paragraphProperties.push({
+		name: "children",
+		type: {
+			_kind: "array", entryType: {
+				_kind: "variant",
+				kinds: [
+					{ key: "paragraph", type: type },
+					{ key: "illustration", type: illustrationType },
+					{ key: "quote", type: quoteType }
+				] // will come later
+			}
+		}
+	});
+	(type as ObjectType).properties = paragraphProperties;
+});
 
 
-
+variantType.kinds = variantKinds;
