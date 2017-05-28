@@ -187,7 +187,7 @@ export class Parser {
 			this.unexpectedToken("Expected parenthesis in function call.");
 		}
 		this.nextToken();
-		var parameters = {};
+		var parameters: { [key: string]: Expression<any> } = {};
 		var useNamedParameters = false;
 		var functionFactory = EvalFunction.getFunctionFactory(functionName);
 
@@ -227,10 +227,14 @@ export class Parser {
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}
 
-	parseParameters(parameters: any, requireClosingParenthesis: boolean, commandDescription: CommandDescription) {
+	parseParameters(parameters: { [key: string]: Expression<any> }, requireClosingParenthesis: boolean, commandDescription: CommandDescription) {
 		var useNamedParameters = false;
-		var parameterStart = 0;		
+		var parameterNumber = Object.keys(parameters).length;
+		var unnamedParametersCount = parameterNumber;
+		var lastUnnamedParameter = commandDescription.unnamedParametersCount - 1;
+
 		while (this.token.type != TokenType.EOF) {
+			parameterNumber++;
 
 			if (requireClosingParenthesis
 				&& this.token.type == TokenType.Operator
@@ -239,17 +243,16 @@ export class Parser {
 				return;
 			}
 
-			var parameterNumber = Object.keys(parameters).length;
-			var lastParameter = (!useNamedParameters && parameterNumber == commandDescription.unnamedParametersCount - 1);
+			var isLastParameter = (!useNamedParameters && unnamedParametersCount >= lastUnnamedParameter);
 
-			if (lastParameter) {
+			if (isLastParameter) {
 				try {
 					var startPos = this.token.position;
 					var value = this.parseExpression(Priority.None);
 				} catch (error) {
 					var hadError = true;
 				}
-				if (hadError) {
+				if (hadError) {
 					this.token = this.tokenizer.getRemaining(startPos);
 					value = new Const<string>(this.token.stringValue);
 					this.nextToken();
@@ -268,9 +271,15 @@ export class Parser {
 				parameters[parameterName] = this.parseExpression(Priority.None);
 			} else {
 				if (useNamedParameters) {
-					throw "Parameter " + (parameterNumber + 1) + " must be named.";
+					throw "Parameter " + (parameterNumber) + " must be named.";
 				}
-				parameters[parameterNumber++] = value;
+				if (isLastParameter) {
+					var previousValue = parameters[lastUnnamedParameter];
+
+					parameters[lastUnnamedParameter] = previousValue ? new Concat(this.evalContext, [previousValue, new Const<string>(" "), value])
+						: value;
+				}
+				else parameters[unnamedParametersCount++] = value;
 			}
 			if (this.token.type == TokenType.Operator
 				&& this.token.stringValue == ",") {
