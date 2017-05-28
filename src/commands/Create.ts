@@ -69,8 +69,7 @@ export class Create extends Command {
 	run(output: Output) {
 		this.pageName = (this.pageName || "").toLowerCase();
 
-		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (elt) => {
-			var output = output.getOutput();
+		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (output) => {
 			output.setEditMode(true);
 			this.recordIdView = <StringInputView>output.printProperty(this, { visibility: "visible", label: "pageName" }, "", { _kind: "string" });
 			// output2.printInput({ id: "recordId" }, "", , (elt) => { });
@@ -104,7 +103,8 @@ export class Create extends Command {
 }
 Command.registerCommand("create", {
 	getNew: () => new Create(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
 		.addParameter("pageName", "stringOrVariableName")
+		.addParameter("for", "string", { mustBeNamed: true })
 });
 

@@ -18,6 +18,6 @@ export class Alert extends Command {
 }
 Command.registerCommand("alert", {
 	getNew: () => new Alert(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
 		.addParameter("data", "string")
 });

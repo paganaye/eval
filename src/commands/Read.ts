@@ -40,7 +40,7 @@ export class Read extends Command {
 }
 Command.registerCommand("read",{
 	getNew: () => new Read(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
 			.addParameter("pageName", "stringOrVariableName")
 			.addParameter("recordId", "stringOrVariableName")
 });

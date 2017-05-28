@@ -159,11 +159,15 @@ export class GetMember extends Expression<any> {
 
 export class FunctionCall extends Expression<any> {
 	private functionInstance: EvalFunction<any>;
+	private functionDescription: CommandDescription;
 
 	constructor(evalContext: Eval, private functionName, private expressions: { [key: string]: Expression<any> }) {
 		super();
 		var functionFactory = EvalFunction.getFunctionFactory(functionName);
-		if (functionFactory) this.functionInstance = functionFactory.getNew();
+		if (functionFactory) {
+			this.functionInstance = functionFactory.getNew();
+			this.functionDescription = functionFactory.description;
+		}
 		if (this.functionInstance) {
 			this.functionInstance.initialize(evalContext, this);
 		}
@@ -220,7 +224,7 @@ export class FunctionCall extends Expression<any> {
 
 	calcValue(evalContext: Eval): any {
 
-		FunctionCall.applyParameters(evalContext, this.functionInstance.getDescription(), this.expressions, this.functionInstance, "function " + this.functionName);
+		FunctionCall.applyParameters(evalContext, this.functionDescription, this.expressions, this.functionInstance, "function " + this.functionName);
 		var result = this.functionInstance.calcValue(evalContext);
 		return result;
 	}

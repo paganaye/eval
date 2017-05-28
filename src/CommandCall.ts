@@ -12,7 +12,7 @@ export class CommandCall {
 	constructor(private evalContext: Eval, private source: string, private commandName, private expressions: { [key: string]: Expression<any> }) {
 		this.commandFactory = Command.getCommandFactory(commandName.toLowerCase());
 		if (this.commandFactory) {
-			this.commandDescription = this.commandFactory.getDescription();
+			this.commandDescription = this.commandFactory.description;
 			this.command = this.commandFactory.getNew();
 			this.command.initialize(evalContext);
 		}

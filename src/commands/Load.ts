@@ -25,7 +25,7 @@ export class Load extends Command {
 }
 Command.registerCommand("load",{
 	getNew: () => new Load(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
 			.addParameter("path", "string")
 			.addParameter("type", "string")
 });

@@ -5,11 +5,6 @@ import { Eval } from "../Eval";
 export class AbsFunction extends EvalFunction<Number> {
 	private arg1: number;
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("arg1", "number", "");
-	}
-
 	calcValue(evalContext: Eval): number {
 		return Math.abs(this.arg1)
 	}
@@ -17,11 +12,6 @@ export class AbsFunction extends EvalFunction<Number> {
 
 export class RoundFunction extends EvalFunction<Number> {
 	private arg1: number;
-
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("arg1", "number", "");
-	}
 
 	calcValue(evalContext: Eval): number {
 		return Math.round(this.arg1)
@@ -31,15 +21,22 @@ export class RoundFunction extends EvalFunction<Number> {
 export class RandomFunction extends EvalFunction<Number> {
 	value: Number = Math.random();
 
-	getDescription(): CommandDescription {
-		return new CommandDescription();
-	}
-
 	calcValue(evalContext: Eval) {
 		return this.value;
 	}
 }
 
-EvalFunction.registerFunction("abs", () => new AbsFunction());
-EvalFunction.registerFunction("round", () => new RoundFunction());
-EvalFunction.registerFunction("random", () => new RandomFunction());
+EvalFunction.registerFunction("abs", {
+	getNew: () => new AbsFunction(),
+	description: new CommandDescription()
+		.addParameter("arg1", "number", "")
+});
+EvalFunction.registerFunction("round", {
+	getNew: () => new RoundFunction(),
+	description: new CommandDescription()
+			.addParameter("arg1", "number")
+});
+EvalFunction.registerFunction("random", {
+	getNew: () => new RandomFunction(),
+	description: new CommandDescription()
+});

@@ -1,8 +1,8 @@
-import { Command } from './Command';
+import { Command, CommandFactory } from './Command';
 import { Tokenizer, Token, TokenType } from './Tokenizer';
 import { CommandCall } from "./CommandCall";
 import { Eval } from "./Eval";
-import { EvalFunction, ParameterDefinition } from "./EvalFunction";
+import { CommandDescription, EvalFunction, ParameterDefinition } from './EvalFunction';
 import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject, GetMember, Concat } from './Expression';
 
 // we keep the same priorities than javascript but with less operators.
@@ -191,7 +191,7 @@ export class Parser {
 		var useNamedParameters = false;
 		var functionFactory = EvalFunction.getFunctionFactory(functionName);
 
-		this.parseParameters(parameters, true, functionFactory);
+		this.parseParameters(parameters, true, functionFactory.description);
 		return new FunctionCall(this.evalContext, functionName, parameters);
 	}
 
@@ -223,27 +223,40 @@ export class Parser {
 				commandFactory = Command.getCommandFactory(commandName);
 			}
 		}
-		this.parseParameters(parameters, false, commandFactory);
+		this.parseParameters(parameters, false, commandFactory.description);
 		return new CommandCall(this.evalContext, expression, commandName, parameters);
 	}
 
-	parseParameters(parameters: any, requireClosingParenthesis: boolean, commandFactory: any) {
+	parseParameters(parameters: any, requireClosingParenthesis: boolean, commandDescription: CommandDescription) {
 		var useNamedParameters = false;
-		var parameterStart = 0;
+		var parameterStart = 0;		
 		while (this.token.type != TokenType.EOF) {
+
 			if (requireClosingParenthesis
 				&& this.token.type == TokenType.Operator
 				&& this.token.stringValue == ")") {
 				this.nextToken();
 				return;
 			}
-			try {
-				var startPos = this.token.position;
+
+			var parameterNumber = Object.keys(parameters).length;
+			var lastParameter = (!useNamedParameters && parameterNumber == commandDescription.unnamedParametersCount - 1);
+
+			if (lastParameter) {
+				try {
+					var startPos = this.token.position;
+					var value = this.parseExpression(Priority.None);
+				} catch (error) {
+					var hadError = true;
+				}
+				if (hadError) {
+					this.token = this.tokenizer.getRemaining(startPos);
+					value = new Const<string>(this.token.stringValue);
+					this.nextToken();
+				}
+
+			} else {
 				var value = this.parseExpression(Priority.None);
-			} catch (error) {
-				this.token = this.tokenizer.getRemaining(startPos);
-				value = new Const<string>(this.token.stringValue);
-				this.nextToken();
 			}
 
 			if ((this.token.type == TokenType.Operator
@@ -254,7 +267,6 @@ export class Parser {
 				this.nextToken();
 				parameters[parameterName] = this.parseExpression(Priority.None);
 			} else {
-				var parameterNumber = Object.keys(parameters).length;
 				if (useNamedParameters) {
 					throw "Parameter " + (parameterNumber + 1) + " must be named.";
 				}

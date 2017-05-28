@@ -28,5 +28,5 @@ export abstract class Command implements ViewParent {
 
 export interface CommandFactory {
 	getNew(): any;
-	getDescription(): CommandDescription;
+	description: CommandDescription;
 }

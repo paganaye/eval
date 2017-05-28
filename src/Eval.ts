@@ -195,7 +195,7 @@ export class Eval {
 		this.addType("time", "html", "Time");
 		this.addType("url", "html", "URL");
 		this.addType("week", "html", "Week");
-		
+
 		this.addType("select", "advanced", "Select", (type, addProperty) => {
 			(type as SelectType).entries = [];
 			addProperty({ name: "entries", type: this.arrayOfEnum });
@@ -642,5 +642,24 @@ export class Eval {
 		}
 		return value;
 	}
-}
 
+	openWindow(command: string, parameters: object = {}) {
+		var url = '#' + command;
+		for (var paramName in parameters) {
+			var paramValue = Eval.enquoteIfRequired(parameters[paramName]);
+			url += " " + paramName + ":" + paramValue;
+		}
+		window.open(url, '_blank');
+	}
+
+
+	static enquoteIfRequired(s: string) {
+
+		const regex = /([ "'])/g;
+		if (s.match(regex)) {
+			return '"' + s.replace(/["]/g, '\\"') + '"';
+		}
+		return s;
+	}
+
+}

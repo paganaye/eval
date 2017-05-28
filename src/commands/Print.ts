@@ -21,6 +21,6 @@ export class Print extends Command {
 
 Command.registerCommand("print",{
 	getNew: () => new Print(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
 			.addParameter("data", "Expression", { multiple: true })
 });

@@ -10,11 +10,6 @@ import { PrintArgs } from "../Theme";
 export class Index extends Command {
 	pageName: string;
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("pageName", "stringOrVariableName")
-	}
-
 	run(output: Output) {
 		this.pageName = (this.pageName || ""); //.toLowerCase();
 
@@ -55,6 +50,7 @@ export class Index extends Command {
 }
 Command.registerCommand("index",{
 	getNew: () => new Index(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
+			.addParameter("pageName", "stringOrVariableName")
 });
 

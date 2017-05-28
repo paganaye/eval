@@ -28,11 +28,16 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 								entries.push({ key: key });
 							}
 							this.selectedOption = this.evalContext.findEntry(entries, this.data);
+							entries.push({ key: "__new__", label: "new " + pageName, group: "More..." });
 
 							output.printSelect(
 								{ entries: entries, id: this.getId() },
 								this.selectedOption, { _kind: "string" }, (a) => {
-									this.selectedOption = a;
+									if (a === "__new__") {
+										//window.open('#create tableName:' + pageName + " for:\"movie 1234\"", '_blank');
+										this.evalContext.openWindow("create", { pageName: pageName, for: location.hash });
+									}
+									else this.selectedOption = a;
 								});
 						}
 						output.domReplace();
@@ -40,7 +45,7 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 			} else {
 				output.printTag("p", {}, "Link pageName is not set.")
 				output.domReplace();
-			}			
+			}
 		});
 	}
 

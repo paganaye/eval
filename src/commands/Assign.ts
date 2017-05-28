@@ -19,7 +19,7 @@ export class Assign extends Command {
 
 Command.registerCommand("assign", {
 	getNew: () => new Assign(),
-	getDescription: () => new CommandDescription()
-			.addParameter("variableName", "string", "")
-			.addParameter("variableValue", "any", "")
+	description: new CommandDescription()
+			.addParameter("variableName", "string")
+			.addParameter("variableValue", "any")
 });

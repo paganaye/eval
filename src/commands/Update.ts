@@ -69,7 +69,7 @@ export class Update extends Command {
 }
 Command.registerCommand("update",{
 	getNew: () => new Update(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
 			.addParameter("pageName", "stringOrVariableName")
 			.addParameter("recordId", "stringOrVariableName")
 });

@@ -5,10 +5,6 @@ import { Eval } from "../Eval";
 
 export class NowFunction extends EvalFunction<number> {
 
-	getDescription(): CommandDescription {
-		return new CommandDescription();
-	}
-
 	calcValue(evalContext: Eval): number {
 		setTimeout(() => {
 			this.valueChanged();
@@ -17,4 +13,7 @@ export class NowFunction extends EvalFunction<number> {
 	}
 }
 
-EvalFunction.registerFunction("now", () => new NowFunction());
+EvalFunction.registerFunction("now", {
+	getNew: () => new NowFunction(),
+	description: new CommandDescription()
+});

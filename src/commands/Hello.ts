@@ -23,6 +23,6 @@ export class Hello extends Command {
 }
 Command.registerCommand("hello",{
 	getNew: () => new Hello(),
-	getDescription: () => new CommandDescription()
-         .addParameter("who", "Expression", "")
+	description: new CommandDescription()
+         .addParameter("who", "Expression")
 });

@@ -85,11 +85,6 @@ class TestReporter implements jasmine.CustomReporter {
 
 export class Tests extends Command {
 
-	getDescription(): CommandDescription {
-		return new CommandDescription()
-			.addParameter("data", "Expression");
-	}
-
 	extend(destination, source) {
 		for (var property in source) destination[property] = source[property];
 		return destination;
@@ -160,5 +155,6 @@ export class Tests extends Command {
 }
 Command.registerCommand("tests",{
 	getNew: () => new Tests(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
+			.addParameter("data", "Expression")
 });

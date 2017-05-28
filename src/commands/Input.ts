@@ -20,7 +20,7 @@ export class Input extends Command {
 }
 Command.registerCommand("input",{
 	getNew: () => new Input(),
-	getDescription: () => new CommandDescription()
+	description: new CommandDescription()
 			.addParameter("inputs", "Expression", { multiple: true })
 });
 
