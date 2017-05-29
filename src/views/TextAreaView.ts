@@ -9,6 +9,13 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 	id: string;
 	elt: HTMLTextAreaElement;
 
+	build() {
+		if (typeof this.data!== "string") {
+			if (this.data == undefined) this.data = "";
+			else this.data = JSON.stringify(this.data);
+		}
+	}
+
 	onRender(output: Output): void {
 		if (this.data == null) this.data = "" as any;
 		if (typeof this.data == "object") JSON.stringify(this.data);
