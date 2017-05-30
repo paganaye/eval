@@ -155,20 +155,22 @@ export class Eval {
 				};
 				tableType = objectDefinition;
 				break;
-			case "page":
+			case "pagetemplate":
 				var tableDefinition: ObjectType = {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "object" }, visibility: "hidden" },
 						{ name: "description", type: { _kind: "string" }, tab: "display" },
-						{ name: "template", type: { _kind: "string" }, tab: "display" },
-						{ name: "nameHelp", type: { _kind: "string" }, tab: "name" },
-						{ name: "nameValidation", type: arrayOfValidationRegexp, tab: "name" },
-						{ name: "pluralName", type: { _kind: "string" }, tab: "index" },
-						{ name: "indexHelp", type: { _kind: "string" }, tab: "index" },
-						{ name: "indexDescription", type: { _kind: "string" }, tab: "index" },
-						{ name: "properties", type: propertiesType, tab: "properties" }
+						{name: "template", type: { _kind: "string" }, tab: "display" },
 
+						{ name: "pageName", type: { _kind: "string" }, tab: "pages",  },
+						{ name: "nameValidation", type: arrayOfValidationRegexp, tab: "pages" },
+						{ name: "pluralName", type: { _kind: "string" }, tab: "pages" },
+
+						{ name: "properties", type: propertiesType, tab: "properties" },
+
+						{ name: "indexTitle", type: { _kind: "string" }, tab: "index" },
+						{ name: "indexDescription", type: { _kind: "string" }, tab: "index" }
 					]
 				};
 				tableType = tableDefinition;
@@ -177,7 +179,6 @@ export class Eval {
 
 				var processDefinition: ObjectType = {
 					_kind: "object",
-					description: "this is the graphcet page",
 					properties: [
 						{ name: "description", type: { _kind: "string" } },
 						{ name: "onclick", type: stepsType }
@@ -191,7 +192,7 @@ export class Eval {
 			callback(tableType);
 		}
 		else {
-			this.database.on("eval/page/" + typeName, (data, error) => {
+			this.database.on("eval/pagetemplate/" + typeName, (data, error) => {
 				var type = data as Type;
 				//var y: Table;
 

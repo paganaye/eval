@@ -131,7 +131,12 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		//var vtype = this.typeByName[key] || {} as Type;
 		if (property.visibility != "hidden") {
 			var value = this.data[property.name];
-			this.views[property.name] = output.printProperty(this, { label: property.label || property.name, visibility: property.visibility }, value, property.type);
+			this.views[property.name] = output.printProperty(this,
+				{
+					label: property.label || property.name,
+					visibility: property.visibility,
+					description: property.description
+				}, value, property.type);
 		}
 	}
 

@@ -23,7 +23,6 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 		if (output.isEditMode()) {
 			this.kind = (this.type && this.type._kind) || "string";
 			this.id = this.evalContext.nextId("textarea");
-			this.setDescription(this.type.description);
 			var dataType = this.type;
 			output.printAsync("textarea", { id: this.id, class: "form-control" }, this.data, (output) => {
 				this.elt = output.getOutputElt() as HTMLTextAreaElement;

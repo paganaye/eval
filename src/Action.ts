@@ -52,7 +52,7 @@ var stepKinds: VariantKind[] = [
 		type: {
 			_kind: "object",
 			properties: [
-				{ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } }]
+				{ name: "pageName", type: { _kind: "string", editView: "link", pageName: "pagetemplate" } }]
 		}
 	},
 	{

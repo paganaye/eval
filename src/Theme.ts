@@ -64,6 +64,7 @@ export class PropertyPrintArgs extends PrintArgs {
 	printLabel?: ((output: Output, printArgs: PrintArgs) => void);
 	label?: string;
 	visibility: Visibility;
+	description: string;
 }
 
 export class ArrayPrintArgs extends PrintArgs {

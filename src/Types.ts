@@ -11,7 +11,7 @@ export interface TypeDefinition<T> {
 	printView?: string;
 	pageName?: string;
 	mandatory?: boolean;
-	description?: string;
+//	description?: string;
 	template?: string;
 }
 
@@ -73,6 +73,7 @@ export interface Property {
 	type: Type;
 	tab?: string;
 	visibility?: Visibility;
+	description?: string;
 }
 
 export interface ObjectType extends TypeDefinition<object> {
@@ -179,7 +180,7 @@ export var propertiesType: ArrayType<object> = {
 			{ name: "type", type: variantType, tab: "type" },
 			{
 				name: "visibility", type: {
-					_kind: "select", description: "Property visibility.",
+					_kind: "select", 
 					entries: [
 						{ key: "visible", label: "Visible" },
 						{ key: "hiddenLabel", label: "Hidden label" },
@@ -311,7 +312,7 @@ addType("category", "wiki", "Category", (type, addProperty) => {
 });
 
 addType("link", "wiki", "Link", (type, addProperty) => {
-	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
+	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "pagetemplate" } });
 });
 
 addType("button", "wiki", "Button", (type, addProperty) => {
@@ -324,7 +325,7 @@ addType("type", "wiki", "Type", (type, addProperty) => {
 });
 
 addType("frame", "wiki", "Frame", (type, addProperty) => {
-	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "page" } });
+	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "pagetemplate" } });
 });
 
 var illustrationType: Type = addType("illustration", "wiki", "Illustration", (type, addProperty) => {

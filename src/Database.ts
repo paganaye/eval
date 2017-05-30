@@ -24,6 +24,7 @@ export class Database {
 
 
 	on(path: string, callback: (data: any, error: string) => void) {
+		console.log("loading " + path + "...");
 		var db = firebase.database().ref(path);
 		var func = (snap, err) => {
 			console.log("database content:", JSON.stringify(snap.val()));
