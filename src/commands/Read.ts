@@ -17,7 +17,7 @@ export class Read extends Command {
 		this.recordId = (this.recordId || "").toLowerCase();
 
 		output.printAsync("div", {}, "Reading " + this.pageName + " " + this.recordId + "...", (output) => {
-			
+
 			this.evalContext.getPageType(this.pageName, (type) => {
 				if (type && !type._kind) type._kind = "object";
 
@@ -27,6 +27,16 @@ export class Read extends Command {
 						this.innerView = this.evalContext.instantiate(this, "read::", data, type, false);
 						this.innerView.render(output);
 						output.printTag("a", { href: "#update " + this.pageName + " " + this.recordId }, "edit");
+						if (this.pageName === "pagetemplate") {
+							output.printHTML(" | ");
+							output.printTag("a", { href: "#" + this.recordId }, "list " + this.recordId);
+							output.printHTML(" | ");
+							output.printTag("a", { href: "#" + this.pageName }, "list " + this.pageName);
+						}
+						else {
+							output.printHTML(" | ");
+							output.printTag("a", { href: "#update pagetemplate " + this.pageName }, "edit " + this.pageName + " template");
+						}
 						output.domReplace();
 					})
 			});
@@ -38,9 +48,9 @@ export class Read extends Command {
 
 	}
 }
-Command.registerCommand("read",{
+Command.registerCommand("read", {
 	getNew: () => new Read(),
 	description: new CommandDescription()
-			.addParameter("pageName", "stringOrVariableName")
-			.addParameter("recordId", "stringOrVariableName")
+		.addParameter("pageName", "stringOrVariableName")
+		.addParameter("recordId", "stringOrVariableName")
 });

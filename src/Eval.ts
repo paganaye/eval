@@ -5,20 +5,20 @@ import { EvalFunction } from './EvalFunction';
 import { Expression } from './Expression';
 import { PrintArgs, Theme } from './Theme';
 import {
-   arrayOfEnum,
-   arrayOfValidationRegexp,
-   ArrayType,
-   ObjectType,
-   propertiesType,
-   Property,
-   SelectEntry,
-   SelectType,
-   Type,
-   types,
-   VariantKind,
-   variantKinds,
-   VariantType,
-   variantType
+	arrayOfEnum,
+	arrayOfValidationRegexp,
+	ArrayType,
+	ObjectType,
+	propertiesType,
+	Property,
+	SelectEntry,
+	SelectType,
+	Type,
+	types,
+	VariantKind,
+	variantKinds,
+	VariantType,
+	variantType
 } from './Types';
 import { AnyView, View, ViewFactory, ViewParent } from './View';
 import { JSONView } from './views/JSONView';
@@ -82,19 +82,19 @@ export class Eval {
 		return JSON.stringify(expr);
 	}
 
-	getTypeDef(data: any, type: Type | string): Type {
-		if (typeof type == "string") type = types[type];
-		if (!type) type = types[typeof data] || types['object'];
-		if (!type.printView) {
+	getTypeDef(data: any, _type: Type | string): Type {
+		if (typeof _type == "string") _type = types[_type];
+		if (!_type) _type = types[typeof data] || types['object'];
+		if (!_type.printView) {
 			// inherits from base type
-			var baseType = types[type._kind];
-			if (baseType != type) {
+			var baseType = types[_type._kind] || types["object"];
+			if (baseType != _type) {
 				for (var prop in baseType) {
-					if (!type.hasOwnProperty(prop)) type[prop] = baseType[prop];
+					if (!_type.hasOwnProperty(prop)) _type[prop] = baseType[prop];
 				}
 			}
 		}
-		return type;
+		return _type;
 	}
 
 	instantiate(parent: ViewParent, name: string, expr: any, exprType: Type, editMode: boolean, printArgs?: PrintArgs): AnyView {
@@ -118,28 +118,17 @@ export class Eval {
 
 	getPageType(typeName: string, callback: (loadedType: Type) => void): void {
 		typeName = (typeName || "object").toLowerCase();
-		var tableType: Type;
+		var pageType: Type;
 
 		switch (typeName) {
 			case "category":
-				tableType = {
+				pageType = {
 					_kind: "object",
 					properties: [
 						{ name: "description", type: { _kind: "string" } },
 						{ name: "entries", type: arrayOfEnum }
 					]
 				};
-				break;
-			case "lenient":
-				tableType = {
-					_kind: "variant",
-					kinds: [
-						{ key: "number", type: { _kind: "number" } },
-						{ key: "boolean", type: { _kind: "boolean" } },
-						{ key: "string", type: { _kind: "string" } },
-						{ key: "object", type: { _kind: "object", properties: [] } }
-					]
-				}
 				break;
 			case "type":
 				var objectDefinition: ObjectType = {
@@ -153,19 +142,30 @@ export class Eval {
 						}
 					}]
 				};
-				tableType = objectDefinition;
+				pageType = objectDefinition;
 				break;
 			case "pagetemplate":
-				var tableDefinition: ObjectType = {
+				var singlePage: ObjectType = {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "object" }, visibility: "hidden" },
 						{ name: "description", type: { _kind: "string" }, tab: "display" },
-						{name: "template", type: { _kind: "string" }, tab: "display" },
+						{ name: "template", type: { _kind: "string" }, tab: "display" },
 
-						{ name: "pageName", type: { _kind: "string" }, tab: "pages",  },
-						{ name: "nameValidation", type: arrayOfValidationRegexp, tab: "pages" },
-						{ name: "pluralName", type: { _kind: "string" }, tab: "pages" },
+						{ name: "properties", type: propertiesType, tab: "properties" },
+					]
+				};
+
+				var pageCollection: ObjectType = {
+					_kind: "object",
+					properties: [
+						{ name: "_kind", type: { _kind: "const", value: "object" }, visibility: "hidden" },
+						{ name: "description", type: { _kind: "string" }, tab: "display" },
+						{ name: "template", type: { _kind: "string" }, tab: "display" },
+
+						{ name: "pageName", type: { _kind: "string" }, tab: "collection", },
+						{ name: "nameValidation", type: arrayOfValidationRegexp, tab: "collection" },
+						{ name: "pluralName", type: { _kind: "string" }, tab: "collection" },
 
 						{ name: "properties", type: propertiesType, tab: "properties" },
 
@@ -173,7 +173,15 @@ export class Eval {
 						{ name: "indexDescription", type: { _kind: "string" }, tab: "index" }
 					]
 				};
-				tableType = tableDefinition;
+
+				var variantPageTemplate: VariantType = {
+					_kind: "variant",
+					kinds: [
+						{ key: "singleton", label: "Single page", type: singlePage },
+						{ key: "collection", label: "Page collection", type: pageCollection }
+					]
+				};
+				pageType = variantPageTemplate;
 				break;
 			case "process":
 
@@ -184,12 +192,12 @@ export class Eval {
 						{ name: "onclick", type: stepsType }
 					]
 				};
-				tableType = processDefinition;
+				pageType = processDefinition;
 				break;
 		}
 
-		if (tableType) {
-			callback(tableType);
+		if (pageType) {
+			callback(pageType);
 		}
 		else {
 			this.database.on("eval/pagetemplate/" + typeName, (data, error) => {
@@ -249,6 +257,8 @@ export class Eval {
 	}
 
 	newInstance(instanceType: Type): any {
+		if (instanceType==null) return null;
+		
 		switch (instanceType._kind) {
 			case "const":
 				return instanceType.value;
