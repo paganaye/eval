@@ -26,7 +26,11 @@ export class Read extends Command {
 					(data, error) => {
 						this.innerView = this.evalContext.instantiate(this, "read::", data, type, false);
 						this.innerView.render(output);
-						output.printTag("a", { href: "#update " + this.pageName + " " + this.recordId }, "edit");
+						if (this.recordId) {
+							output.printTag("a", { href: "#" + this.pageName }, "list " + this.pageName);
+							output.printHTML(" | ");
+						}
+						output.printTag("a", { href: "#update " + this.pageName + " " + this.recordId }, "edit " + this.pageName + " " + this.recordId);
 						if (this.pageName === "pagetemplate") {
 							output.printHTML(" | ");
 							output.printTag("a", { href: "#" + this.recordId }, "list " + this.recordId);
@@ -35,7 +39,7 @@ export class Read extends Command {
 						}
 						else {
 							output.printHTML(" | ");
-							output.printTag("a", { href: "#update pagetemplate " + this.pageName }, "edit " + this.pageName + " template");
+							output.printTag("a", { href: "#update pagetemplate " + this.pageName }, "update " + this.pageName + " template");
 						}
 						output.domReplace();
 					})
