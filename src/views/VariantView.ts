@@ -22,7 +22,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 
 	onRender(output: Output): void {
 		var variantKinds: VariantKind[] = this.type.kinds;
-		var printArgs: PropertyPrintArgs = { visibility: "visible" };
+		var printArgs: PropertyPrintArgs = { visibility: "visible", description: "" };
 		var id: string = this.evalContext.nextId("select");
 
 		output.printSection({ name: "variant-select-container" }, (printArgs) => {
@@ -47,7 +47,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 		var entry = this.entriesByKey[kind];
 		if (entry) {
 			var innerView = this.evalContext.instantiate(this,
-				"[:variant]",
+				"variantInnerView",
 				this.data,
 				entry.type,
 				this.targetOutput.isEditMode(), {});

@@ -24,11 +24,16 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	public evalContext: Eval;
 	public viewParent: ViewParent;
 	public name: string;
+	public childViews: AnyView[] = [];
 
 	initialize(evalContext: Eval, viewParent: ViewParent, name: string) {
 		this.evalContext = evalContext;
 		this.viewParent = viewParent;
 		this.name = name;
+
+		if (viewParent instanceof View) {
+			viewParent.childViews.push(this);
+		}
 
 		if (viewParent == null) {
 			console.error("View has no parent. This is not normal.");
@@ -114,6 +119,49 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 		return View.viewFactories[viewName];
 	}
 
+	getRootView(): AnyView {
+		if (this.viewParent && this.viewParent instanceof View) {
+			return this.viewParent.getRootView();
+		}
+		return this;
+	}
+
+	log(prefix = "") {
+		console.log(prefix + this.name + " " + this.id);
+		for (var c of this.childViews) {
+			c.log(prefix + "   ");
+		}
+	}
+
+	getData(path: string[], expectedType: string): any {
+		if (path.length == 0) return this.data;
+
+		var first = path[0];
+		path.shift();
+		switch (first) {
+			case "..":
+				var viewParent = this.getViewParent();
+				while (viewParent != null) {
+					if (viewParent instanceof View) {
+						if (viewParent.hasProperties()) {
+							return viewParent.getData(path, expectedType);
+						}
+						else viewParent = viewParent.getViewParent();
+					}
+					else return null;
+				}
+			default:
+				var childView = this.getChildView(first);
+				if (childView) {
+					return childView.getData(path);
+				} else return null;
+		}
+	}
+
+	hasProperties(): boolean { return false; }
+	getChildView(childName: string) {
+		return null;
+	}
 }
 
 export const enum ValidationStatus {

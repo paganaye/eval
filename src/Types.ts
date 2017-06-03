@@ -11,7 +11,7 @@ export interface TypeDefinition<T> {
 	printView?: string;
 	pageName?: string;
 	mandatory?: boolean;
-//	description?: string;
+	//	description?: string;
 	template?: string;
 }
 
@@ -96,10 +96,14 @@ export interface ArrayType<T> extends TypeDefinition<T[]> {
 	canReorder?: boolean;
 }
 
+export interface Datasource {
+	_kind: "datasource";
+	path: string;
+}
 export interface SelectType extends TypeDefinition<string> {
 	_kind: "select";
 	defaultValue?: string;
-	entries: SelectEntry[];
+	entries: SelectEntry[] | Datasource;
 	multiple?: boolean;
 }
 
@@ -180,7 +184,7 @@ export var propertiesType: ArrayType<object> = {
 			{ name: "type", type: variantType, tab: "type" },
 			{
 				name: "visibility", type: {
-					_kind: "select", 
+					_kind: "select",
 					entries: [
 						{ key: "visible", label: "Visible" },
 						{ key: "hiddenLabel", label: "Hidden label" },
@@ -188,7 +192,37 @@ export var propertiesType: ArrayType<object> = {
 					]
 				}, tab: "display"
 			},
-			{ name: "tab", type: { _kind: "string" }, tab: "display" }
+			{
+				name: "tab", type: {
+					_kind: "select", entries: {
+						_kind: "datasource",
+						path: "../../tabs"
+					}
+				}, tab: "display"
+			}
+		],
+		template: "{name} ({type._kind})"
+	}
+};
+
+export var tabsType: ArrayType<object> = {
+	_kind: "array",
+	entryType: {
+		_kind: "object",
+		properties: [
+			{ name: "name", type: { _kind: "string" } },
+			{ name: "label", type: { _kind: "string" } },
+			{
+				name: "viewAs", type: {
+					_kind: "select",
+					entries: [
+						{ key: "default", label: "Default" },
+						{ key: "tab", label: "Tab" },
+						{ key: "collapsible", label: "Collapsible" },
+						{ key: "dialog", label: "Dialog box" }
+					]
+				}
+			}
 		],
 		template: "{name} ({type._kind})"
 	}

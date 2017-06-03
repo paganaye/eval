@@ -60,6 +60,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		}
 	}
 
+	hasProperties(): boolean { return true; }
 
 	valueChanged(view: AnyView): void {
 		if (this.previewOutput) {
@@ -153,5 +154,10 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		}
 		return result;
 	}
+
+	getChildView(childName: string) {
+		return this.views[childName];
+	}
+
 }
 View.registerViewFactory("object", () => new ObjectView());

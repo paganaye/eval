@@ -10,6 +10,7 @@ import {
 	ArrayType,
 	ObjectType,
 	propertiesType,
+	tabsType,
 	Property,
 	SelectEntry,
 	SelectType,
@@ -148,18 +149,19 @@ export class Eval {
 				var singlePage: ObjectType = {
 					_kind: "object",
 					properties: [
-						{ name: "_kind", type: { _kind: "const", value: "object" }, visibility: "hidden" },
+						{ name: "_kind", type: { _kind: "const", value: "pageTemplate" }, visibility: "hidden" },
 						{ name: "description", type: { _kind: "string" }, tab: "display" },
 						{ name: "template", type: { _kind: "string" }, tab: "display" },
 
 						{ name: "properties", type: propertiesType, tab: "properties" },
+						{ name: "tabs", type: tabsType, tab: "tabs" },						
 					]
 				};
 
 				var pageCollection: ObjectType = {
 					_kind: "object",
 					properties: [
-						{ name: "_kind", type: { _kind: "const", value: "object" }, visibility: "hidden" },
+						{ name: "_kind", type: { _kind: "const", value: "pageCollection" }, visibility: "hidden" },
 						{ name: "description", type: { _kind: "string" }, tab: "display" },
 						{ name: "template", type: { _kind: "string" }, tab: "display" },
 
@@ -171,14 +173,22 @@ export class Eval {
 
 						{ name: "indexTitle", type: { _kind: "string" }, tab: "index" },
 						{ name: "indexDescription", type: { _kind: "string" }, tab: "index" }
+					]					
+				};
+				var redirectionPage: ObjectType = {
+					_kind: "object",
+					properties: [
+						{ name: "_kind", type: { _kind: "const", value: "redirection" }, visibility: "hidden" },
+						{ name: "newPage", type: { _kind: "string" } },
+						{ name: "message", type: { _kind: "string" } }
 					]
 				};
-
 				var variantPageTemplate: VariantType = {
 					_kind: "variant",
 					kinds: [
 						{ key: "singleton", label: "Single page", type: singlePage },
-						{ key: "collection", label: "Page collection", type: pageCollection }
+						{ key: "collection", label: "Page collection", type: pageCollection },
+						{ key: "redirect", label: "Redirection", type: redirectionPage }
 					]
 				};
 				pageType = variantPageTemplate;
@@ -257,8 +267,8 @@ export class Eval {
 	}
 
 	newInstance(instanceType: Type): any {
-		if (instanceType==null) return null;
-		
+		if (instanceType == null) return null;
+
 		switch (instanceType._kind) {
 			case "const":
 				return instanceType.value;
