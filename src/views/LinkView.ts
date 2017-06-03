@@ -30,7 +30,7 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 							this.selectedOption = this.evalContext.findEntry(entries, this.data);
 							entries.push({ key: "__new__", label: "new " + pageName, group: "More..." });
 
-							output.printSelect(
+							output.printSelect(null,
 								{ entries: entries, id: this.getId() },
 								this.selectedOption, { _kind: "string" }, (a) => {
 									if (a === "__new__") {

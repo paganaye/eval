@@ -9,6 +9,7 @@ import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrint
 import { ArrayView, ArrayEntryView } from "./views/ArrayView";
 import { VariantView } from "./views/VariantView";
 import { Notification } from "./commands/Notification"
+import { SelectView } from "views/SelectView";
 
 
 export class Output {
@@ -184,7 +185,7 @@ export class Output {
 	}
 
 
-	printAsync(tag: string, attributes: ElementAttributes, text: string | ((output: Output) => void), callback: (output: Output) => void): void {
+	printAsync(tag: string, attributes: ElementAttributes, text: string | (() => void), callback: (output: Output) => void): void {
 		if (!attributes) attributes = {};
 		var id = attributes.id;
 		if (!id) {
@@ -439,30 +440,18 @@ export class Output {
 		});
 	}
 
-	printSelect(printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void): void {
+	printSelect(view: SelectView, printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void): void {
 		var attributes: ElementAttributes = { class: "form-control" };
 		attributes.id = printArgs.id;
 		this.printAsync("select", attributes, () => {
-			var currentGroup = null;
-			for (var entry of printArgs.entries) {
-				if (entry.group != currentGroup) {
-					if (currentGroup) this.printEndTag();
-					currentGroup = entry.group;
-					this.printStartTag("optgroup", { label: currentGroup });
-				}
-				var optionAttributes = { key: entry.key };
-				if (data == entry.key) {
-					optionAttributes["selected"] = true;
-				}
-				this.printTag("option", optionAttributes, entry.label || entry.key);
-			}
-			if (currentGroup) {
-				this.printEndTag();
-				currentGroup = null;
+			this.printSelectOptions(printArgs.entries, data);
+		}, (output) => {
+			var selectElement = output.getOutputElt() as HTMLSelectElement;
+
+			selectElement.onfocus = () => {
+				if (view) view.onFocus(selectElement);
 			}
 
-		}, (output) => {
-			var selectElement = output.getOutputElt();
 			selectElement.onchange = ((a: Event) => {
 				var select = a.target as HTMLSelectElement;
 				var option = select.selectedOptions[0] as HTMLOptionElement;
@@ -472,6 +461,29 @@ export class Output {
 			});
 		});
 	}
+
+	printSelectOptions(entries: SelectEntry[], data: any) {
+		var output = this;
+		var currentGroup = null;
+		for (var entry of entries) {
+			if (entry.group != currentGroup) {
+				if (currentGroup) this.printEndTag();
+				currentGroup = entry.group;
+				output.printStartTag("optgroup", { label: currentGroup });
+			}
+			var optionAttributes = { key: entry.key };
+			if (data == entry.key) {
+				optionAttributes["selected"] = true;
+			}
+			output.printTag("option", optionAttributes, entry.label || entry.key);
+		}
+		if (currentGroup) {
+			output.printEndTag();
+			currentGroup = null;
+		}
+		output.domReplace()
+	}
+
 
 	printButton(printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
 		var attributes: ElementAttributes = { id: printArgs.id };

@@ -177,10 +177,10 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	}
 
 	getValue(): any {
-		var result = [];
-
+		if (this.arrayEntriesOutput == null) return null;
 		var container = this.arrayEntriesOutput.getOutputElt();
 		var entryKeys = this.evalContext.theme.getArrayEntriesIndex(container);
+		var result = [];
 		for (var key of entryKeys) {
 			var view = this.viewById[key];
 			if (view) {

@@ -134,7 +134,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	}
 
 	getData(path: string[], expectedType: string): any {
-		if (path.length == 0) return this.data;
+		if (path.length == 0) return this.getValue();
 
 		var first = path[0];
 		path.shift();

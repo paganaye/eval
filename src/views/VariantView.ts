@@ -31,7 +31,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 			}
 			else {
 				this.kind = this.evalContext.findEntry(variantKinds, this.kind);
-				output.printSelect({ entries: variantKinds, id: id }, this.kind, this.type,
+				output.printSelect(null, { entries: variantKinds, id: id }, this.kind, this.type,
 					(kind) => this.selectionChanged(kind));
 			}
 		});

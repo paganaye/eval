@@ -7,6 +7,7 @@ import { ObjectView } from "../views/ObjectView";
 import { ArrayView, ArrayEntryView } from "../views/ArrayView";
 import { VariantView } from "../views/VariantView";
 import { Notification } from "../commands/Notification"
+import { SelectView } from "views/SelectView";
 
 export class Bootstrap extends Theme {
 
@@ -283,30 +284,18 @@ export class BootstrapOutput extends Output {
 		});
 	}
 
-	printSelect(printArgs: SelectPrintArgs, data: string, datType: Type, onChanged?: (string) => void) {
+	printSelect(view: SelectView, printArgs: SelectPrintArgs, data: string, datType: Type, onChanged?: (string) => void) {
 		var attributes: ElementAttributes = { class: "form-control" };
 		attributes.id = printArgs.id;
 		this.printAsync("select", attributes, () => {
-			var currentGroup = null;
-			for (var entry of printArgs.entries) {
-				if (entry.group != currentGroup) {
-					if (currentGroup) this.printEndTag();
-					currentGroup = entry.group;
-					this.printStartTag("optgroup", { label: currentGroup });
-				}
-				var optionAttributes = { key: entry.key };
-				if (data == entry.key) {
-					optionAttributes["selected"] = true;
-				}
-				this.printTag("option", optionAttributes, entry.label || entry.key);
-			}
-			if (currentGroup) {
-				this.printEndTag();
-				currentGroup = null;
+			this.printTag("option", {}, data);
+		}, (output) => {
+			var selectElement = output.getOutputElt() as HTMLSelectElement;
+
+			selectElement.onfocus = () => {
+				if (view) view.onFocus(selectElement);
 			}
 
-		}, (output) => {
-			var selectElement = output.getOutputElt();
 			selectElement.onchange = ((a: Event) => {
 				var select = a.target as HTMLSelectElement;
 				var option = select.selectedOptions[0] as HTMLOptionElement;
