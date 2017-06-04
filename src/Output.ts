@@ -440,12 +440,8 @@ export class Output {
 		});
 	}
 
-	printSelect(view: SelectView, printArgs: SelectPrintArgs, data: string, dataType: Type, onChanged?: (string) => void): void {
-		var attributes: ElementAttributes = { class: "form-control" };
-		attributes.id = printArgs.id;
-		this.printAsync("select", attributes, () => {
-			this.printSelectOptions(printArgs.entries, data);
-		}, (output) => {
+	printSelect(view: SelectView, printArgs: SelectPrintArgs, data: string, datType: Type, onChanged?: (string) => void) {
+		this.printSelectElt(printArgs, data, (output) => {
 			var selectElement = output.getOutputElt() as HTMLSelectElement;
 
 			selectElement.onfocus = () => {
@@ -460,6 +456,14 @@ export class Output {
 				if (onChanged) onChanged(value);
 			});
 		});
+	}
+
+	printSelectElt(printArgs: SelectPrintArgs, data: string, callback: (output: Output) => void) {
+		var attributes: ElementAttributes = {};
+		attributes.id = printArgs.id;
+		this.printAsync("select", attributes, () => {
+			this.printSelectOptions(printArgs.entries, data);
+		}, callback);
 	}
 
 	printSelectOptions(entries: SelectEntry[], data: any) {

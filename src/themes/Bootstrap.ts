@@ -284,26 +284,12 @@ export class BootstrapOutput extends Output {
 		});
 	}
 
-	printSelect(view: SelectView, printArgs: SelectPrintArgs, data: string, datType: Type, onChanged?: (string) => void) {
+	printSelectElt(printArgs: SelectPrintArgs, data: string, callback: (output: Output) => void) {
 		var attributes: ElementAttributes = { class: "form-control" };
 		attributes.id = printArgs.id;
 		this.printAsync("select", attributes, () => {
 			this.printSelectOptions(printArgs.entries, data);
-		}, (output) => {
-			var selectElement = output.getOutputElt() as HTMLSelectElement;
-
-			selectElement.onfocus = () => {
-				if (view) view.onFocus(selectElement);
-			}
-
-			selectElement.onchange = ((a: Event) => {
-				var select = a.target as HTMLSelectElement;
-				var option = select.selectedOptions[0] as HTMLOptionElement;
-				var key = option.attributes['key'];
-				var value = key ? key.value : option.value;
-				if (onChanged) onChanged(value);
-			});
-		});
+		}, callback);
 	}
 
 
