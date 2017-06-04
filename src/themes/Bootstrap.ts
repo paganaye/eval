@@ -45,7 +45,7 @@ export class Bootstrap extends Theme {
 			elt.classList.remove("has-success");
 			elt.classList.remove("has-warning");
 			elt.classList.remove("has-danger");
-			var className = BootstrapOutput.getClassName(view.getValidationStatus());
+			var className = Bootstrap.getValidationClassName(view.getValidationStatus());
 			if (className) elt.classList.add(className);
 		}
 		if (refreshOptions.valueChanged) {

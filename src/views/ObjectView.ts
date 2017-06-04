@@ -39,7 +39,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 			var value = this.data[key];
 			if (typeof value === "string" && value.length == 0) continue;
 			if (typeof value === "object" && Object.keys(value).length == 0) continue;
-			this.addProperty({ name: key, type: { _kind: "string" }, tab: "orphans", visibility: "visible" });
+			this.addProperty({ name: key, type: { _kind: "string" }, group: "orphans", visibility: "visible" });
 		}
 	}
 
@@ -47,14 +47,14 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		this.propertyByName[p.name] = p;
 		this.allKeys.push(p.name);
 		this.typedKeys.push(p.name);
-		if (p.tab) {
-			var tab = this.tabByName[p.tab];
-			if (!tab) {
-				tab = [];
-				this.tabByName[p.tab] = tab;
-				this.tabNames.push(p.tab);
+		if (p.group) {
+			var group = this.tabByName[p.group];
+			if (!group) {
+				group = [];
+				this.tabByName[p.group] = group;
+				this.tabNames.push(p.group);
 			}
-			tab.push(p);
+			group.push(p);
 		} else {
 			this.mainProperties.push(p);
 		}
@@ -85,22 +85,22 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 					});
 				}
 				if (this.tabNames.length) {
-					var tabs: { text: string, id: string }[];
-					tabs = this.tabNames.map(s => { return { text: s, id: this.evalContext.nextId("tab") }; });
+					var groups: { text: string, id: string }[];
+					groups = this.tabNames.map(s => { return { text: s, id: this.evalContext.nextId("group") }; });
 
-					output.printTabHeaders(tabs);
+					output.printTabHeaders(groups);
 
 					output.printTabContent({}, () => {
 
 						var first = true;
-						for (var tab0 of tabs) {
-							var tab = this.tabByName[tab0.text];
+						for (var tab0 of groups) {
+							var group = this.tabByName[tab0.text];
 							output.printTabPage({
 								id: tab0.id,
 								active: first, title: tab0.text
 								//orphans: (tab0.text == "orphans")
 							}, (output) => {
-								for (var property of tab) {
+								for (var property of group) {
 									this.printProperty(property, output);
 								}
 							});

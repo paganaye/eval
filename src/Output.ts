@@ -242,14 +242,15 @@ export class Output {
 		return "eval-";
 	}
 
-	printTabHeaders(tabs: { text: string, id: string }[]) {
+	printTabHeaders(groups: { text: string, id: string }[]) {
 		this.printStartTag("div", { class: "object-body" });
 
 		this.printAsync("div", { class: "form-group" }, "", (output) => {
-			if (tabs.length) {
+		
+			if (groups.length) {
 				output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
 				var first = true;
-				for (var h of tabs) {
+				for (var h of groups) {
 					output.printHTML('<li class="nav-item">');
 					var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.id, role: "tab" };
 					if (first) {

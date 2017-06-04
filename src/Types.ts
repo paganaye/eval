@@ -49,10 +49,10 @@ export interface StringType extends TypeDefinition<string> {
 }
 
 addType("string", "basic", "String", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "string" }, tab: "value" });
+	addProperty({ name: "defaultValue", type: { _kind: "string" }, group: "value" });
 	addProperty({ name: "validation", type: arrayOfValidationRegexp });
-	addProperty({ name: "cols", type: { _kind: "number" }, tab: "display" });
-	addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
+	addProperty({ name: "cols", type: { _kind: "number" }, group: "display" });
+	addProperty({ name: "rows", type: { _kind: "number" }, group: "display" });
 });
 
 export interface ValidationRegexp {
@@ -71,7 +71,7 @@ export interface Property {
 	name: string;
 	label?: string;
 	type: Type;
-	tab?: string;
+	group?: string;
 	visibility?: Visibility;
 	description?: string;
 }
@@ -181,7 +181,7 @@ export var propertiesType: ArrayType<object> = {
 		_kind: "object",
 		properties: [
 			{ name: "name", type: { _kind: "string" } },
-			{ name: "type", type: variantType, tab: "type" },
+			{ name: "type", type: variantType, group: "type" },
 			{
 				name: "visibility", type: {
 					_kind: "select",
@@ -190,15 +190,15 @@ export var propertiesType: ArrayType<object> = {
 						{ key: "hiddenLabel", label: "Hidden label" },
 						{ key: "hidden", label: "Hidden" }
 					]
-				}, tab: "display"
+				}, group: "display"
 			},
 			{
-				name: "tab", type: {
+				name: "group", type: {
 					_kind: "select", entries: {
 						_kind: "datasource",
-						path: "../../tabs"
+						path: "../../groups"
 					}
-				}, tab: "display"
+				}, group: "display"
 			}
 		],
 		template: "{name} ({type._kind})"
@@ -217,7 +217,7 @@ export var tabsType: ArrayType<object> = {
 					_kind: "select",
 					entries: [
 						{ key: "default", label: "Default" },
-						{ key: "tab", label: "Tab" },
+						{ key: "group", label: "Tab" },
 						{ key: "collapsible", label: "Collapsible" },
 						{ key: "dialog", label: "Dialog box" }
 					]
@@ -256,21 +256,21 @@ function addType(key: string, group: string, label: string, typeCallback?: (newT
 }
 
 addType("string", "basic", "String", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "string" }, tab: "value" });
+	addProperty({ name: "defaultValue", type: { _kind: "string" }, group: "value" });
 	addProperty({ name: "validation", type: arrayOfValidationRegexp });
-	addProperty({ name: "cols", type: { _kind: "number" }, tab: "display" });
-	addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
+	addProperty({ name: "cols", type: { _kind: "number" }, group: "display" });
+	addProperty({ name: "rows", type: { _kind: "number" }, group: "display" });
 });
 
 addType("number", "basic", "Number", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "number" }, tab: "value" });
-	addProperty({ name: "minimum", type: { _kind: "number" }, tab: "validation" });
-	addProperty({ name: "maximum", type: { _kind: "number" }, tab: "validation" });
-	addProperty({ name: "rows", type: { _kind: "number" }, tab: "display" });
+	addProperty({ name: "defaultValue", type: { _kind: "number" }, group: "value" });
+	addProperty({ name: "minimum", type: { _kind: "number" }, group: "validation" });
+	addProperty({ name: "maximum", type: { _kind: "number" }, group: "validation" });
+	addProperty({ name: "rows", type: { _kind: "number" }, group: "display" });
 });
 
 addType("boolean", "basic", "Boolean", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "boolean" }, tab: "value" });
+	addProperty({ name: "defaultValue", type: { _kind: "boolean" }, group: "value" });
 });
 
 addType("textarea", "html", "Multi-line string");
@@ -305,10 +305,10 @@ addType("array", "advanced", "Array", (type, addProperty) => {
 	addProperty({
 		name: "entryType", type: entryTypeDefinition
 	});
-	addProperty({ name: "minimumCount", type: { _kind: "number" }, tab: "validation" });
-	addProperty({ name: "maximumCount", type: { _kind: "number" }, tab: "validation" });
-	addProperty({ name: "canAddOrDelete", type: { _kind: "boolean" }, tab: "validation" });
-	addProperty({ name: "canReorder", type: { _kind: "boolean" }, tab: "validation" });
+	addProperty({ name: "minimumCount", type: { _kind: "number" }, group: "validation" });
+	addProperty({ name: "maximumCount", type: { _kind: "number" }, group: "validation" });
+	addProperty({ name: "canAddOrDelete", type: { _kind: "boolean" }, group: "validation" });
+	addProperty({ name: "canReorder", type: { _kind: "boolean" }, group: "validation" });
 });
 
 
@@ -318,7 +318,7 @@ addType("object", "advanced", "Object", (type, addProperty) => {
 	objectType.properties = [];
 
 	addProperty({ name: "properties", type: propertiesType });
-	addProperty({ name: "template", type: { _kind: "string" }, tab: "display" });
+	addProperty({ name: "template", type: { _kind: "string" }, group: "display" });
 });
 
 addType("variant", "advanced", "Variant", (type, addProperty) => {

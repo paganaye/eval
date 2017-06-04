@@ -142,11 +142,11 @@ export class Eval {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "pageTemplate" }, visibility: "hidden" },
-						{ name: "description", type: { _kind: "string" }, tab: "display" },
-						{ name: "template", type: { _kind: "string" }, tab: "display" },
+						{ name: "description", type: { _kind: "string" }, group: "display" },
+						{ name: "template", type: { _kind: "string" }, group: "display" },
 
-						{ name: "properties", type: propertiesType, tab: "properties" },
-						{ name: "tabs", type: tabsType, tab: "tabs" },						
+						{ name: "properties", type: propertiesType, group: "properties" },
+						{ name: "groups", type: tabsType, group: "groups" },						
 					]
 				};
 
@@ -154,17 +154,17 @@ export class Eval {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "pageCollection" }, visibility: "hidden" },
-						{ name: "description", type: { _kind: "string" }, tab: "display" },
-						{ name: "template", type: { _kind: "string" }, tab: "display" },
+						{ name: "description", type: { _kind: "string" }, group: "display" },
+						{ name: "template", type: { _kind: "string" }, group: "display" },
 
-						{ name: "pageName", type: { _kind: "string" }, tab: "collection", },
-						{ name: "nameValidation", type: arrayOfValidationRegexp, tab: "collection" },
-						{ name: "pluralName", type: { _kind: "string" }, tab: "collection" },
+						{ name: "pageName", type: { _kind: "string" }, group: "collection", },
+						{ name: "nameValidation", type: arrayOfValidationRegexp, group: "collection" },
+						{ name: "pluralName", type: { _kind: "string" }, group: "collection" },
 
-						{ name: "properties", type: propertiesType, tab: "properties" },
+						{ name: "properties", type: propertiesType, group: "properties" },
 
-						{ name: "indexTitle", type: { _kind: "string" }, tab: "index" },
-						{ name: "indexDescription", type: { _kind: "string" }, tab: "index" }
+						{ name: "indexTitle", type: { _kind: "string" }, group: "index" },
+						{ name: "indexDescription", type: { _kind: "string" }, group: "index" }
 					]					
 				};
 				var redirectionPage: ObjectType = {
