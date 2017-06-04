@@ -57,13 +57,28 @@ export class Bootstrap extends Theme {
 			elt.innerText = view.getValidationText();
 		}
 	}
+
+	static getValidationClassName(validationStatus: ValidationStatus): string {
+		switch (validationStatus) {
+			case ValidationStatus.success:
+				return "has-success";
+			case ValidationStatus.warning:
+				return "has-warning";
+			case ValidationStatus.danger:
+				return "has-danger";
+			default:
+				return null;
+		}
+
+	}
+
 }
 
 export class BootstrapOutput extends Output {
 	printPropertyView(printArgs: PropertyPrintArgs, view: AnyView) {
 
 		var validationStatus = view.getValidationStatus();
-		var className = BootstrapOutput.getClassName(view.getValidationStatus());
+		var className = Bootstrap.getValidationClassName(view.getValidationStatus());
 
 		var attrs = { class: "form-group row", id: view.getId() + "-container" };
 		if (className) Output.addClass(attrs, className);
@@ -160,36 +175,6 @@ export class BootstrapOutput extends Output {
 		printContent(this, {});
 		this.printEndTag();
 	}
-
-	// printPropertyGroups() {
-	// 	// this.printStartTag("div", {});
-	// 	// this.printHTML("...hi...")
-	// 	// this.printEndTag();
-	// 	this.printStartTag("div", { class: "object-body" });
-
-	// 	this.printAsync("div", { class: "form-group" }, "", (output) => {
-	// 		output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
-	// 		var first = true;
-	// 		for (var h of headers) {
-	// 			output.printHTML('<li class="nav-item">');
-	// 			var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
-	// 			if (first) {
-	// 				Output.addClass(headerAttributes, "active");
-	// 				first = false;
-	// 			}
-	// 			output.printTag('a', headerAttributes, h.label);
-	// 			output.printHTML('</li>');
-	// 		}
-	// 		output.printEndTag();
-	// 		output.domReplace();
-	// 	});
-	// 	/*<!-- Tab panes -->*/
-	// 	Output.addClass(attributes, "tab-content");
-	// 	this.printStartTag("div", attributes);
-	// 	printContent(this, {});
-	// 	this.printEndTag();
-	// 	this.printEndTag();
-	// }
 
 	printSection(printArgs: SectionPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
 		Output.addClass({}, printArgs.name);
@@ -303,20 +288,6 @@ export class BootstrapOutput extends Output {
 			}
 			this.printEndTag(); // dropdown-menu
 		});
-	}
-
-	static getClassName(validationStatus: ValidationStatus): string {
-		switch (validationStatus) {
-			case ValidationStatus.success:
-				return "has-success";
-			case ValidationStatus.warning:
-				return "has-warning";
-			case ValidationStatus.danger:
-				return "has-danger";
-			default:
-				return null;
-		}
-
 	}
 
 	printNotification(printArgs: NotificationPrintArgs, data: Notification, callback: (notification: Notification, id: string) => void): void {
