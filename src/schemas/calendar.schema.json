@@ -41,9 +41,6 @@
 			"type": "string",
 			"description": "Recurrence rule"
 		},
-		"category": {
-			"type": "string"
-		},
 		"description": {
 			"type": "string"
 		},

@@ -341,10 +341,6 @@ addType("variant", "advanced", "Variant", (type, addProperty) => {
 
 });
 
-addType("category", "wiki", "Category", (type, addProperty) => {
-	addProperty({ name: "categoryName", type: { _kind: "string", editView: "link", pageName: "category" } });
-});
-
 addType("link", "wiki", "Link", (type, addProperty) => {
 	addProperty({ name: "pageName", type: { _kind: "string", editView: "link", pageName: "pagetemplate" } });
 });

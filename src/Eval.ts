@@ -122,15 +122,7 @@ export class Eval {
 		var pageType: Type;
 
 		switch (typeName) {
-			case "category":
-				pageType = {
-					_kind: "object",
-					properties: [
-						{ name: "description", type: { _kind: "string" } },
-						{ name: "entries", type: arrayOfEnum }
-					]
-				};
-				break;
+
 			case "type":
 				var objectDefinition: ObjectType = {
 					_kind: "object",
