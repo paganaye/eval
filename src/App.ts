@@ -55,9 +55,9 @@ class App {
 		output.printNavbar({});
 		//output.printBreadcrump({});
 		// output.printJumbotron({ title: "Title", description: "Description" });
-		// output.printAsync("span", { class: "eval-login" }, "...", (elt, output) => {
+		// output.printAsync("span", { class: "eval-login" }, "...13", (elt, output) => {
 		// 	var userOutput: Output;
-		// 	var userName = "...";
+		// 	var userName = "...14";
 		// 	var userId = null;
 
 		// 	var updateUser = () => {
@@ -65,7 +65,7 @@ class App {
 		// 		userOutput.printText(userName);
 		// 		userOutput.domReplace();
 		// 	}
-		// 	output.printAsync("span", {}, "...", (elt, output) => {
+		// 	output.printAsync("span", {}, "...12", (elt, output) => {
 		// 		userOutput = output;
 		// 		updateUser();
 		// 	});

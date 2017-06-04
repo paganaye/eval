@@ -96,7 +96,7 @@ export class Tests extends Command {
 
 	run(output: Output) {
 
-		output.printAsync("div", {}, "...", (output) => {
+		output.printAsync("div", {}, "...8", (output) => {
 			var win = window as any;
 			if (!win.jasmine) {
 				var jasmineRequire: any = win.jasmineRequire;

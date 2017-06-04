@@ -16,7 +16,7 @@ export class Read extends Command {
 		this.pageName = (this.pageName || "");
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, "Reading " + this.pageName + " " + this.recordId + "...", (output) => {
+		output.printAsync("div", {}, "Reading " + this.pageName + " " + this.recordId + "...11", (output) => {
 
 			this.evalContext.getPageType(this.pageName, (type) => {
 				if (type && !type._kind) type._kind = "object";

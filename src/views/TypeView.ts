@@ -24,7 +24,7 @@ export class TypeView extends ObjectView {
 	}
 
 	onRender(output: Output): void {
-		output.printAsync("div", {}, "...", (output) => {
+		output.printAsync("div", {}, "...5", (output) => {
 			this.customOutput = output;
 			this.renderView();
 		});

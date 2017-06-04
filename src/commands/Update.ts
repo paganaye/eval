@@ -19,7 +19,7 @@ export class Update extends Command {
 		this.pageName = (this.pageName || "").toLowerCase();
 		this.recordId = (this.recordId || "").toLowerCase();
 
-		output.printAsync("div", {}, "Updating " + this.pageName + " " + this.recordId + "...", (output) => {
+		output.printAsync("div", {}, "Updating " + this.pageName + " " + this.recordId + "...10", (output) => {
 			this.showForm(output);
 		});
 

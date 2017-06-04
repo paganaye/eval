@@ -29,7 +29,7 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 
 	onRender(output: Output): void {
 		output.printSection({ name: "frame" }, (printArgs) => {
-			output.printAsync("div", {}, "...", (output) => {
+			output.printAsync("div", {}, "...3", (output) => {
 				this.customOutput = output
 				this.customOutput.setEditMode(true);
 				this.renderView();

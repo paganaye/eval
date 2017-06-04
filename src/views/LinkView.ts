@@ -16,7 +16,7 @@ export class LinkView extends View<any, ObjectType, PrintArgs> {
 
 	onRender(output: Output): void {
 		//  for simplicity we make the id of the input element identical to the id of the view.
-		output.printAsync("div", {}, "...", (output) => {
+		output.printAsync("div", {}, "...4", (output) => {
 
 			var pageName = this.type.pageName;
 			if (pageName) {

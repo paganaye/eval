@@ -21,7 +21,7 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 
 	onRender(output: Output): void {
 		var printArgs = { buttonText: this.type.text };
-		output.printAsync("div", {}, "...", (output) => {
+		output.printAsync("div", {}, "...2", (output) => {
 			this.contentOutput = output;
 			this.renderButton();
 			output.domReplace();

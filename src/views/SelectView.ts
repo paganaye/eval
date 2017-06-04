@@ -33,6 +33,7 @@ export class SelectView extends View<string, SelectType, SelectPrintArgs> {
 		this.buildEntries();
 		var output = new Output(this.evalContext, elt);
 		output.printSelectOptions(this.enumEntries, this.selectedOption);
+		output.domReplace();
 	}
 
 	onRender(output: Output): void {

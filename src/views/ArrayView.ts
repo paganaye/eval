@@ -92,7 +92,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		output.printSection({ name: "array" }, (printArgs) => {
 
 
-			output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...", (output) => {
+			output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...7", (output) => {
 				this.arrayEntriesOutput = output;
 
 				for (var index = 0; index < this.data.length; index++) {

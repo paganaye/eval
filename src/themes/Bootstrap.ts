@@ -125,7 +125,7 @@ export class BootstrapOutput extends Output {
 		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
 		//var innerView = this.evalContext.instantiate(arrayView, "[" + printArgs.id + ']', data, dataType, this.isEditMode(), {});
 
-		this.printAsync("div", contentAttributes, "...", (output) => {
+		this.printAsync("div", contentAttributes, "...1", (output) => {
 			var $: any = window["$"];
 			//innerView.render(output);
 			if (printArgs.active) {
