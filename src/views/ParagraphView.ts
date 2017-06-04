@@ -14,7 +14,10 @@ export interface IParagraph {
 export class ParagraphView extends View<IParagraph, Type, PrintArgs> {
 
 	build(): void {
-		if (!this.data) this.data = {} as IParagraph;
+		if (typeof this.data != "object") {
+			this.data = { text: this.data } as any;
+		}
+
 		if (typeof this.data.title === "undefined") {
 			this.data.title = "Paragraph title";
 		}

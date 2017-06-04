@@ -288,7 +288,7 @@ export class BootstrapOutput extends Output {
 		var attributes: ElementAttributes = { class: "form-control" };
 		attributes.id = printArgs.id;
 		this.printAsync("select", attributes, () => {
-			this.printTag("option", {}, data);
+			this.printSelectOptions(printArgs.entries, data);
 		}, (output) => {
 			var selectElement = output.getOutputElt() as HTMLSelectElement;
 

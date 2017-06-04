@@ -109,26 +109,28 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 				});
 
 			});
-			output.printSection({ name: "array-buttons" }, (printArgs) => {
-				// we won't use HTML tables because sorting does not work well on table.
-				// we don't use the bootstrap pager because sorting is hard with a pager and it look crap on mobile
-				if (this.addButtonEntries) {
-					output.printButtonGroup({
-						buttonText: "Add",
-						entries: this.addButtonEntries
-					}, (ev, str) => {
-						var index = this.buildOne(null, str, true);
-						this.renderOne(index, this.arrayEntriesOutput);
-						this.arrayEntriesOutput.domAppend();
-					});
-				} else {
-					output.printButton({ buttonText: "+" }, (ev: Event) => {
-						var index = this.buildOne(null, null, true);
-						this.renderOne(index, this.arrayEntriesOutput);
-						this.arrayEntriesOutput.domAppend();
-					});
-				}
-			});
+			if (output.isEditMode()) {
+				output.printSection({ name: "array-buttons" }, (printArgs) => {
+					// we won't use HTML tables because sorting does not work well on table.
+					// we don't use the bootstrap pager because sorting is hard with a pager and it look crap on mobile
+					if (this.addButtonEntries) {
+						output.printButtonGroup({
+							buttonText: "Add",
+							entries: this.addButtonEntries
+						}, (ev, str) => {
+							var index = this.buildOne(null, str, true);
+							this.renderOne(index, this.arrayEntriesOutput);
+							this.arrayEntriesOutput.domAppend();
+						});
+					} else {
+						output.printButton({ buttonText: "+" }, (ev: Event) => {
+							var index = this.buildOne(null, null, true);
+							this.renderOne(index, this.arrayEntriesOutput);
+							this.arrayEntriesOutput.domAppend();
+						});
+					}
+				});
+			}
 		});
 
 	}
