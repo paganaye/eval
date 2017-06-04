@@ -71,7 +71,7 @@ export class Create extends Command {
 
 		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (output) => {
 			output.setEditMode(true);
-			this.recordIdView = <StringInputView>output.printProperty(this, { visibility: "visible", label: "pageName" }, "", { _kind: "string" });
+			this.recordIdView = <StringInputView>output.printProperty(this, { visibility: "visible", label: "pageName", description: "" }, "", { _kind: "string" });
 			// output2.printInput({ id: "recordId" }, "", , (elt) => { });
 			output.printHTML("<hr/>");
 

@@ -78,21 +78,28 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		else {
 			output.printSection({ name: "object" }, (output, printArgs) => {
 				if (this.mainProperties.length) {
-					output.printSection({ addHeaderCallback: printArgs.addHeaderCallback, name: "object-properties" }, (printArgs) => {
+					output.printSection({ name: "object-properties" }, (printArgs) => {
 						for (var property of this.mainProperties) {
 							this.printProperty(property, output);
 						}
 					});
 				}
 				if (this.tabNames.length) {
-					output.printSection({ name: "property-groups" }, (output, printArgs) => {
+					var tabs: { text: string, id: string }[];
+					tabs = this.tabNames.map(s => { return { text: s, id: this.evalContext.nextId("tab") }; });
+
+					output.printTabHeaders(tabs);
+
+					output.printTabContent({}, () => {
+
 						var first = true;
-						for (var tabName of this.tabNames) {
-							var tab = this.tabByName[tabName];
-							output.printSection({
-								addHeaderCallback: printArgs.addHeaderCallback, name: "property-group",
-								active: first, title: tabName, orphans: (tabName == "orphans")
-							}, (printArgs) => {
+						for (var tab0 of tabs) {
+							var tab = this.tabByName[tab0.text];
+							output.printTabPage({
+								id: tab0.id,
+								active: first, title: tab0.text
+								//orphans: (tab0.text == "orphans")
+							}, (output) => {
 								for (var property of tab) {
 									this.printProperty(property, output);
 								}

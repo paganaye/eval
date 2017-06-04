@@ -161,51 +161,43 @@ export class BootstrapOutput extends Output {
 		this.printEndTag();
 	}
 
+	// printPropertyGroups() {
+	// 	// this.printStartTag("div", {});
+	// 	// this.printHTML("...hi...")
+	// 	// this.printEndTag();
+	// 	this.printStartTag("div", { class: "object-body" });
+
+	// 	this.printAsync("div", { class: "form-group" }, "", (output) => {
+	// 		output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
+	// 		var first = true;
+	// 		for (var h of headers) {
+	// 			output.printHTML('<li class="nav-item">');
+	// 			var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
+	// 			if (first) {
+	// 				Output.addClass(headerAttributes, "active");
+	// 				first = false;
+	// 			}
+	// 			output.printTag('a', headerAttributes, h.label);
+	// 			output.printHTML('</li>');
+	// 		}
+	// 		output.printEndTag();
+	// 		output.domReplace();
+	// 	});
+	// 	/*<!-- Tab panes -->*/
+	// 	Output.addClass(attributes, "tab-content");
+	// 	this.printStartTag("div", attributes);
+	// 	printContent(this, {});
+	// 	this.printEndTag();
+	// 	this.printEndTag();
+	// }
+
 	printSection(printArgs: SectionPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
 		Output.addClass({}, printArgs.name);
 		var attributes: ElementAttributes = { class: super.getClassPrefix() + printArgs.name };
 		switch (printArgs.name) {
-			case "property-groups":
-				// this.printStartTag("div", {});
-				// this.printHTML("...hi...")
-				// this.printEndTag();
-				this.printStartTag("div", { class: "object-body" });
-				var headers: { key: string, label: string }[] = [];
 
-				this.printAsync("div", { class: "form-group" }, "", (output) => {
-					if (headers.length) {
-						output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
-						var first = true;
-						for (var h of headers) {
-							output.printHTML('<li class="nav-item">');
-							var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
-							if (first) {
-								Output.addClass(headerAttributes, "active");
-								first = false;
-							}
-							output.printTag('a', headerAttributes, h.label);
-							output.printHTML('</li>');
-						}
-						output.printEndTag();
-						output.domReplace();
-					} else {
-						output.getOutputElt().remove();
-					}
-				});
-				/*<!-- Tab panes -->*/
-				Output.addClass(attributes, "tab-content");
-				this.printStartTag("div", attributes);
-				printContent(this, {
-					addHeaderCallback: (key, label) => {
-						headers.push({ key: key, label: label });
-					}
-				});
-				this.printEndTag();
-				this.printEndTag();
-				break;
 			case "array-buttons":
 			case "map-properties":
-			case "variant-control":
 			case "object-properties":
 			case "create":
 			case "update":
@@ -219,28 +211,6 @@ export class BootstrapOutput extends Output {
 				this.printStartTag("div", attributes);
 				printContent(this, {});
 				this.printEndTag();
-				break;
-
-			case "property-group":
-				if (printArgs.title) {
-					var id = this.evalContext.nextId("tab");
-					if (printArgs.addHeaderCallback) {
-						printArgs.addHeaderCallback(id, printArgs.title);
-					}
-					Output.addClass(attributes, "tab-pane");
-					if (printArgs.active) {
-						Output.addClass(attributes, "active");
-					}
-					attributes.role = "tabpanel";
-					attributes.id = id;
-					this.printStartTag("div", attributes);
-					printContent(this, {});
-					this.printEndTag();
-				} else {
-					this.printStartTag("div", attributes);
-					printContent(this, {});
-					this.printEndTag();
-				}
 				break;
 
 			// case "array-entries":

@@ -5,7 +5,7 @@ import { Type, SelectEntry, Visibility } from './Types';
 import { View, AnyView, ViewParent } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, BreadcrumpPrintArgs, JumbotronPrintArgs, NotificationPrintArgs, RefreshOptions, NavbarPrintArgs } from "./Theme";
+import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, BreadcrumpPrintArgs, JumbotronPrintArgs, NotificationPrintArgs, RefreshOptions, NavbarPrintArgs, TabPagePrintArgs } from "./Theme";
 import { ArrayView, ArrayEntryView } from "./views/ArrayView";
 import { VariantView } from "./views/VariantView";
 import { Notification } from "./commands/Notification"
@@ -242,47 +242,81 @@ export class Output {
 		return "eval-";
 	}
 
+	printTabHeaders(tabs: { text: string, id: string }[]) {
+		this.printStartTag("div", { class: "object-body" });
+
+		this.printAsync("div", { class: "form-group" }, "", (output) => {
+			if (tabs.length) {
+				output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
+				var first = true;
+				for (var h of tabs) {
+					output.printHTML('<li class="nav-item">');
+					var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.id, role: "tab" };
+					if (first) {
+						Output.addClass(headerAttributes, "active");
+						first = false;
+					}
+					output.printTag('a', headerAttributes, h.text);
+					output.printHTML('</li>');
+				}
+				output.printEndTag();
+				output.domReplace();
+			} else {
+				output.getOutputElt().remove();
+			}
+		});
+		this.printEndTag();
+	}
+
+	printTabContent(printArgs: PrintArgs, printContent: (output: Output) => void) {
+		this.printStartTag("div", { class: "tab-content" });
+		printContent(this);
+		this.printEndTag();
+	}
+
+	printTabPage(printArgs: TabPagePrintArgs, printContent: (output: Output) => void) {
+		var attributes: ElementAttributes = { class: this.getClassPrefix() + printArgs.id };
+		if (printArgs.title) {
+			var id = printArgs.id || this.evalContext.nextId("tab");
+			Output.addClass(attributes, "tab-pane");
+			if (printArgs.active) {
+				Output.addClass(attributes, "active");
+			}
+			attributes.role = "tabpanel";
+			attributes.id = id;
+			this.printStartTag("div", attributes);
+			printContent(this);
+			this.printEndTag();
+		} else {
+			this.printStartTag("div", attributes);
+			printContent(this);
+			this.printEndTag();
+		}
+	}
+	/*
+				case "property-group":
+					if (printArgs.title) {
+						var id = this.evalContext.nextId("tab");
+						Output.addClass(attributes, "tab-pane");
+						if (printArgs.active) {
+							Output.addClass(attributes, "active");
+						}
+						attributes.role = "tabpanel";
+						attributes.id = id;
+						this.printStartTag("div", attributes);
+						printContent(this, {});
+						this.printEndTag();
+					} else {
+						this.printStartTag("div", attributes);
+						printContent(this, {});
+						this.printEndTag();
+					}
+					break;
+	
+	*/
 	printSection(printArgs: SectionPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void) {
 		var attributes: ElementAttributes = { class: this.getClassPrefix() + printArgs.name };
 		switch (printArgs.name) {
-			case "property-groups":
-				// this.printStartTag("div", {});
-				// this.printHTML("...hi...")
-				// this.printEndTag();
-				this.printStartTag("div", { class: "object-body" });
-				var headers: { key: string, label: string }[] = [];
-
-				this.printAsync("div", { class: "form-group" }, "", (output) => {
-					if (headers.length) {
-						output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
-						var first = true;
-						for (var h of headers) {
-							output.printHTML('<li class="nav-item">');
-							var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.key, role: "tab" };
-							if (first) {
-								Output.addClass(headerAttributes, "active");
-								first = false;
-							}
-							output.printTag('a', headerAttributes, h.label);
-							output.printHTML('</li>');
-						}
-						output.printEndTag();
-						output.domReplace();
-					} else {
-						output.getOutputElt().remove();
-					}
-				});
-
-				Output.addClass(attributes, "tab-content");
-				this.printStartTag("div", attributes);
-				printContent(this, {
-					addHeaderCallback: (key, label) => {
-						headers.push({ key: key, label: label });
-					}
-				});
-				this.printEndTag();
-				this.printEndTag();
-				break;
 			case "array-buttons":
 			case "map-properties":
 			case "variant-control":
@@ -299,28 +333,6 @@ export class Output {
 				this.printStartTag("div", attributes);
 				printContent(this, {});
 				this.printEndTag();
-				break;
-
-			case "property-group":
-				if (printArgs.title) {
-					var id = this.evalContext.nextId("tab");
-					if (printArgs.addHeaderCallback) {
-						printArgs.addHeaderCallback(id, printArgs.title);
-					}
-					Output.addClass(attributes, "tab-pane");
-					if (printArgs.active) {
-						Output.addClass(attributes, "active");
-					}
-					attributes.role = "tabpanel";
-					attributes.id = id;
-					this.printStartTag("div", attributes);
-					printContent(this, {});
-					this.printEndTag();
-				} else {
-					this.printStartTag("div", attributes);
-					printContent(this, {});
-					this.printEndTag();
-				}
 				break;
 
 			// case "array-entries":

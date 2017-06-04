@@ -57,7 +57,12 @@ export interface RefreshOptions {
 export type ElementAttributes = { [key: string]: string };
 
 export class PrintArgs {
-	addHeaderCallback?: (key: string, label: string) => void;
+}
+
+export class TabPagePrintArgs {
+	id: string;
+	title: string;
+	active: boolean;
 }
 
 export class PropertyPrintArgs extends PrintArgs {
