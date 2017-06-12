@@ -50,7 +50,7 @@ export class VariantView extends View<VariantObject, VariantType, VariantPrintAr
 				"variantInnerView",
 				this.data,
 				entry.type,
-				this.targetOutput.isEditMode(), {});
+				this.targetOutput.getRenderMode(), {});
 			innerView.render(this.targetOutput);
 			this.innerView = innerView;
 			this.targetOutput.domReplace();

@@ -3,7 +3,7 @@ import { Eval } from "../Eval";
 import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type } from '../Types';
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { View, AnyView, ViewParent } from "../View";
 import { PrintArgs } from "../Theme";
 
@@ -41,14 +41,14 @@ export class Update extends Command {
 				var path = "eval/" + this.pageName + "/" + this.recordId;
 				var indexBySizePath = "eval/" + this.pageName + "/_index/bySize/" + this.recordId;
 				this.evalContext.database.on(path, (data, error) => {
-					output2.setEditMode(true);
+					output2.setRenderMode(RenderMode.Edit);
 					var isNew: boolean = (data === null);
 
 					if (isNew) {
 						data = this.evalContext.newInstance(type);
 						isNew = true;
 					}
-					this.innerView = this.evalContext.instantiate(this, "Create::", data, type, true);
+					this.innerView = this.evalContext.instantiate(this, "Create::", data, type, RenderMode.Edit);
 					this.innerView.render(output2);
 					output2.printSection({ name: "create" }, (printArgs) => {
 						output2.printButton({ buttonText: "Cancel" }, () => {

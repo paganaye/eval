@@ -1,5 +1,5 @@
 import { View } from "../View";
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { Type, ObjectType, Visibility } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
 import { ObjectView } from "../views/ObjectView";
@@ -33,11 +33,11 @@ export class TypeView extends ObjectView {
 
 	renderView() {
 		debugger;
-		if (this.customOutput.isEditMode()) {
+		if (this.customOutput.getRenderMode() == RenderMode.Edit) {
 			if (this.type.properties) {
 				super.onRender(this.customOutput)
 				this.customOutput.domReplace();
-			}			
+			}
 		} else {
 			var data = this.data || {};
 			var template = this.type.template;

@@ -23,6 +23,7 @@ import {
 } from './Types';
 import { AnyView, View, ViewFactory, ViewParent } from './View';
 import { JSONView } from './views/JSONView';
+import { RenderMode } from "./Output";
 
 
 export class Eval {
@@ -98,11 +99,11 @@ export class Eval {
 		return _type;
 	}
 
-	instantiate(parent: ViewParent, name: string, expr: any, exprType: Type, editMode: boolean, printArgs?: PrintArgs): AnyView {
+	instantiate(parent: ViewParent, name: string, expr: any, exprType: Type, renderMode: RenderMode, printArgs?: PrintArgs): AnyView {
 		var typeDef = this.getTypeDef(expr, exprType)
 		if (!printArgs) printArgs = {};
 
-		var viewName = (editMode ? typeDef.editView : typeDef.printView) || typeDef._kind;
+		var viewName = (renderMode == RenderMode.Edit ? typeDef.editView : typeDef.printView) || typeDef._kind;
 		var viewFactory = View.getViewFactory(viewName) || this.defaultViewFactory;
 		var view = viewFactory.instantiateNewView(this, parent, name);
 
@@ -137,16 +138,49 @@ export class Eval {
 				};
 				pageType = objectDefinition;
 				break;
+			case "dog":
+				var carType: ObjectType = {
+					_kind: "object",
+					properties: [
+						{ name: "make", type: { _kind: "string" } },
+						{ name: "model", type: { _kind: "string" }, tab: "standard" },
+						{ name: "year", type: { _kind: "number" }, tab: "standard" },
+						{ name: "description", type: { _kind: "textarea" } as any as VariantType, tab: "advanced" },
+						{
+							name: "secondary", type: {
+								_kind: "table",
+								entryType: {
+									_kind: "object",
+									properties: [
+										{ name: "p1", type: { _kind: "string" } },
+										{
+											name: "p2", type: { _kind: "string" },
+											visibility: "drilldown"
+										}
+									],
+									template: "{p1} ({p2})"
+								}
+							},
+							visibility: "visible"
+						}
+
+					]
+				};
+				pageType = carType;
+				break;
 			case "pagetemplate":
 				var singlePage: ObjectType = {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "pageTemplate" }, visibility: "hidden" },
-						{ name: "description", type: { _kind: "string" }, group: "display" },
-						{ name: "template", type: { _kind: "string" }, group: "display" },
+						{ name: "description", type: { _kind: "string" } },
+						{ name: "template", type: { _kind: "string" } },
 
-						{ name: "properties", type: propertiesType, group: "properties" },
-						{ name: "groups", type: tabsType, group: "groups" },						
+						{ name: "properties", type: propertiesType, tab: "properties" },
+						{ name: "tabs", type: tabsType, tab: "tabs" },
+					],
+					tabs: [
+						{ name: "tabs", label: "Tabs1", viewAs: "dialog" }
 					]
 				};
 
@@ -154,18 +188,18 @@ export class Eval {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "pageCollection" }, visibility: "hidden" },
-						{ name: "description", type: { _kind: "string" }, group: "display" },
-						{ name: "template", type: { _kind: "string" }, group: "display" },
+						{ name: "description", type: { _kind: "string" } },
+						{ name: "template", type: { _kind: "string" } },
 
-						{ name: "pageName", type: { _kind: "string" }, group: "collection", },
-						{ name: "nameValidation", type: arrayOfValidationRegexp, group: "collection" },
-						{ name: "pluralName", type: { _kind: "string" }, group: "collection" },
+						{ name: "pageName", type: { _kind: "string" } },
+						{ name: "nameValidation", type: arrayOfValidationRegexp },
+						{ name: "pluralName", type: { _kind: "string" } },
 
-						{ name: "properties", type: propertiesType, group: "properties" },
+						{ name: "properties", type: propertiesType, tab: "properties" },
 
-						{ name: "indexTitle", type: { _kind: "string" }, group: "index" },
-						{ name: "indexDescription", type: { _kind: "string" }, group: "index" }
-					]					
+						{ name: "indexTitle", type: { _kind: "string" } },
+						{ name: "indexDescription", type: { _kind: "string" } }
+					]
 				};
 				var redirectionPage: ObjectType = {
 					_kind: "object",

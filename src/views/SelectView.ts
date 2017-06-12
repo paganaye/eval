@@ -1,12 +1,14 @@
 import { View } from '../View';
 import { Type, SelectEntry, SelectType } from '../Types';
-import { Output } from '../Output';
+import { Output, RenderMode } from '../Output';
 import { Eval } from "../Eval";
 import { SelectPrintArgs, PrintArgs } from "../Theme";
 
 export class SelectView extends View<string, SelectType, SelectPrintArgs> {
 	selectedOption: string;
 	enumEntries: SelectEntry[];
+	//useEntriesPath: boolean;
+	tab: string;
 
 
 	build(): void {
@@ -21,8 +23,8 @@ export class SelectView extends View<string, SelectType, SelectPrintArgs> {
 		if (Array.isArray(entries)) {
 			this.enumEntries = this.type.entries as SelectEntry[];
 		} else {
-			// this is hot... entries.path
-			this.enumEntries = this.getData(entries.path.split("/"), "object[]") as SelectEntry[];
+			this.tab = entries.tab;
+			this.enumEntries = this.getData(["..", "..", this.tab], "object[]") as SelectEntry[];
 		}
 
 		if (!Array.isArray(this.enumEntries)) this.enumEntries = [];
@@ -31,7 +33,7 @@ export class SelectView extends View<string, SelectType, SelectPrintArgs> {
 
 	onFocus(elt: HTMLSelectElement) {
 		this.buildEntries();
-		var output = new Output(this.evalContext, elt);
+		var output = this.evalContext.theme.createOutput(elt, null)
 		output.printSelectOptions(this.enumEntries, this.selectedOption);
 		output.domReplace();
 	}
@@ -40,17 +42,25 @@ export class SelectView extends View<string, SelectType, SelectPrintArgs> {
 
 		this.selectedOption = this.evalContext.findEntry(this.enumEntries, this.data);
 
-		if (output.isEditMode()) {
-			output.printSelect(this,
-				{ entries: this.enumEntries, id: this.getId() },
-				this.selectedOption, this.type, (a) => {
-					this.selectedOption = a;
+		if (output.getRenderMode() == RenderMode.Edit) {
+			if (this.tab) {
+				output.printInput(
+					{ id: this.getId() },
+					this.selectedOption, this.type, () => { });
+				output.printButton({ buttonText: "..." }, () => {
+					this.showDialog(this.tab);
 				});
+			} else {
+				output.printSelect(this,
+					{ entries: this.enumEntries, id: this.getId() },
+					this.selectedOption, this.type, (a) => {
+						this.selectedOption = a;
+					});
+			}
 		} else {
 			output.printInput(
 				{ id: this.getId() },
 				this.selectedOption, this.type, () => { });
-
 		}
 	}
 

@@ -59,14 +59,21 @@ export type ElementAttributes = { [key: string]: string };
 export class PrintArgs {
 }
 
+export class ModalPrintArgs {
+	id: string;
+	title: string;
+	buttons: string[]
+}
+
+
 export class TabPagePrintArgs {
 	id: string;
 	title: string;
 	active: boolean;
+	modal: boolean;
 }
 
 export class PropertyPrintArgs extends PrintArgs {
-	printLabel?: ((output: Output, printArgs: PrintArgs) => void);
 	label?: string;
 	visibility: Visibility;
 	description: string;
@@ -78,6 +85,20 @@ export class ArrayPrintArgs extends PrintArgs {
 }
 
 export class ArrayEntryPrintArgs extends PrintArgs {
+	id: string;
+	label: string;
+	deletable: boolean;
+	frozenDynamic: boolean;
+	entriesElementId: string;
+	active: boolean;
+}
+
+export class TablePrintArgs extends PrintArgs {
+	deletable?: boolean;
+	frozenDynamic?: boolean;
+}
+
+export class TableRowPrintArgs extends PrintArgs {
 	id: string;
 	label: string;
 	deletable: boolean;
@@ -140,6 +161,7 @@ export class ButtonPrintArgs extends PrintArgs {
 	id?: string;
 	buttonText: string;
 	class?: string;
+	viewAsLink?: boolean;
 }
 
 export class ButtonGroupPrintArgs extends PrintArgs {

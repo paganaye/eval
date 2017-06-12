@@ -104,3 +104,24 @@ input[type="color"] {
 .container {
 	margin-top: 1em;
 }
+
+.float-right {
+	float: right;
+}
+
+textarea.form-control {
+	min-height: 5em;
+}
+.my-handle {
+  /*background-color: orange;*/
+  padding: 10px;
+  cursor: move;
+  display: block;
+  float: left;
+  height: 30px;
+}
+
+span.handle {
+    margin-right: 0.5em;
+    cursor: move;
+}

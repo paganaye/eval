@@ -1,5 +1,5 @@
 import { Theme, PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, VariantPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, RefreshOptions, JumbotronPrintArgs, BreadcrumpPrintArgs, NotificationPrintArgs, NavbarPrintArgs } from "../Theme";
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { Type, Visibility } from "../Types";
 import { Eval } from "../Eval";
 import { View, AnyView, ValidationStatus } from "../View";
@@ -8,6 +8,8 @@ import { ArrayView, ArrayEntryView } from "../views/ArrayView";
 import { VariantView } from "../views/VariantView";
 import { Notification } from "../commands/Notification"
 import { SelectView } from "views/SelectView";
+
+var $: any = (window as any).$;
 
 export class Bootstrap extends Theme {
 
@@ -89,9 +91,9 @@ export class BootstrapOutput extends Output {
 		this.printStartTag("div", attrs);
 		switch (visibility || "visible") {
 			case "visible":
+			case "drilldown":
 				var labelAttributes = { class: "col-form-label col-lg-2", for: view.getId() };
-				this.printTag("label", labelAttributes,
-					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
+				this.printTag("label", labelAttributes, printArgs.label);
 				Output.addClass(valueAttributes, "col-lg-10");
 				break;
 			default:
@@ -99,19 +101,33 @@ export class BootstrapOutput extends Output {
 				break;
 		}
 
-
-		this.printStartTag("div", valueAttributes);
-		view.render(this);
-
-		this.printTag('div', { class: "form-control-feedback", id: view.getId() + "-validation" },
-			view.getValidationText() || "");
-		this.printTag('small', { class: "form-text text-muted", id: view.getId() + "-description" }, view.getDescription() || "");
-
-		this.printEndTag(); // col-lg-10;
-		if (titleInBox) {
-			this.printHTML('   </div>');
+		if (visibility === "drilldown") {
+			this.printAsync("div", valueAttributes, "...", (output) => {
+				//output.setRenderMode(RenderMode.View);
+				output.printButton({ buttonText: "....", class: "float-right" }, () => {
+					$('#' + modalId).modal('show')
+				})
+				output.printTag("div", {}, view.toString());
+				var modalId = this.evalContext.nextId("modal");
+				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] }, (output) => view.render(output));
+				output.domReplace();
+			});
 		}
-		this.printEndTag(); // row or card
+		else {
+
+			this.printStartTag("div", valueAttributes);
+			view.render(this);
+
+			this.printTag('div', { class: "form-control-feedback", id: view.getId() + "-validation" },
+				view.getValidationText() || "");
+			this.printTag('small', { class: "form-text text-muted", id: view.getId() + "-description" }, view.getDescription() || "");
+
+			this.printEndTag(); // col-lg-10;
+			if (titleInBox) {
+				this.printHTML('   </div>');
+			}
+			this.printEndTag(); // row or card
+		}
 	}
 
 	printArray(arrayView: ArrayView<any>, printArgs: ArrayPrintArgs, printContent: (output, printArgs: PrintArgs) => void): void {
@@ -221,7 +237,7 @@ export class BootstrapOutput extends Output {
 	printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
 		var attributes: ElementAttributes = { value: data };
 		Output.addClass(attributes, "form-control");
-		if (!this.isEditMode()) {
+		if (this.getRenderMode() !== RenderMode.Edit) {
 			attributes.readonly = "readonly";
 		}
 		attributes.id = printArgs.id;
@@ -251,10 +267,21 @@ export class BootstrapOutput extends Output {
 	printButton(printArgs: ButtonPrintArgs, action: (ev: Event) => void): void {
 		var attributes: ElementAttributes = { id: printArgs.id };
 		if (printArgs.class) attributes.class = printArgs.class;
-		this.printAsync("button", attributes, printArgs.buttonText, (output) => {
-			var elt = output.getOutputElt();
-			elt.onclick = (ev) => action(ev);
-		});
+		if (printArgs.viewAsLink) {
+			this.printAsync("a", { href: "#" + printArgs.buttonText }, printArgs.buttonText, (output) => {
+				var elt = output.getOutputElt();
+				elt.onclick = (ev) => {
+					action(ev);
+					return false;
+				}
+			});
+		}
+		else {
+			this.printAsync("button", attributes, printArgs.buttonText, (output) => {
+				var elt = output.getOutputElt();
+				elt.onclick = (ev) => action(ev);
+			});
+		}
 	}
 
 	printButtonGroup(printArgs: ButtonGroupPrintArgs, action: (ev: Event, string: any) => void) {

@@ -48,13 +48,6 @@ export interface StringType extends TypeDefinition<string> {
 	translate?: boolean;
 }
 
-addType("string", "basic", "String", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "string" }, group: "value" });
-	addProperty({ name: "validation", type: arrayOfValidationRegexp });
-	addProperty({ name: "cols", type: { _kind: "number" }, group: "display" });
-	addProperty({ name: "rows", type: { _kind: "number" }, group: "display" });
-});
-
 export interface ValidationRegexp {
 	regexp: string;
 	message: string;
@@ -65,13 +58,13 @@ export interface BooleanType extends TypeDefinition<boolean> {
 	defaultValue?: boolean;
 }
 
-export type Visibility = "visible" | "hiddenLabel" | "hidden";
+export type Visibility = "visible" | "hiddenLabel" | "hidden" | "drilldown";
 
 export interface Property {
 	name: string;
 	label?: string;
 	type: Type;
-	group?: string;
+	tab?: string;
 	visibility?: Visibility;
 	description?: string;
 }
@@ -79,8 +72,15 @@ export interface Property {
 export interface ObjectType extends TypeDefinition<object> {
 	_kind: "object";
 	properties: Property[];
+	tabs?: Tab[];
 }
 
+export interface Tab {
+	name: string;
+	label: string;
+	viewAs: "tab" | "collapsible" | "dialog";
+
+}
 export interface Group {
 	defaultValue?: string;
 	entries: SelectEntry[];
@@ -96,14 +96,28 @@ export interface ArrayType<T> extends TypeDefinition<T[]> {
 	canReorder?: boolean;
 }
 
+export interface TableType<T> extends TypeDefinition<T[]> {
+	_kind: "table";
+	entryType: Type;
+	minimumCount?: number;
+	maximumCount?: number;
+	canAddOrDelete?: boolean;
+	canReorder?: boolean;
+}
+
 export interface Datasource {
 	_kind: "datasource";
 	path: string;
 }
+export interface TabLink {
+	_kind: "tablink";
+	tab: string;
+}
+
 export interface SelectType extends TypeDefinition<string> {
 	_kind: "select";
 	defaultValue?: string;
-	entries: SelectEntry[] | Datasource;
+	entries: SelectEntry[] | TabLink;
 	multiple?: boolean;
 }
 
@@ -141,11 +155,11 @@ export interface VariantKind extends SelectEntry {
 }
 
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
-	| SelectType | ObjectType | ArrayType<any> | VariantType | ButtonType;
+	| SelectType | ObjectType | ArrayType<any> | VariantType | ButtonType | TableType<any>; // | VariantObject;
 
 export interface VariantObject {
 	_kind: string;
-	//[otherFields: string]: any;
+	[otherFields: string]: any;
 }
 
 
@@ -181,7 +195,7 @@ export var propertiesType: ArrayType<object> = {
 		_kind: "object",
 		properties: [
 			{ name: "name", type: { _kind: "string" } },
-			{ name: "type", type: variantType, group: "type" },
+			{ name: "type", type: variantType },
 			{
 				name: "visibility", type: {
 					_kind: "select",
@@ -190,15 +204,15 @@ export var propertiesType: ArrayType<object> = {
 						{ key: "hiddenLabel", label: "Hidden label" },
 						{ key: "hidden", label: "Hidden" }
 					]
-				}, group: "display"
+				}
 			},
 			{
-				name: "group", type: {
+				name: "tab", type: {
 					_kind: "select", entries: {
-						_kind: "datasource",
-						path: "../../groups"
+						_kind: "tablink",
+						tab: "tabs"
 					}
-				}, group: "display"
+				}
 			}
 		],
 		template: "{name} ({type._kind})"
@@ -217,7 +231,7 @@ export var tabsType: ArrayType<object> = {
 					_kind: "select",
 					entries: [
 						{ key: "default", label: "Default" },
-						{ key: "group", label: "Tab" },
+						{ key: "tab", label: "Tab" },
 						{ key: "collapsible", label: "Collapsible" },
 						{ key: "dialog", label: "Dialog box" }
 					]
@@ -256,21 +270,21 @@ function addType(key: string, group: string, label: string, typeCallback?: (newT
 }
 
 addType("string", "basic", "String", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "string" }, group: "value" });
+	addProperty({ name: "defaultValue", type: { _kind: "string" } });
 	addProperty({ name: "validation", type: arrayOfValidationRegexp });
-	addProperty({ name: "cols", type: { _kind: "number" }, group: "display" });
-	addProperty({ name: "rows", type: { _kind: "number" }, group: "display" });
+	addProperty({ name: "cols", type: { _kind: "number" } });
+	addProperty({ name: "rows", type: { _kind: "number" } });
 });
 
 addType("number", "basic", "Number", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "number" }, group: "value" });
-	addProperty({ name: "minimum", type: { _kind: "number" }, group: "validation" });
-	addProperty({ name: "maximum", type: { _kind: "number" }, group: "validation" });
-	addProperty({ name: "rows", type: { _kind: "number" }, group: "display" });
+	addProperty({ name: "defaultValue", type: { _kind: "number" } });
+	addProperty({ name: "minimum", type: { _kind: "number" } });
+	addProperty({ name: "maximum", type: { _kind: "number" } });
+	addProperty({ name: "rows", type: { _kind: "number" } });
 });
 
 addType("boolean", "basic", "Boolean", (type, addProperty) => {
-	addProperty({ name: "defaultValue", type: { _kind: "boolean" }, group: "value" });
+	addProperty({ name: "defaultValue", type: { _kind: "boolean" } });
 });
 
 addType("textarea", "html", "Multi-line string");
@@ -291,26 +305,32 @@ addType("select", "advanced", "Select", (type, addProperty) => {
 	addProperty({ name: "entries", type: arrayOfEnum });
 });
 
+var entryTypeDefinition: VariantType = {
+	_kind: "variant",
+	kinds: variantKinds
+};
+
 addType("array", "advanced", "Array", (type, addProperty) => {
-	type.editView = "array";
+//	type.editView = "array";
 	var arrayType = (type as ArrayType<object>);
 	var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
 	entryType._kind = "object";
 
-	var entryTypeDefinition: VariantType = {
-		_kind: "variant",
-		kinds: variantKinds
-	};
 
 	addProperty({
 		name: "entryType", type: entryTypeDefinition
 	});
-	addProperty({ name: "minimumCount", type: { _kind: "number" }, group: "validation" });
-	addProperty({ name: "maximumCount", type: { _kind: "number" }, group: "validation" });
-	addProperty({ name: "canAddOrDelete", type: { _kind: "boolean" }, group: "validation" });
-	addProperty({ name: "canReorder", type: { _kind: "boolean" }, group: "validation" });
+	addProperty({ name: "minimumCount", type: { _kind: "number" } });
+	addProperty({ name: "maximumCount", type: { _kind: "number" } });
+	addProperty({ name: "canAddOrDelete", type: { _kind: "boolean" } });
+	addProperty({ name: "canReorder", type: { _kind: "boolean" } });
 });
 
+addType("table", "advanced", "Table", (type, addProperty) => {
+	addProperty({
+		name: "entryType", type: entryTypeDefinition
+	});
+});
 
 addType("object", "advanced", "Object", (type, addProperty) => {
 	type.editView = "object";
@@ -318,7 +338,7 @@ addType("object", "advanced", "Object", (type, addProperty) => {
 	objectType.properties = [];
 
 	addProperty({ name: "properties", type: propertiesType });
-	addProperty({ name: "template", type: { _kind: "string" }, group: "display" });
+	addProperty({ name: "template", type: { _kind: "string" } });
 });
 
 addType("variant", "advanced", "Variant", (type, addProperty) => {

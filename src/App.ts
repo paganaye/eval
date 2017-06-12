@@ -6,6 +6,7 @@ import { Type } from "./Types";
 import { Eval } from "./Eval";
 import "firebase";
 import './views/ArrayView';
+import './views/TableView';
 import "./views/ButtonView";
 import "./views/FrameView";
 import "./views/InputView";

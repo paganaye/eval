@@ -1,9 +1,11 @@
 import { View, AnyView } from "../View";
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { Type, ObjectType, Property, Visibility } from "../Types";
 import { PrintArgs } from "../Theme";
 import { Parser } from "../Parser";
 import { Eval } from "../Eval";
+
+var $: any = (window as any).$;
 
 export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	allKeys: string[];
@@ -13,6 +15,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	propertyByName: { [key: string]: Property } = {};
 	tabByName: { [key: string]: Property[] };
 	tabNames: string[];
+	tabIds: { text: string, id: string }[];
 	mainProperties: Property[];
 	previewOutput: Output;
 
@@ -24,6 +27,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		this.tabNames = [];
 		this.propertyByName = {};
 		this.mainProperties = [];
+		this.tabIds = [];
 
 		for (var p of this.properties) {
 			this.addProperty(p);
@@ -39,7 +43,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 			var value = this.data[key];
 			if (typeof value === "string" && value.length == 0) continue;
 			if (typeof value === "object" && Object.keys(value).length == 0) continue;
-			this.addProperty({ name: key, type: { _kind: "string" }, group: "orphans", visibility: "visible" });
+			this.addProperty({ name: key, type: { _kind: "string" }, tab: "orphans", visibility: "visible" });
 		}
 	}
 
@@ -47,14 +51,14 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		this.propertyByName[p.name] = p;
 		this.allKeys.push(p.name);
 		this.typedKeys.push(p.name);
-		if (p.group) {
-			var group = this.tabByName[p.group];
-			if (!group) {
-				group = [];
-				this.tabByName[p.group] = group;
-				this.tabNames.push(p.group);
+		if (p.tab) {
+			var tab = this.tabByName[p.tab];
+			if (!tab) {
+				tab = [];
+				this.tabByName[p.tab] = tab;
+				this.tabNames.push(p.tab);
 			}
-			group.push(p);
+			tab.push(p);
 		} else {
 			this.mainProperties.push(p);
 		}
@@ -72,51 +76,48 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 
 
 	onRender(output: Output): void {
-		if (this.type.template && !output.isEditMode()) {
-			this.printTemplate(output);
-		}
-		else {
-			output.printSection({ name: "object" }, (output, printArgs) => {
-				if (this.mainProperties.length) {
-					output.printSection({ name: "object-properties" }, (printArgs) => {
-						for (var property of this.mainProperties) {
-							this.printProperty(property, output);
-						}
-					});
-				}
-				if (this.tabNames.length) {
-					var groups: { text: string, id: string }[];
-					groups = this.tabNames.map(s => { return { text: s, id: this.evalContext.nextId("group") }; });
+		switch (output.getRenderMode()) {
+			case RenderMode.View:
+				this.printTemplate(output);
+				break;
+			default:
+				output.printSection({ name: "object" }, (output, printArgs) => {
+					if (this.mainProperties.length) {
+						output.printSection({ name: "object-properties" }, (printArgs) => {
+							for (var property of this.mainProperties) {
+								this.printProperty(property, output);
+							}
+						});
+					}
+					if (this.tabNames.length) {
+						this.tabIds = this.tabNames.map(s => { return { text: s, id: this.evalContext.nextId("tab") }; });
 
-					output.printTabHeaders(groups);
+						output.printTabHeaders(this.tabIds);
 
-					output.printTabContent({}, () => {
+						output.printTabContent({}, () => {
 
-						var first = true;
-						for (var tab0 of groups) {
-							var group = this.tabByName[tab0.text];
-							output.printTabPage({
-								id: tab0.id,
-								active: first, title: tab0.text
-								//orphans: (tab0.text == "orphans")
-							}, (output) => {
-								for (var property of group) {
-									this.printProperty(property, output);
-								}
-							});
-							if (first) first = false;
-						}
-					});
-				}
-				/*
-								output.printAsync("div", {}, "Preview...",
-									(output) => {
-										this.previewOutput = output;
-										this.printTemplate(output);
-										output.domReplace();
-									});
-				*/
-			});
+							var first = true;
+							for (var tab0 of this.tabIds) {
+								var tab = this.tabByName[tab0.text];
+								output.printTabPage({
+									id: tab0.id,
+									active: first,
+									title: tab0.text,
+									modal: tab0.text == "tabs"
+									//orphans: (tab0.text == "orphans")
+								}, (output) => {
+									for (var property of tab) {
+										this.printProperty(property, output);
+									}
+								});
+								if (first) first = false;
+							}
+						});
+					}
+					/*
+					*/
+				});
+				break;
 		}
 	}
 
@@ -132,6 +133,21 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		} catch (error) {
 			output.printTag("div", { class: "error" }, error);
 		}
+	}
+
+	getTemplateResult(): string {
+		var html: string;
+		var parser = new Parser(this.evalContext);
+		try {
+			var expr = parser.parseTemplate(this.type.template);
+			this.data = this.getValue();
+			this.evalContext.globalVariables = this.data;
+			html = expr.getValue(this.evalContext);
+			return html;
+		} catch (error) {
+			return "Error: " + error;
+		}
+
 	}
 
 	printProperty(property: Property, output: Output) {
@@ -166,5 +182,18 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		return this.views[childName];
 	}
 
+	showDialog(tab: string) {
+		var tabEntry = this.tabIds.filter(e => e.text == tab);
+		if (tabEntry.length > 0) {
+			$('#' + tabEntry[0].id).modal('show')
+		}
+		else {
+			super.showDialog(tab);
+		}
+	}
+
+	toString(): string {
+		return this.getTemplateResult();
+	}
 }
 View.registerViewFactory("object", () => new ObjectView());

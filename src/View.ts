@@ -162,6 +162,18 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	getChildView(childName: string) {
 		return null;
 	}
+
+	showDialog(tab: string) {
+		if (this.viewParent instanceof View) {
+			this.viewParent.showDialog(tab);
+		}
+		else alert("Tab " + tab + " not found");
+	}
+
+	toString() {
+		return JSON.stringify(this.data);
+	}
+
 }
 
 export const enum ValidationStatus {

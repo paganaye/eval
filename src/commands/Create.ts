@@ -3,7 +3,7 @@ import { Eval } from "../Eval";
 import { ParameterDefinition, CommandDescription } from '../EvalFunction';
 import { Expression } from '../Expression';
 import { Type, Visibility } from '../Types';
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { View, AnyView, ValidationStatus } from "../View";
 import { PrintArgs } from "../Theme";
 import { Update } from "../commands/Update";
@@ -70,7 +70,7 @@ export class Create extends Command {
 		this.pageName = (this.pageName || "").toLowerCase();
 
 		output.printAsync("div", {}, "Creating " + this.pageName + " page...", (output) => {
-			output.setEditMode(true);
+			output.setRenderMode(RenderMode.Edit);
 			this.recordIdView = <StringInputView>output.printProperty(this, { visibility: "visible", label: "pageName", description: "" }, "", { _kind: "string" });
 			// output2.printInput({ id: "recordId" }, "", , (elt) => { });
 			output.printHTML("<hr/>");
@@ -82,7 +82,7 @@ export class Create extends Command {
 				var data = this.evalContext.newInstance(type);
 				//isNew = true;
 				// 	}
-				this.innerView = this.evalContext.instantiate(this, "update::", data, type, true);
+				this.innerView = this.evalContext.instantiate(this, "update::", data, type, RenderMode.Edit);
 				this.innerView.render(output);
 				output.printSection({ name: "update" }, (printArgs) => {
 					output.printButton({ buttonText: "Cancel" }, () => {

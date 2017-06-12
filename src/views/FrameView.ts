@@ -1,5 +1,5 @@
 import { View, AnyView } from "../View";
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { Type, ObjectType, Visibility } from "../Types";
 import { PrintArgs, ElementAttributes } from "../Theme";
 import { ObjectView } from "../views/ObjectView";
@@ -19,7 +19,7 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 		this.evalContext.database.on("eval/pagetemplate/" + this.pageName, (data, error) => {
 			if (data) {
 				this.frameType = data;
-				this.frameView = this.evalContext.instantiate(this, "[::frame]", {}, this.frameType, true);
+				this.frameView = this.evalContext.instantiate(this, "[::frame]", {}, this.frameType, RenderMode.Edit);
 			}
 			if (this.customOutput) {
 				this.renderView();
@@ -31,7 +31,7 @@ export class FrameView extends View<Object, ObjectType, PrintArgs> {
 		output.printSection({ name: "frame" }, (printArgs) => {
 			output.printAsync("div", {}, "...3", (output) => {
 				this.customOutput = output
-				this.customOutput.setEditMode(true);
+				this.customOutput.setRenderMode(RenderMode.Edit);
 				this.renderView();
 				output.domReplace();
 			});

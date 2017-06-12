@@ -1,3 +1,4 @@
+import { TableView } from './views/TableView';
 import { app } from "./App";
 import { ObjectView } from "./views/ObjectView";
 import { JSONView } from "./views/JSONView";
@@ -5,34 +6,60 @@ import { Type, SelectEntry, Visibility } from './Types';
 import { View, AnyView, ViewParent } from "./View";
 import { Eval } from "./Eval";
 import { Expression, GetVariable } from './Expression';
-import { PagePrintArgs, SectionPrintArgs, PrintArgs, InputPrintArgs, ButtonPrintArgs, ArrayPrintArgs, SelectPrintArgs, ButtonGroupPrintArgs, ElementAttributes, PropertyPrintArgs, ArrayEntryPrintArgs, GroupOptions, BreadcrumpPrintArgs, JumbotronPrintArgs, NotificationPrintArgs, RefreshOptions, NavbarPrintArgs, TabPagePrintArgs } from "./Theme";
+import {
+	ArrayEntryPrintArgs,
+	ArrayPrintArgs,
+	BreadcrumpPrintArgs,
+	ButtonGroupPrintArgs,
+	ButtonPrintArgs,
+	ElementAttributes,
+	GroupOptions,
+	InputPrintArgs,
+	JumbotronPrintArgs,
+	ModalPrintArgs,
+	NavbarPrintArgs,
+	NotificationPrintArgs,
+	PagePrintArgs,
+	PrintArgs,
+	PropertyPrintArgs,
+	RefreshOptions,
+	SectionPrintArgs,
+	SelectPrintArgs,
+	TablePrintArgs,
+	TableRowPrintArgs,
+	TabPagePrintArgs
+} from './Theme';
 import { ArrayView, ArrayEntryView } from "./views/ArrayView";
 import { VariantView } from "./views/VariantView";
 import { Notification } from "./commands/Notification"
 import { SelectView } from "views/SelectView";
 
+export const enum RenderMode {
+	View,
+	Edit
+}
 
 export class Output {
 	arrayEntriesOutput
 	public html: String[] = [];
-	private editMode: boolean;
+	private renderMode: RenderMode;
 	private afterDomCreatedCallbacks: ((elt: HTMLElement) => void)[] = [];
 	private id: string;
 	static counter: number = 0;
 
 
 	constructor(protected evalContext: Eval, private elt?: HTMLElement, private parentOutput?: Output) {
-		this.editMode = (parentOutput && parentOutput.editMode) || false;
+		this.renderMode = (parentOutput && parentOutput.renderMode) || RenderMode.View;
 		this.id = "output#" + (++Output.counter);
 	}
 
-	isEditMode(): boolean {
-		return this.editMode;
+	getRenderMode(): RenderMode {
+		return this.renderMode;
 	}
 
-	setEditMode(value: boolean) {
+	setRenderMode(value: RenderMode) {
 		//todo: perhaps check that the html is empty
-		this.editMode = value;
+		this.renderMode = value;
 	}
 
 	printHTML(html: string) {
@@ -79,36 +106,14 @@ export class Output {
 
 	printProperty(viewParent: ViewParent, propertyPrintArgs: PropertyPrintArgs, data: any, dataType: Type): AnyView {
 		var view: AnyView;
-
-		view = this.evalContext.instantiate(viewParent, propertyPrintArgs.label, data, dataType, this.editMode, propertyPrintArgs);
-
+		view = this.evalContext.instantiate(viewParent, propertyPrintArgs.label, data, dataType, this.renderMode, propertyPrintArgs);
 		this.printPropertyView(propertyPrintArgs, view);
 		return view;
 	}
 
 	printPropertyView(printArgs: PropertyPrintArgs, view: AnyView): void {
-		var validationStatus = view.getValidationStatus();
-		var attrs = { id: view.getId() };
-
-		var valueAttributes = {};
-		var visibility = printArgs.visibility;
-		this.printStartTag("div", attrs);
-		switch (visibility) {
-			case "visible":
-				var labelAttributes = { for: view.getId() };
-				this.printTag("label", labelAttributes,
-					printArgs.printLabel ? (o) => printArgs.printLabel(o, printArgs) : printArgs.label);
-				break;
-		}
-		this.printStartTag("div", valueAttributes);
-		view.render(this);
-
-		this.printTag('div', { id: view.getId() + "-validation" },
-			view.getValidationText() || "");
-		this.printTag('small', { id: view.getId() + "-description" }, view.getDescription() || "");
-
-		this.printEndTag();
-		this.printEndTag();
+		debugger;
+		this.printHTML("TODO");
 	}
 
 	printText(text: string) {
@@ -126,9 +131,9 @@ export class Output {
 		this.raiseAfterDomCreated();
 	}
 
-	domAppend(): void {
+	domAppend(parentTag: string): void {
 		var htmlText = this.toString();
-		var tmpDiv = document.createElement('div');
+		var tmpDiv = document.createElement(parentTag);
 		tmpDiv.innerHTML = htmlText;
 
 		while (tmpDiv.firstChild) {
@@ -242,15 +247,14 @@ export class Output {
 		return "eval-";
 	}
 
-	printTabHeaders(groups: { text: string, id: string }[]) {
+	printTabHeaders(tabs: { text: string, id: string }[]) {
 		this.printStartTag("div", { class: "object-body" });
 
 		this.printAsync("div", { class: "form-group" }, "", (output) => {
-		
-			if (groups.length) {
+			if (tabs.length) {
 				output.printStartTag("ul", { class: "nav nav-tabs", role: "tablist" });
 				var first = true;
-				for (var h of groups) {
+				for (var h of tabs) {
 					output.printHTML('<li class="nav-item">');
 					var headerAttributes = { class: "nav-link", "data-toggle": "tab", href: "#" + h.id, role: "tab" };
 					if (first) {
@@ -275,23 +279,67 @@ export class Output {
 		this.printEndTag();
 	}
 
-	printTabPage(printArgs: TabPagePrintArgs, printContent: (output: Output) => void) {
-		var attributes: ElementAttributes = { class: this.getClassPrefix() + printArgs.id };
-		if (printArgs.title) {
-			var id = printArgs.id || this.evalContext.nextId("tab");
-			Output.addClass(attributes, "tab-pane");
-			if (printArgs.active) {
-				Output.addClass(attributes, "active");
+	printModal(printArgs: ModalPrintArgs, printContent: (output: Output) => void) {
+		var elt = document.createElement("div");
+		document.body.appendChild(elt);
+		var o = this.evalContext.theme.createOutput(elt, this);
+
+		var attributes: ElementAttributes = { id: (printArgs as any).id };
+
+		Output.addClass(attributes, "modal fade");
+		o.printStartTag("div", attributes);
+		o.printHTML('  <div class="modal-dialog" role="document">');
+		o.printHTML('    <div class="modal-content">');
+		o.printHTML('      <div class="modal-header">');
+		o.printTag('h5', { class: "modal-title" }, printArgs.title);
+		o.printHTML('        <button type="button" class="close" data-dismiss="modal" aria-label="Close">');
+		o.printHTML('          <span aria-hidden="true">&times;</span>');
+		o.printHTML('        </button>');
+		o.printHTML('      </div>');
+		o.printHTML('      <div class="modal-body">');
+		printContent(o);
+		o.printHTML('      </div>');
+		o.printHTML('      <div class="modal-footer">');
+		var first = true;
+		if (printArgs.buttons) {
+			for (var b of printArgs.buttons) {
+				o.printTag('button', { type: "button", class: first ? "btn btn-primary" : "btn", "data-dismiss": "modal" }, b);
+				first = false;
 			}
-			attributes.role = "tabpanel";
-			attributes.id = id;
-			this.printStartTag("div", attributes);
-			printContent(this);
-			this.printEndTag();
+		}
+		o.printHTML('      </div>');
+		o.printHTML('    </div>');
+		o.printHTML('  </div>');
+		o.printEndTag();
+		o.domReplace();
+
+	}
+
+	printTabPage(printArgs: TabPagePrintArgs, printContent: (output: Output) => void) {
+
+		if (printArgs.modal) {
+			var modalArgs = printArgs as any as ModalPrintArgs;
+			modalArgs.buttons = ["Close"];
+			this.printModal(modalArgs, (output) => printContent(output));
 		} else {
-			this.printStartTag("div", attributes);
-			printContent(this);
-			this.printEndTag();
+			var attributes: ElementAttributes = { class: this.getClassPrefix() + printArgs.id };
+
+			if (printArgs.title) {
+				var id = printArgs.id || this.evalContext.nextId("tab");
+				attributes.id = id;
+				Output.addClass(attributes, "tab-pane");
+				if (printArgs.active) {
+					Output.addClass(attributes, "active");
+				}
+				attributes.role = "tabpanel";
+				this.printStartTag("div", attributes);
+				printContent(this);
+				this.printEndTag();
+			} else {
+				this.printStartTag("div", attributes);
+				printContent(this);
+				this.printEndTag();
+			}
 		}
 	}
 	/*
@@ -354,13 +402,60 @@ export class Output {
 
 				break;
 		}
-
 	}
+
 	printArray(arrayView: ArrayView<any>, printArgs: ArrayPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void): void {
 		printContent(this, printArgs);
 	}
 
 	printArrayEntry(arrayEntryView: ArrayEntryView, printArgs: ArrayEntryPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void): void {
+
+		this.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
+		Output.addClass({}, "card-header");
+		Output.addClass({}, "collapsed");
+
+		var accordionId = printArgs.entriesElementId
+		this.printTag("a", {
+			href: "#" + printArgs.id + "-content", class: "sort-handle collapsible-title", "data-toggle": "collapse",
+			"data-parent": "#" + accordionId
+		}, (output) => {
+			this.printText(printArgs.label);
+			if (printArgs.deletable) {
+				this.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
+					var elt = (ev.target as HTMLElement).parentElement;
+					if (elt) elt.parentElement.remove();
+				});
+			}
+		});
+		var contentAttributes = { class: "card-block collapse", id: printArgs.id + "-content" };
+		//var innerView = this.evalContext.instantiate(arrayView, "[" + printArgs.id + ']', data, dataType, this.isEditMode(), {});
+
+		this.printAsync("div", contentAttributes, "...1", (output) => {
+			var $: any = window["$"];
+			//innerView.render(output);
+			if (printArgs.active) {
+				var $elt = $(output.getOutputElt());
+				//Output.addClass(contentAttributes, "show");
+				$elt.collapse("show");
+				$elt.siblings().collapse("hide");
+			}
+			printContent(output, {});
+			output.domReplace();
+		})
+
+		// this.printStartTag("div", contentAttributes);
+		//this.printEndTag(); // card-block
+
+		this.printEndTag(); // card
+
+		//return innerView;
+	}
+
+	printTable(arrayView: TableView<any>, printArgs: TablePrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void): void {
+		printContent(this, printArgs);
+	}
+
+	printTableRow(arrayEntryView: ArrayEntryView, printArgs: TableRowPrintArgs, printContent: (output: Output, printArgs: PrintArgs) => void): void {
 
 		this.printStartTag("div", { class: "card array-entry", id: printArgs.id });;//    <div class="card">
 		Output.addClass({}, "card-header");
@@ -435,8 +530,10 @@ export class Output {
 	printInput(printArgs: InputPrintArgs, data: any, dataType: Type, callback: (elt: HTMLInputElement) => void): void {
 		var attributes: ElementAttributes = { value: data };
 		Output.addClass(attributes, "form-control");
-		if (!this.isEditMode()) {
-			attributes.readonly = "readonly";
+		switch (this.renderMode) {
+			case RenderMode.View:
+				attributes.readonly = "readonly";
+				break;
 		}
 		attributes.id = printArgs.id;
 

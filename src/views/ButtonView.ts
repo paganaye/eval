@@ -1,6 +1,6 @@
 import { Action, ShowMessageAction } from '../Action';
 import { View, AnyView } from "../View";
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { Type, ButtonType } from "../Types";
 import { PrintArgs, ButtonPrintArgs } from "../Theme";
 import { Parser } from "../Parser";
@@ -77,7 +77,7 @@ export class ButtonView extends View<boolean, ButtonType, ButtonPrintArgs> {
 
 	renderTypeView(structType: Type) {
 		var data = {};
-		this.frameView = this.evalContext.instantiate(this, "[type]", {}, structType, true);
+		this.frameView = this.evalContext.instantiate(this, "[type]", {}, structType, RenderMode.Edit);
 		this.frameView.render(this.contentOutput);
 
 		this.contentOutput.printButton({ buttonText: "next" },

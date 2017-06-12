@@ -1,6 +1,6 @@
 import { View, ValidationStatus } from '../View';
 import { Type, StringType, NumberType, BooleanType } from '../Types';
-import { Output } from '../Output';
+import { Output, RenderMode } from '../Output';
 import { Eval } from "../Eval";
 import { PrintArgs, InputPrintArgs } from "../Theme";
 
@@ -10,7 +10,7 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 	elt: HTMLTextAreaElement;
 
 	build() {
-		if (typeof this.data!== "string") {
+		if (typeof this.data !== "string") {
 			if (this.data == undefined) this.data = "";
 			else this.data = JSON.stringify(this.data);
 		}
@@ -20,7 +20,7 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 		if (this.data == null) this.data = "" as any;
 		if (typeof this.data == "object") JSON.stringify(this.data);
 
-		if (output.isEditMode()) {
+		if (output.getRenderMode() == RenderMode.Edit) {
 			this.kind = (this.type && this.type._kind) || "string";
 			this.id = this.evalContext.nextId("textarea");
 			var dataType = this.type;
@@ -63,7 +63,7 @@ export class TextAreaView extends View<string, Type, InputPrintArgs> {
 
 export class PreFormattedView extends TextAreaView {
 	onRender(output: Output): void {
-		if (output.isEditMode()) {
+		if (output.getRenderMode() === RenderMode.Edit) {
 			super.onRender(output);
 		} else {
 			output.printTag("pre", { class: "form-control" }, this.data);

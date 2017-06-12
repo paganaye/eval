@@ -1,5 +1,5 @@
 import { AnyView, View, ViewParent } from '../View';
-import { Output } from "../Output";
+import { Output, RenderMode } from "../Output";
 import { Type, ArrayType, SelectEntry, VariantObject, ObjectType, Visibility } from "../Types";
 import { ArrayPrintArgs, PrintArgs, ElementAttributes, ArrayEntryPrintArgs } from "../Theme";
 import { Parser } from "../Parser";
@@ -15,7 +15,7 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 	}
 
 	build() {
-		this.innerView = this.evalContext.instantiate(this, "[" + this.index + ']', this.data, this.type, false, {});
+		this.innerView = this.evalContext.instantiate(this, "[" + this.index + ']', this.data, this.type, RenderMode.View, {});
 	}
 
 	protected onRender(output: Output): void {
@@ -52,6 +52,7 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 	getValue() {
 		return this.innerView.getValue();
 	}
+
 }
 
 export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
@@ -92,47 +93,62 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		output.printSection({ name: "array" }, (printArgs) => {
 
 
-			output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...7", (output) => {
+			this.renderBody(output, (output) => {
 				this.arrayEntriesOutput = output;
-
 				for (var index = 0; index < this.data.length; index++) {
 					this.renderOne(index, output);
 				}
-
 				this.arrayEntriesOutput.domReplace();
 
 				// after dom replace
-				var Sortable = (window as any).Sortable;
-				var sortable = Sortable.create(output.getOutputElt(), {
-					animation: 200,
-					handle: ".sort-handle"
-				});
+				this.makeSortable(output.getOutputElt());
 
 			});
-			if (output.isEditMode()) {
-				output.printSection({ name: "array-buttons" }, (printArgs) => {
-					// we won't use HTML tables because sorting does not work well on table.
-					// we don't use the bootstrap pager because sorting is hard with a pager and it look crap on mobile
-					if (this.addButtonEntries) {
-						output.printButtonGroup({
-							buttonText: "Add",
-							entries: this.addButtonEntries
-						}, (ev, str) => {
-							var index = this.buildOne(null, str, true);
-							this.renderOne(index, this.arrayEntriesOutput);
-							this.arrayEntriesOutput.domAppend();
-						});
-					} else {
-						output.printButton({ buttonText: "+" }, (ev: Event) => {
-							var index = this.buildOne(null, null, true);
-							this.renderOne(index, this.arrayEntriesOutput);
-							this.arrayEntriesOutput.domAppend();
-						});
-					}
+
+
+			if (output.getRenderMode() === RenderMode.Edit) {
+				this.printBottomButtons(output);
+			}
+		});
+	}
+
+	printBottomButtons(output: Output) {
+		output.printSection({ name: "array-buttons" }, (printArgs) => {
+			// we won't use HTML tables because sorting does not work well on table.
+			// we don't use the bootstrap pager because sorting is hard with a pager and it look crap on mobile
+			if (this.addButtonEntries) {
+				output.printButtonGroup({
+					buttonText: "Add",
+					entries: this.addButtonEntries
+				}, (ev, str) => {
+					var index = this.buildOne(null, str, true);
+					this.renderOne(index, this.arrayEntriesOutput);
+					this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
+				});
+			} else {
+				output.printButton({ buttonText: "+" }, (ev: Event) => {
+					var index = this.buildOne(null, null, true);
+					this.renderOne(index, this.arrayEntriesOutput);
+					this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
 				});
 			}
 		});
+	}
 
+	getTemporaryParentTag(): string {
+		return "div";
+	}
+
+	renderBody(output: Output, printContent: (output) => void) {
+		output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...7", printContent);
+	}
+
+	makeSortable(elt: HTMLElement) {
+		var Sortable = (window as any).Sortable;
+		var sortable = Sortable.create(elt, {
+			animation: 200,
+			handle: ".sort-handle"
+		});
 	}
 
 	buildOne(index: number, kind: string, active: boolean): number {
