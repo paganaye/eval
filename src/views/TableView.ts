@@ -100,7 +100,7 @@ export class TableView<T> extends ArrayView<any>
 	printBottomButtons(output: Output) {
 		var modalId = this.evalContext.nextId("modal");
 
-		output.printModal({ id: modalId, title: "#newEntry", buttons: ["Create", "Cancel"] }, (output) => {
+		output.printModal({ id: modalId, title: "#newEntry", buttons: ["Add", "Cancel"] }, (output) => {
 			var newInstance = this.evalContext.newInstance(this.entryType);
 			var innerView = this.evalContext.instantiate(this, "new entry", newInstance, this.type.entryType, RenderMode.View, {});
 			innerView.render(output);
