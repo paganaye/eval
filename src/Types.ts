@@ -189,8 +189,8 @@ export var variantType: VariantType = {
 	kinds: [], // will come later
 };
 
-export var propertiesType: ArrayType<object> = {
-	_kind: "array",
+export var propertiesType: TableType<object> = {
+	_kind: "table",
 	entryType: {
 		_kind: "object",
 		properties: [
