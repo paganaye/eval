@@ -48,7 +48,7 @@ export class TableRowView extends View<any, Type, ArrayPrintArgs>
 						this.parentView.valueChanged(this);
 						var elt = document.getElementById(this.getId());
 						if (elt != null) {
-							var output2 = new Output(this.evalContext, elt, output);
+							var output2 = this.evalContext.theme.createOutput(elt, output);
 							this.render(output2);
 							output2.domReplace();
 						}
