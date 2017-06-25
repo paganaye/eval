@@ -199,7 +199,6 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	}
 
 	getValue(): any {
-		debugger;
 		if (this.arrayEntriesOutput == null) return null;
 		var container = this.arrayEntriesOutput.getOutputElt();
 		var entryKeys = this.evalContext.theme.getArrayEntriesIndex(container);
