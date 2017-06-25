@@ -34,6 +34,8 @@ import { VariantView } from "./views/VariantView";
 import { Notification } from "./commands/Notification"
 import { SelectView } from "views/SelectView";
 
+var $: any = (window as any).$;
+
 export const enum RenderMode {
 	View,
 	Edit
@@ -322,6 +324,15 @@ export class Output {
 		o.printEndTag();
 		o.domReplace();
 
+	}
+
+	showModal(id: string) {
+		$('#' + id).modal('show');
+
+	}
+
+	closeModal(id: string) {
+		$('#' + id).modal('hide').delete();
 	}
 
 	printTabPage(printArgs: TabPagePrintArgs, printContent: (output: Output) => void) {

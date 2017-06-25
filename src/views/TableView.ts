@@ -5,8 +5,6 @@ import { Type, ArrayType, SelectEntry, VariantObject, ObjectType, Visibility } f
 import { Parser } from "../Parser";
 import { Eval } from "../Eval";
 
-var $: any = (window as any).$;
-
 interface Column {
 	name: string;
 	type?: Type;
@@ -73,12 +71,13 @@ export class TableView<T> extends ArrayView<any>
 		output.printEndTag();
 	}
 
-	renderOne(index: number, output: Output) {
-		output.printStartTag('tr', { class: 'table-row' });
+	renderRow(index: number, output: Output) {
+		output.printStartTag("tr", { class: 'table-row' });
 		var row = this.data[index];
-		var first = true;
+		var firstColumn = this.columns[0];
+		var lastColumn = this.columns[this.columns.length - 1];
 		for (var key of this.columns) {
-			if (first) {
+			if (key == firstColumn) {
 				output.printTag('th', { class: 'table-handle' }, (o) => {
 					output.printTag('span', { class: "handle" }, "☰");
 					// debugger;
@@ -88,25 +87,31 @@ export class TableView<T> extends ArrayView<any>
 					output.printModal({ id: modalId, title: "#" + (index + 1), buttons: ["Close"] }, (output) => {
 						var innerView = this.evalContext.instantiate(this, "[" + index + ']', this.data[index], this.type.entryType, RenderMode.View, {});
 						innerView.render(output);
-						//super.renderOne(index, output);
 					}, b => {
+						output.closeModal(modalId);
 					});
 					//output.domReplace();
 
 					output.printButton({ buttonText: row[key.name], viewAsLink: true }, () => {
-						$('#' + modalId).modal('show')
+						output.showModal(modalId);
 						//						...modal
 						// 					$('#' + modalId).modal('show')
 					});
-
+					if (key == lastColumn) {
+						output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
+							var elt = (ev.target as HTMLElement).parentElement;
+							if (elt) elt.parentElement.remove();
+						});
+					}
+				});
+			} else if (key == lastColumn) {
+				output.printTag('td', {}, (output) => {
+					output.printText(row[key.name]);
 					output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
 						var elt = (ev.target as HTMLElement).parentElement;
 						if (elt) elt.parentElement.remove();
 					});
 				});
-
-
-				first = false;
 			}
 			else output.printTag('td', {}, row[key.name]);
 		}
@@ -120,34 +125,40 @@ export class TableView<T> extends ArrayView<any>
 
 	printBottomButtons(output: Output) {
 		// that is the buttons of the table
-		var modalId = this.evalContext.nextId("modal");
-
-		output.printModal({ id: modalId, title: "#newEntry", buttons: ["Add", "Cancel"] }, (output) => {
-			var newInstance = this.evalContext.newInstance(this.entryType);
-			var innerView = this.evalContext.instantiate(this, "new entry", newInstance, this.type.entryType, RenderMode.View, {});
-			innerView.render(output);
-			//super.renderOne(index, output);
-		}, b => {
-			switch (b.buttonText) {
-				case "Add":
-					console.log("adding...");
-					var index = this.buildOne(null, null, true);
-					this.renderOne(index, this.arrayEntriesOutput);
-					this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
-
-					break;
-				case "Cancel":
-					alert(b.buttonText);
-					break;
-			}
-		});
 
 		output.printButton({ buttonText: "+" }, (ev: Event) => {
 
 			//output.domReplace();
+			var modalId = this.evalContext.nextId("modal");
+			var newInstance: any;
+			var innerView: AnyView;
+
+			output.printModal({ id: modalId, title: "#newEntry", buttons: ["Add", "Cancel"] }, (output) => {
+				newInstance = this.evalContext.newInstance(this.entryType);
+				innerView = this.evalContext.instantiate(this, "new entry", newInstance, this.type.entryType, RenderMode.View, {});
+				innerView.render(output);
+			}, b => {
+				switch (b.buttonText) {
+					case "Add":
+						console.log("adding...");
+						//var index = this.buildOne(null, null, true);
+						newInstance = innerView.getValue();
+						var index = this.data.length;
+						this.data.push(newInstance);
+						this.addView(index, true);
+						this.renderRow(index, this.arrayEntriesOutput);
+						this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
+						output.closeModal(modalId);
+						break;
+					case "Cancel":
+						alert(b.buttonText);
+						output.closeModal(modalId);
+						break;
+				}
+			});
 
 			// output.printButton({ buttonText: row[key.name], viewAsLink: true }, () => {
-			$('#' + modalId).modal('show');
+			output.showModal(modalId);
 
 
 			// 	//						...modal
@@ -160,7 +171,7 @@ export class TableView<T> extends ArrayView<any>
 			// });
 
 			// var index = this.buildOne(null, null, true);
-			// this.renderOne(index, this.arrayEntriesOutput);
+			// this.renderRow(index, this.arrayEntriesOutput);
 			// this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
 		});
 

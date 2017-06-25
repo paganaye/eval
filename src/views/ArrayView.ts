@@ -160,7 +160,11 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 			if (kind && typeof entry == "object") (entry as VariantObject)._kind = kind;
 			this.data.push(entry);
 		}
+		this.addView(index, active);
+	}
 
+	addView(index: number, active: boolean)
+	{
 		var entry = this.data[index];
 		var id = this.evalContext.nextId("entry");
 
