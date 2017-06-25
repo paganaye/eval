@@ -161,9 +161,10 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 			this.data.push(entry);
 		}
 		this.addView(index, active);
+		return index;
 	}
 
-	addView(index: number, active: boolean)
+	addView(index: number, active: boolean): AnyView
 	{
 		var entry = this.data[index];
 		var id = this.evalContext.nextId("entry");
@@ -190,7 +191,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		this.viewById[view.getId()] = view;
 		this.views.push(view);
 
-		return index;
+		return view;
 	}
 
 	renderOne(index: number, output: Output) {
@@ -199,6 +200,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	}
 
 	getValue(): any {
+		debugger;
 		if (this.arrayEntriesOutput == null) return null;
 		var container = this.arrayEntriesOutput.getOutputElt();
 		var entryKeys = this.evalContext.theme.getArrayEntriesIndex(container);

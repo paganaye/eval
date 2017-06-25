@@ -1,5 +1,5 @@
-import { ArrayView } from './ArrayView';
-import { AnyView, View, ViewParent } from '../View';
+import { ArrayView } from "./ArrayView";
+import { AnyView, View, ViewParent } from "../View";
 import { Output, RenderMode } from "../Output";
 import { Type, ArrayType, SelectEntry, VariantObject, ObjectType, Visibility } from "../Types";
 import { Parser } from "../Parser";
@@ -43,7 +43,7 @@ export class TableView<T> extends ArrayView<any>
 		}
 
 		for (var index = 0; index < this.data.length; index++) {
-			var row = this.data[index];
+			var row = this.data[index] || {};
 			var keys = Object.keys(row);
 			for (var key of keys) {
 				if (this.columnsByName[key]) continue;
@@ -57,39 +57,47 @@ export class TableView<T> extends ArrayView<any>
 			this.columnsByName["text"] = column;
 			this.columns.push(column);
 		}
+		debugger;
 		output.printStartTag("table", { border: "1", class: "table-entries table", id: this.entriesElementId });
-		output.printHTML('<thead><tr>');
+		output.printHTML("<thead><tr>");
 		for (var column of this.columns) {
-			output.printTag('th', {}, column.name);
+			output.printTag("th", {}, column.name);
 		}
-		output.printHTML('</tr></thead>');
+		output.printHTML("</tr></thead>");
 
-		output.printAsync('tbody', { id: "table" }, "", (output) => {
+		output.printAsync("tbody", { id: "table" }, "", (output) => {
 			printContent(output);
 		});
-		output.printHTML('</tbody>');
+		output.printHTML("</tbody>");
 		output.printEndTag();
 	}
 
-	renderRow(index: number, output: Output) {
-		output.printStartTag("tr", { class: 'table-row' });
-		var row = this.data[index];
+	renderOne(index: number, output: Output) {
+		var arrayEntry: AnyView = this.views[index];
+		this.renderRow(arrayEntry, index, output);
+	}
+
+
+	renderRow(view: AnyView, index: number, output: Output) {
+		debugger;
+		var rowId = view.getId(); // this.evalContext.nextId("row");
+		output.printStartTag("tr", { class: "table-row", id: rowId });
+		var row = this.data[index] || {};
 		var firstColumn = this.columns[0];
 		var lastColumn = this.columns[this.columns.length - 1];
 		for (var key of this.columns) {
-			output.printStartTag(key == firstColumn ? 'th' : 'td', { class: 'table-handle' });
+			output.printStartTag(key == firstColumn ? "th" : "td", { class: "table-handle" });
 			if (key == firstColumn) {
-				output.printTag('span', { class: "handle" }, "☰");
+				output.printTag("span", { class: "handle" }, "☰");
 				var text = row[key.name] || "blank";
 				output.printButton({ buttonText: text, viewAsLink: true }, () => {
 					var modalId = this.evalContext.nextId("modal");
 					output.printModal({ id: modalId, title: "#" + (index + 1), buttons: ["Close"] }, (output) => {
-						var innerView = this.evalContext.instantiate(this, "[" + index + ']', this.data[index], this.type.entryType, RenderMode.View, {});
+						var innerView = this.evalContext.instantiate(this, "[" + index + "]", this.data[index], this.type.entryType, RenderMode.View, {});
 						innerView.render(output);
 					}, b => {
 						output.closeModal(modalId);
 					});
-					//output.domReplace();
 					output.showModal(modalId);
 				});
 			}
@@ -135,8 +143,8 @@ export class TableView<T> extends ArrayView<any>
 						newInstance = innerView.getValue();
 						var index = this.data.length;
 						this.data.push(newInstance);
-						this.addView(index, true);
-						this.renderRow(index, this.arrayEntriesOutput);
+						var view = this.addView(index, true);
+						this.renderRow(view, index, this.arrayEntriesOutput);
 						this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
 						output.closeModal(modalId);
 						break;
@@ -152,7 +160,7 @@ export class TableView<T> extends ArrayView<any>
 
 
 			// 	//						...modal
-			// 	// 					$('#' + modalId).modal('show')
+			// 	// 					$("#" + modalId).modal("show")
 			// });
 
 			// output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
@@ -172,7 +180,7 @@ export class TableView<T> extends ArrayView<any>
 		var Sortable = (window as any).Sortable;
 		var sortable = Sortable.create(tbody, {
 			animation: 200,
-			draggable: '.table-row',
+			draggable: ".table-row",
 			handle: ".table-handle"
 		});
 

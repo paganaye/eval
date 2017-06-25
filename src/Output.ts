@@ -289,8 +289,17 @@ export class Output {
 		var elt = document.createElement("div");
 		document.body.appendChild(elt);
 		var o = this.evalContext.theme.createOutput(elt, this);
+		var id = (printArgs as any).id;
+		if (id) {
+			var previousElt = document.getElementById(id);
+			console.log("shouldRemove");
 
-		var attributes: ElementAttributes = { id: (printArgs as any).id };
+			if (previousElt) previousElt.remove();
+
+		}
+		var attributes: ElementAttributes = { id: id };
+
+//		var attributes: ElementAttributes = { id: (printArgs as any).id };
 
 		Output.addClass(attributes, "modal fade");
 		o.printStartTag("div", attributes);
@@ -332,7 +341,7 @@ export class Output {
 	}
 
 	closeModal(id: string) {
-		$('#' + id).modal('hide').delete();
+		$('#' + id).modal('hide');
 	}
 
 	printTabPage(printArgs: TabPagePrintArgs, printContent: (output: Output) => void) {
