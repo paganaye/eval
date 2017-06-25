@@ -39,6 +39,10 @@ export const enum RenderMode {
 	Edit
 }
 
+export class ModalContext {
+	buttonText: string;
+}
+
 export class Output {
 	arrayEntriesOutput
 	public html: String[] = [];
@@ -279,7 +283,7 @@ export class Output {
 		this.printEndTag();
 	}
 
-	printModal(printArgs: ModalPrintArgs, printContent: (output: Output) => void) {
+	printModal(printArgs: ModalPrintArgs, printContent: (output: Output) => void, buttonClicked: (button: ModalContext) => void) {
 		var elt = document.createElement("div");
 		document.body.appendChild(elt);
 		var o = this.evalContext.theme.createOutput(elt, this);
@@ -303,7 +307,12 @@ export class Output {
 		var first = true;
 		if (printArgs.buttons) {
 			for (var b of printArgs.buttons) {
-				o.printTag('button', { type: "button", class: first ? "btn btn-primary" : "btn", "data-dismiss": "modal" }, b);
+				o.printButton({ buttonText: b }, ev => {
+					buttonClicked({
+						buttonText: (ev.target as HTMLInputElement).innerText
+					})
+				});
+				//o.printTag('button', { type: "button", class: first ? "btn btn-primary" : "btn", "data-dismiss": "modal" }, b);
 				first = false;
 			}
 		}
@@ -320,7 +329,9 @@ export class Output {
 		if (printArgs.modal) {
 			var modalArgs = printArgs as any as ModalPrintArgs;
 			modalArgs.buttons = ["Close"];
-			this.printModal(modalArgs, (output) => printContent(output));
+			this.printModal(modalArgs, (output) => printContent(output), b => {
+
+			});
 		} else {
 			var attributes: ElementAttributes = { class: this.getClassPrefix() + printArgs.id };
 

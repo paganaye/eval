@@ -9,6 +9,8 @@ var $: any = (window as any).$;
 
 interface Column {
 	name: string;
+	type?: Type;
+	label?: string;
 }
 
 export class TableView<T> extends ArrayView<any>
@@ -29,6 +31,19 @@ export class TableView<T> extends ArrayView<any>
 	renderBody(output: Output, printContent: (output: Output) => void) {
 		this.columns = [];
 		this.columnsByName = {};
+		var entryType = this.type.entryType || { _kind: "string" };
+		if (entryType._kind == "object") {
+			for (var index = 0; index < entryType.properties.length; index++) {
+				var property = entryType.properties[index];
+				var key = property.name;
+				if (this.columnsByName[key]) continue;
+				if (property.visibility == "hidden") continue;
+				var column: Column = { name: key, type: property.type, label: property.label };
+				this.columnsByName[key] = column;
+				this.columns.push(column);
+			}
+		}
+
 		for (var index = 0; index < this.data.length; index++) {
 			var row = this.data[index];
 			var keys = Object.keys(row);
@@ -38,6 +53,11 @@ export class TableView<T> extends ArrayView<any>
 				this.columnsByName[key] = column;
 				this.columns.push(column);
 			}
+		}
+		if (this.columns.length == 0) {
+			var column: Column = { name: "text" };
+			this.columnsByName["text"] = column;
+			this.columns.push(column);
 		}
 		output.printStartTag("table", { border: "1", class: "table-entries table", id: this.entriesElementId });
 		output.printHTML('<thead><tr>');
@@ -69,6 +89,7 @@ export class TableView<T> extends ArrayView<any>
 						var innerView = this.evalContext.instantiate(this, "[" + index + ']', this.data[index], this.type.entryType, RenderMode.View, {});
 						innerView.render(output);
 						//super.renderOne(index, output);
+					}, b => {
 					});
 					//output.domReplace();
 
@@ -98,6 +119,7 @@ export class TableView<T> extends ArrayView<any>
 	}
 
 	printBottomButtons(output: Output) {
+		// that is the buttons of the table
 		var modalId = this.evalContext.nextId("modal");
 
 		output.printModal({ id: modalId, title: "#newEntry", buttons: ["Add", "Cancel"] }, (output) => {
@@ -105,6 +127,19 @@ export class TableView<T> extends ArrayView<any>
 			var innerView = this.evalContext.instantiate(this, "new entry", newInstance, this.type.entryType, RenderMode.View, {});
 			innerView.render(output);
 			//super.renderOne(index, output);
+		}, b => {
+			switch (b.buttonText) {
+				case "Add":
+					console.log("adding...");
+					var index = this.buildOne(null, null, true);
+					this.renderOne(index, this.arrayEntriesOutput);
+					this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
+
+					break;
+				case "Cancel":
+					alert(b.buttonText);
+					break;
+			}
 		});
 
 		output.printButton({ buttonText: "+" }, (ev: Event) => {
@@ -112,7 +147,9 @@ export class TableView<T> extends ArrayView<any>
 			//output.domReplace();
 
 			// output.printButton({ buttonText: row[key.name], viewAsLink: true }, () => {
-			$('#' + modalId).modal('show')
+			$('#' + modalId).modal('show');
+
+
 			// 	//						...modal
 			// 	// 					$('#' + modalId).modal('show')
 			// });

@@ -109,7 +109,7 @@ export class BootstrapOutput extends Output {
 				})
 				output.printTag("div", {}, view.toString());
 				var modalId = this.evalContext.nextId("modal");
-				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] }, (output) => view.render(output));
+				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] }, (output) => view.render(output), c => { });
 				output.domReplace();
 			});
 		}

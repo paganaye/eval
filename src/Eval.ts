@@ -155,8 +155,11 @@ export class Eval {
 										{ name: "p1", type: { _kind: "string" } },
 										{
 											name: "p2", type: { _kind: "string" },
-											visibility: "drilldown"
-										}
+											// visibility: "drilldown"
+										},
+										{ name: "p3", type: { _kind: "string" } },
+										{ name: "p4", type: { _kind: "string" } },
+										{ name: "p5", type: { _kind: "string" } }
 									],
 									template: "{p1} ({p2})"
 								}
