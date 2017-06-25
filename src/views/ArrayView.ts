@@ -160,12 +160,6 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 			if (kind && typeof entry == "object") (entry as VariantObject)._kind = kind;
 			this.data.push(entry);
 		}
-		this.addView(index, active);
-		return index;
-	}
-
-	addView(index: number, active: boolean): AnyView
-	{
 		var entry = this.data[index];
 		var id = this.evalContext.nextId("entry");
 
@@ -185,12 +179,17 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		else {
 			label = "#" + (this.views.length + 1);
 		}
-		var view = new ArrayEntryView(this.evalContext, this, index, active);
-		view.beforeBuild(entry, this.entryType, {});
-		view.build();
+		var view = this.createView(index, active) as ArrayEntryView;
 		this.viewById[view.getId()] = view;
 		this.views.push(view);
 
+		return index;
+	}
+
+	createView(index: number, active: boolean): AnyView {
+		var view = new ArrayEntryView(this.evalContext, this, index, active);
+		view.beforeBuild(this.data[index], this.entryType, {});
+		view.build();
 		return view;
 	}
 

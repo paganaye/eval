@@ -1,15 +1,77 @@
+import { Eval } from '../Eval';
+import { Output, RenderMode } from '../Output';
+import { Parser } from '../Parser';
+import { ArrayEntryPrintArgs, ArrayPrintArgs } from '../Theme';
+import { ArrayType, ObjectType, SelectEntry, Type, VariantObject, Visibility } from '../Types';
+import { AnyView, View, ViewParent } from '../View';
 import { ArrayView } from "./ArrayView";
-import { AnyView, View, ViewParent } from "../View";
-import { Output, RenderMode } from "../Output";
-import { Type, ArrayType, SelectEntry, VariantObject, ObjectType, Visibility } from "../Types";
-import { Parser } from "../Parser";
-import { Eval } from "../Eval";
 
 interface Column {
 	name: string;
 	type?: Type;
 	label?: string;
 }
+
+export class TableRowView extends View<any, Type, ArrayPrintArgs>
+{
+	innerView: AnyView;
+
+	constructor(evalContext: Eval, private parentView: TableView<any>, private index: number, private active: boolean) {
+		super()
+		this.initialize(evalContext, parentView, "#" + index);
+	}
+
+	build() {
+		this.innerView = this.evalContext.instantiate(this, "[" + this.index + ']', this.data, this.type, RenderMode.View, {});
+	}
+
+	protected onRender(output: Output): void {
+		output.printStartTag("tr", { class: "table-row", id: this.getId() });
+		var row = this.data || {};
+		var columns = this.parentView.columns;
+		var firstColumn = columns[0];
+		var lastColumn = columns[columns.length - 1];
+		for (var key of columns) {
+			if (key == firstColumn) {
+				output.printStartTag("th", { class: "table-handle" });
+				output.printTag("span", { class: "handle" }, "☰");
+				var text = row[key.name] || "blank";
+				output.printButton({ buttonText: text, viewAsLink: true }, () => {
+					var modalId = this.evalContext.nextId("modal");
+					var modalView: AnyView;
+					output.printModal({ id: modalId, title: "#" + (this.index + 1), buttons: ["Close"] }, (output) => {
+						modalView = this.evalContext.instantiate(this, "[" + this.index + "]", this.data, this.type, RenderMode.View, {});
+						modalView.render(output);
+					}, b => {
+						this.data = modalView.getValue();
+						//alert(JSON.stringify());
+						output.closeModal(modalId);
+					});
+					output.showModal(modalId);
+				});
+			}
+			else {
+				output.printStartTag("td", {});
+				var text = row[key.name] || "";
+				output.printText(text);
+			}
+			if (key == lastColumn) {
+				output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
+					var elt = (ev.target as HTMLElement).parentElement;
+					if (elt) elt.parentElement.remove();
+				});
+			}
+			output.printEndTag();
+		}
+		output.printEndTag();
+	}
+
+	getValue() {
+		return this.innerView.getValue();
+	}
+
+}
+
 
 export class TableView<T> extends ArrayView<any>
 {
@@ -57,7 +119,6 @@ export class TableView<T> extends ArrayView<any>
 			this.columnsByName["text"] = column;
 			this.columns.push(column);
 		}
-		debugger;
 		output.printStartTag("table", { border: "1", class: "table-entries table", id: this.entriesElementId });
 		output.printHTML("<thead><tr>");
 		for (var column of this.columns) {
@@ -72,48 +133,12 @@ export class TableView<T> extends ArrayView<any>
 		output.printEndTag();
 	}
 
-	renderOne(index: number, output: Output) {
-		var arrayEntry: AnyView = this.views[index];
-		this.renderRow(arrayEntry, index, output);
-	}
-
-
-	renderRow(view: AnyView, index: number, output: Output) {
-		debugger;
-		var rowId = view.getId(); // this.evalContext.nextId("row");
-		output.printStartTag("tr", { class: "table-row", id: rowId });
-		var row = this.data[index] || {};
-		var firstColumn = this.columns[0];
-		var lastColumn = this.columns[this.columns.length - 1];
-		for (var key of this.columns) {
-			output.printStartTag(key == firstColumn ? "th" : "td", { class: "table-handle" });
-			if (key == firstColumn) {
-				output.printTag("span", { class: "handle" }, "☰");
-				var text = row[key.name] || "blank";
-				output.printButton({ buttonText: text, viewAsLink: true }, () => {
-					var modalId = this.evalContext.nextId("modal");
-					output.printModal({ id: modalId, title: "#" + (index + 1), buttons: ["Close"] }, (output) => {
-						var innerView = this.evalContext.instantiate(this, "[" + index + "]", this.data[index], this.type.entryType, RenderMode.View, {});
-						innerView.render(output);
-					}, b => {
-						output.closeModal(modalId);
-					});
-					output.showModal(modalId);
-				});
-			}
-			else {
-				var text = row[key.name] || "";
-				output.printText(text);
-			}
-			if (key == lastColumn) {
-				output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
-					var elt = (ev.target as HTMLElement).parentElement;
-					if (elt) elt.parentElement.remove();
-				});
-			}
-			output.printEndTag();
-		}
-		output.printEndTag();
+	createView(index: number, active: boolean): AnyView {
+		var data = this.data[index];
+		var view = new TableRowView(this.evalContext, this, index, active);
+		view.beforeBuild(data, this.entryType, {});
+		view.build();
+		return view;
 	}
 
 	// this is use for appending rows fast
@@ -129,27 +154,25 @@ export class TableView<T> extends ArrayView<any>
 			//output.domReplace();
 			var modalId = this.evalContext.nextId("modal");
 			var newInstance: any;
-			var innerView: AnyView;
+			var modalView: AnyView;
 
 			output.printModal({ id: modalId, title: "#newEntry", buttons: ["Add", "Cancel"] }, (output) => {
 				newInstance = this.evalContext.newInstance(this.entryType);
-				innerView = this.evalContext.instantiate(this, "new entry", newInstance, this.type.entryType, RenderMode.View, {});
-				innerView.render(output);
+				modalView = this.evalContext.instantiate(this, "new entry", newInstance, this.type.entryType, RenderMode.View, {});
+				modalView.render(output);
 			}, b => {
 				switch (b.buttonText) {
 					case "Add":
 						console.log("adding...");
 						//var index = this.buildOne(null, null, true);
-						newInstance = innerView.getValue();
 						var index = this.data.length;
-						this.data.push(newInstance);
-						var view = this.addView(index, true);
-						this.renderRow(view, index, this.arrayEntriesOutput);
+						this.data[index] = modalView.getValue();
+						this.buildOne(index, null, true);
+						this.renderOne(index, this.arrayEntriesOutput);
 						this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
 						output.closeModal(modalId);
 						break;
 					case "Cancel":
-						alert(b.buttonText);
 						output.closeModal(modalId);
 						break;
 				}
