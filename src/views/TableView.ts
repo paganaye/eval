@@ -77,12 +77,11 @@ export class TableView<T> extends ArrayView<any>
 		var firstColumn = this.columns[0];
 		var lastColumn = this.columns[this.columns.length - 1];
 		for (var key of this.columns) {
+			output.printStartTag(key == firstColumn ? 'th' : 'td', { class: 'table-handle' });
 			if (key == firstColumn) {
-				output.printTag('th', { class: 'table-handle' }, (o) => {
-					output.printTag('span', { class: "handle" }, "☰");
-					// debugger;
-
-					//				output.printTag("div", {}, view.toString());
+				output.printTag('span', { class: "handle" }, "☰");
+				var text = row[key.name] || "blank";
+				output.printButton({ buttonText: text, viewAsLink: true }, () => {
 					var modalId = this.evalContext.nextId("modal");
 					output.printModal({ id: modalId, title: "#" + (index + 1), buttons: ["Close"] }, (output) => {
 						var innerView = this.evalContext.instantiate(this, "[" + index + ']', this.data[index], this.type.entryType, RenderMode.View, {});
@@ -91,29 +90,20 @@ export class TableView<T> extends ArrayView<any>
 						output.closeModal(modalId);
 					});
 					//output.domReplace();
-
-					output.printButton({ buttonText: row[key.name], viewAsLink: true }, () => {
-						output.showModal(modalId);
-						//						...modal
-						// 					$('#' + modalId).modal('show')
-					});
-					if (key == lastColumn) {
-						output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
-							var elt = (ev.target as HTMLElement).parentElement;
-							if (elt) elt.parentElement.remove();
-						});
-					}
-				});
-			} else if (key == lastColumn) {
-				output.printTag('td', {}, (output) => {
-					output.printText(row[key.name]);
-					output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
-						var elt = (ev.target as HTMLElement).parentElement;
-						if (elt) elt.parentElement.remove();
-					});
+					output.showModal(modalId);
 				});
 			}
-			else output.printTag('td', {}, row[key.name]);
+			else {
+				var text = row[key.name] || "";
+				output.printText(text);
+			}
+			if (key == lastColumn) {
+				output.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
+					var elt = (ev.target as HTMLElement).parentElement;
+					if (elt) elt.parentElement.remove();
+				});
+			}
+			output.printEndTag();
 		}
 		output.printEndTag();
 	}
