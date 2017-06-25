@@ -45,6 +45,13 @@ export class TableRowView extends View<any, Type, ArrayPrintArgs>
 					}, b => {
 						this.data = modalView.getValue();
 						//alert(JSON.stringify());
+						this.parentView.valueChanged(this);
+						var elt = document.getElementById(this.getId());
+						if (elt != null) {
+							var output2 = new Output(this.evalContext, elt, output);
+							this.render(output2);
+							output2.domReplace();
+						}
 						output.closeModal(modalId);
 					});
 					output.showModal(modalId);
@@ -197,6 +204,10 @@ export class TableView<T> extends ArrayView<any>
 		});
 
 
+	}
+
+	valueChanged(childView: TableRowView): any {
+		this.data = this.getValue();
 	}
 
 	makeSortable(tbody: HTMLElement) {
