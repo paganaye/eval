@@ -36,10 +36,6 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 			viewParent.childViews.push(this);
 		}
 
-		if (viewParent == null) {
-			console.error("View has no parent. This is not normal.");
-			debugger;
-		}
 		var prefix = ((this as object).constructor as any).name;
 		this.id = evalContext.nextId(prefix);
 	}

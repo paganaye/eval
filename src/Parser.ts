@@ -17,6 +17,7 @@ import {
 } from './Expression';
 import { Output, RenderMode } from './Output';
 import { Token, Tokenizer, TokenType } from './Tokenizer';
+import { Visibility } from './Types';
 
 // we keep the same priorities than javascript but with less operators.
 // pure function only (no assignment)
@@ -46,11 +47,14 @@ class TemplateParts {
 	print(output: Output): void {
 		for (var e of this.expressions) {
 			var value = e.getValue(this.evalContext);
+			var label = null;
 			if (e instanceof HTMLLiteral) {
 				output.printHTML(value);
 			} else {
-				var view = this.evalContext.instantiate(null, null, value, null, RenderMode.View, {});
-				view.render(output);
+				if (e instanceof GetVariable) {
+					label = e.getVariableName();
+				}
+				output.printProperty(null, { visibility: "visible", label: label, description: null }, value, null)
 			}
 		}
 	}

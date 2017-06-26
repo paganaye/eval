@@ -78,7 +78,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		}
 		this.views = [];
 		this.viewById = {};
-		this.entryType = this.type.entryType
+		this.entryType = this.type.entryType || {} as Type;
 		this.entriesElementId = this.evalContext.nextId("entries");
 
 		if (this.entryType._kind == "variant") {

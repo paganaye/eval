@@ -8,6 +8,7 @@ import {
 	arrayOfEnum,
 	arrayOfValidationRegexp,
 	ArrayType,
+	TableType,
 	ObjectType,
 	propertiesType,
 	tabsType,
@@ -24,7 +25,6 @@ import {
 import { AnyView, View, ViewFactory, ViewParent } from './View';
 import { JSONView } from './views/JSONView';
 import { RenderMode } from "./Output";
-
 
 export interface VariableBag {
 	getVariable(name: string): any;
@@ -99,7 +99,7 @@ export class Eval {
 		if (!_type) {
 			switch (typeof data) {
 				case "object":
-					_type = Array.isArray(data) ? types['array'] : types['object'];
+					_type = Array.isArray(data) ? types['table'] : types['object'];
 					break;
 				default:
 					_type = types[typeof data] || types['object'];
@@ -330,6 +330,7 @@ export class Eval {
 				if (typeof variantResult == "object") variantResult._kind = instanceType.kinds[0].key;
 				return variantResult;
 			case "array":
+			case "table":
 				return [];
 			default:
 				if ((instanceType as ObjectType).properties) {
