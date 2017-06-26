@@ -1,14 +1,15 @@
-import { Output } from "./Output";
-import { Type, ConstType } from "./Types";
-import { Expression } from './Expression';
-import { Eval } from "./Eval";
-import { PrintArgs, ElementAttributes } from "./Theme";
+import { Eval, VariableBag } from './Eval';
+import { Output } from './Output';
+import { PrintArgs } from './Theme';
+import { ConstType, Type } from './Types';
+
 
 export interface ViewParent {
 	valueChanged(view: AnyView): void;
 }
 
-export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintArgs> {
+export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintArgs>
+	implements VariableBag {
 	static viewFactories: { [key: string]: ViewFactory } = {};
 	protected data: TValue;
 	protected type: TType;
@@ -48,6 +49,17 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 		this.rendered = true;
 	}
 
+	getVariable(name: string): any {
+		return this.data[name];
+	}
+
+	setVariable(name: string, value: any): void {
+		this.data[name] = value;
+	}
+
+	getView(): AnyView {
+		return this;
+	}
 
 	beforeBuild(data: TValue, type: TType, printArgs: TPrintArgs): void {
 		this.type = type || {} as TType;
@@ -173,6 +185,7 @@ export abstract class View<TValue, TType extends Type, TPrintArgs extends PrintA
 	toString() {
 		return JSON.stringify(this.data);
 	}
+
 
 }
 

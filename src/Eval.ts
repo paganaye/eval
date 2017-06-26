@@ -26,14 +26,24 @@ import { JSONView } from './views/JSONView';
 import { RenderMode } from "./Output";
 
 
+export interface VariableBag {
+	getVariable(name: string): any;
+	setVariable(name: string, value: any): void;
+	getView(): AnyView;
+}
+
 export class Eval {
-	globalVariables: { [key: string]: any } = {};
+	variableBag = {}
+
+	globalVariables: VariableBag = {
+		getVariable: (name: string) => { return this.variableBag[name]; },
+		setVariable: (name: string, value: any): void => { this.variableBag[name] = value; },
+		getView() { return null; }
+	}
+
 	userName: string = "guest";
 	userId: string = null;
 	defaultViewFactory: ViewFactory = new ViewFactory("default", () => new JSONView());
-
-
-
 
 	database: Database;
 	theme: Theme;
@@ -69,7 +79,7 @@ export class Eval {
 	}
 
 	getVariable(variableName: string): any {
-		var result = this.globalVariables[variableName];
+		var result = this.globalVariables.getVariable(variableName);
 		if (result == null) {
 
 		}
@@ -77,7 +87,7 @@ export class Eval {
 	}
 
 	setVariable(variableName: string, value: any): void {
-		this.globalVariables[variableName] = value;
+		this.globalVariables.setVariable(variableName, value);
 	}
 
 	stringify(expr: Expression<any>, type?: Type): string {
@@ -167,7 +177,8 @@ export class Eval {
 							visibility: "visible"
 						}
 
-					]
+					],
+					template: "<p>hi {make} {model} {secondary}</p>"
 				};
 				pageType = carType;
 				break;

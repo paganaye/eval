@@ -1,9 +1,21 @@
 import { Command, CommandFactory } from './Command';
-import { Tokenizer, Token, TokenType } from './Tokenizer';
-import { CommandCall } from "./CommandCall";
-import { Eval } from "./Eval";
+import { CommandCall } from './CommandCall';
+import { Eval } from './Eval';
 import { CommandDescription, EvalFunction, ParameterDefinition } from './EvalFunction';
-import { JsonArray, FunctionCall, Expression, UnaryOp, GetVariable, Const, BinaryOp, JsonObject, GetMember, Concat } from './Expression';
+import {
+   BinaryOp,
+   Concat,
+   Const,
+   Expression,
+   FunctionCall,
+   GetMember,
+   GetVariable,
+   JsonArray,
+   JsonObject,
+   Render,
+   UnaryOp,
+} from './Expression';
+import { Token, Tokenizer, TokenType } from './Tokenizer';
 
 // we keep the same priorities than javascript but with less operators.
 // pure function only (no assignment)
@@ -43,7 +55,7 @@ export class Parser {
 		return this.parseExpression(Priority.None);
 	}
 
-	parseTemplate(template: string) {
+	parseTemplate(template: string): Expression<any> {
 		this.init(template, true);
 		//return this.parseExpression(Priority.None);
 		var parts: Expression<any>[] = [];
@@ -52,6 +64,9 @@ export class Parser {
 				this.tokenizer.inTemplate = false;
 				this.nextToken();
 				var expr = this.parseExpression(Priority.None);
+				if (expr instanceof GetVariable) {
+					expr = new Render(expr);
+				}
 				if (this.token.type == TokenType.Operator && this.token.stringValue as any == "}") {
 					parts.push(expr)
 					this.tokenizer.inTemplate = true;

@@ -1,8 +1,9 @@
-import { View } from "../View";
-import { Output, RenderMode } from "../Output";
-import { Type, ObjectType, Visibility } from "../Types";
-import { PrintArgs, ElementAttributes } from "../Theme";
-import { ObjectView } from "../views/ObjectView";
+import { VariableBag } from '../Eval';
+import { Output, RenderMode } from '../Output';
+import { ElementAttributes, PrintArgs } from '../Theme';
+import { ObjectType, Type, Visibility } from '../Types';
+import { View } from '../View';
+import { ObjectView } from '../views/ObjectView';
 import { Parser } from "../Parser";
 
 
@@ -45,7 +46,7 @@ export class TypeView extends ObjectView {
 			if (template) {
 				//TODO: evaluate expression here...
 				var parser = new Parser(this.evalContext);
-				this.evalContext.globalVariables = data;
+				this.evalContext.globalVariables = this;
 				try {
 					var expr = parser.parseTemplate(template);
 					text = expr.getValue(this.evalContext);

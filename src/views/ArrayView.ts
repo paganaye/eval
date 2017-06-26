@@ -1,9 +1,9 @@
+import { Eval, VariableBag } from '../Eval';
+import { Output, RenderMode } from '../Output';
+import { Parser } from '../Parser';
+import { ArrayEntryPrintArgs, ArrayPrintArgs, ElementAttributes, PrintArgs } from '../Theme';
+import { ArrayType, ObjectType, SelectEntry, Type, VariantObject, Visibility } from '../Types';
 import { AnyView, View, ViewParent } from '../View';
-import { Output, RenderMode } from "../Output";
-import { Type, ArrayType, SelectEntry, VariantObject, ObjectType, Visibility } from "../Types";
-import { ArrayPrintArgs, PrintArgs, ElementAttributes, ArrayEntryPrintArgs } from "../Theme";
-import { Parser } from "../Parser";
-import { Eval } from "../Eval";
 
 export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 {
@@ -18,13 +18,20 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 		this.innerView = this.evalContext.instantiate(this, "[" + this.index + ']', this.data, this.type, RenderMode.View, {});
 	}
 
+	getVariable(name: string): any {
+		return this.data[name];
+	}
+	setVariable(name: string, value: any): void {
+		this.data[name] = value;
+	}
+
 	protected onRender(output: Output): void {
 		var template = this.type.template;
 		var label: string;
 		if (template) {
 			//TODO: evaluate expression here...
 			var parser = new Parser(this.evalContext);
-			this.evalContext.globalVariables = this.data;
+			this.evalContext.globalVariables = this;
 			try {
 				var expr = parser.parseTemplate(template);
 				label = expr.getValue(this.evalContext);
@@ -168,7 +175,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		if (template) {
 			//TODO: evaluate expression...
 			var parser = new Parser(this.evalContext);
-			this.evalContext.globalVariables = entry;
+			this.evalContext.globalVariables = this;
 			try {
 				var expr = parser.parseTemplate(template);
 				label = expr.getValue(this.evalContext);

@@ -1,9 +1,9 @@
 import { View, AnyView } from "../View";
-import { Output, RenderMode } from "../Output";
-import { Type, ObjectType, Property, Visibility } from "../Types";
-import { PrintArgs } from "../Theme";
-import { Parser } from "../Parser";
-import { Eval } from "../Eval";
+import { Eval, VariableBag } from '../Eval';
+import { Output, RenderMode } from '../Output';
+import { Parser } from '../Parser';
+import { PrintArgs } from '../Theme';
+import { ObjectType, Property, Type, Visibility } from '../Types';
 
 var $: any = (window as any).$;
 
@@ -122,13 +122,8 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	}
 
 	printTemplate(output: Output) {
-		var html: string;
-		var parser = new Parser(this.evalContext);
 		try {
-			var expr = parser.parseTemplate(this.type.template);
-			this.data = this.getValue();
-			this.evalContext.globalVariables = this.data;
-			html = expr.getValue(this.evalContext);
+			var html = this.getTemplateResult();
 			output.printHTML(html);
 		} catch (error) {
 			output.printTag("div", { class: "error" }, error);
@@ -138,16 +133,11 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	getTemplateResult(): string {
 		var html: string;
 		var parser = new Parser(this.evalContext);
-		try {
-			var expr = parser.parseTemplate(this.type.template);
-			this.data = this.getValue();
-			this.evalContext.globalVariables = this.data;
-			html = expr.getValue(this.evalContext);
-			return html;
-		} catch (error) {
-			return "Error: " + error;
-		}
-
+		var template = this.type ? this.type.template : "";
+		var tree = parser.parseTemplate(template);
+		this.data = this.getValue();
+		this.evalContext.globalVariables = this;
+		return tree.getValue(this.evalContext) as string;
 	}
 
 	printProperty(property: Property, output: Output) {
@@ -195,5 +185,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	toString(): string {
 		return this.getTemplateResult();
 	}
+
+
 }
 View.registerViewFactory("object", () => new ObjectView());

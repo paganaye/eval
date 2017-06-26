@@ -1,6 +1,10 @@
 import { Eval } from './Eval';
-import { EvalFunction, ParameterDefinition, CommandDescription } from './EvalFunction';
+import { EvalConsole } from './EvalConsole';
+import { CommandDescription, EvalFunction, ParameterDefinition } from './EvalFunction';
+import { Output } from './Output';
 import { Type } from './Types';
+import { AnyView, ViewParent } from './View';
+import { ObjectView } from './views/ObjectView';
 
 export interface Subscriber {
 	on(publisher: Publisher);
@@ -25,6 +29,7 @@ export abstract class Expression<T> implements HasValue, Publisher, Subscriber {
 	private label: string;
 	private unit: string;
 	private type: Type;
+
 	abstract calcValue(evalContext: Eval): T;
 
 	getLabel(): string {
@@ -92,10 +97,39 @@ export class GetVariable extends Expression<any> {
 	}
 
 	getVariableName(): string { return this.variableName; }
+
 	calcValue(evalContext: Eval): any {
 		return evalContext.getVariable(this.variableName);
 	}
+
 }
+
+export class Render extends Expression<string> implements ViewParent {
+	constructor(private expr: Expression<any>) {
+		super();
+	}
+
+	calcValue(evalContext: Eval): any {
+		var output = new Output(evalContext, null, null);
+		var value = this.expr.getValue(evalContext);
+		if (typeof value === "object") {
+			var view = new ObjectView();
+
+			view.initialize(evalContext, this, null);
+			view.beforeBuild(value, null, {});
+
+			view.build();
+			view.render(output);
+		} else {
+			output.printText(value);
+		}
+		return output.toString();
+	}
+
+	valueChanged(view: AnyView): void {
+	}
+}
+
 
 export class UnaryOp extends Expression<any> {
 	constructor(private op1: Expression<any>, private operator: string) {
@@ -282,7 +316,8 @@ export class Concat extends Expression<string> {
 	calcValue(evalContext: Eval): string {
 		var result = [];
 		for (var e of this.parts) {
-			result.push(e.getValue(evalContext))
+			var value = e.getValue(evalContext);
+			result.push(value);
 		}
 		return result.join("");
 	}
