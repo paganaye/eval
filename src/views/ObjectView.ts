@@ -78,47 +78,55 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 	onRender(output: Output): void {
 		switch (output.getRenderMode()) {
 			case RenderMode.View:
-				this.printTemplate(output);
+				if (this.type.template) {
+					this.printTemplate(output);
+				} else {
+					this.printAsForm(output);
+				}
 				break;
 			default:
-				output.printSection({ name: "object" }, (output, printArgs) => {
-					if (this.mainProperties.length) {
-						output.printSection({ name: "object-properties" }, (printArgs) => {
-							for (var property of this.mainProperties) {
+				this.printAsForm(output);
+				break;
+		}
+	}
+
+	printAsForm(output: Output) {
+		output.printSection({ name: "object" }, (output, printArgs) => {
+			if (this.mainProperties.length) {
+				output.printSection({ name: "object-properties" }, (printArgs) => {
+					for (var property of this.mainProperties) {
+						this.printProperty(property, output);
+					}
+				});
+			}
+			if (this.tabNames.length) {
+				this.tabIds = this.tabNames.map(s => { return { text: s, id: this.evalContext.nextId("tab") }; });
+
+				output.printTabHeaders(this.tabIds);
+
+				output.printTabContent({}, () => {
+
+					var first = true;
+					for (var tab0 of this.tabIds) {
+						var tab = this.tabByName[tab0.text];
+						output.printTabPage({
+							id: tab0.id,
+							active: first,
+							title: tab0.text,
+							modal: tab0.text == "tabs"
+							//orphans: (tab0.text == "orphans")
+						}, (output) => {
+							for (var property of tab) {
 								this.printProperty(property, output);
 							}
 						});
+						if (first) first = false;
 					}
-					if (this.tabNames.length) {
-						this.tabIds = this.tabNames.map(s => { return { text: s, id: this.evalContext.nextId("tab") }; });
-
-						output.printTabHeaders(this.tabIds);
-
-						output.printTabContent({}, () => {
-
-							var first = true;
-							for (var tab0 of this.tabIds) {
-								var tab = this.tabByName[tab0.text];
-								output.printTabPage({
-									id: tab0.id,
-									active: first,
-									title: tab0.text,
-									modal: tab0.text == "tabs"
-									//orphans: (tab0.text == "orphans")
-								}, (output) => {
-									for (var property of tab) {
-										this.printProperty(property, output);
-									}
-								});
-								if (first) first = false;
-							}
-						});
-					}
-					/*
-					*/
 				});
-				break;
-		}
+			}
+			/*
+			*/
+		});
 	}
 
 	printTemplate(output: Output) {

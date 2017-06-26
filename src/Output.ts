@@ -132,20 +132,24 @@ export class Output {
 
 	domReplace(): void {
 		var htmlText = this.toString();
-		this.elt.innerHTML = htmlText;
+		if (this.elt) {
+			this.elt.innerHTML = htmlText;
+		}
 		this.html = [];
 		this.raiseAfterDomCreated();
 	}
 
 	domAppend(parentTag: string): void {
-		var htmlText = this.toString();
-		var tmpDiv = document.createElement(parentTag);
-		tmpDiv.innerHTML = htmlText;
+		if (this.elt) {
+			var htmlText = this.toString();
+			var tmpDiv = document.createElement(parentTag);
+			tmpDiv.innerHTML = htmlText;
 
-		while (tmpDiv.firstChild) {
-			this.elt.appendChild(tmpDiv.firstChild);
+			while (tmpDiv.firstChild) {
+				this.elt.appendChild(tmpDiv.firstChild);
+			}
+			this.html = [];
 		}
-		this.html = [];
 		this.raiseAfterDomCreated();
 	}
 
@@ -217,16 +221,20 @@ export class Output {
 				this.printEndTag();
 				break;
 		}
-
-		this.afterDomCreatedCallbacks.push(() => {
-			var elt: HTMLElement = document.getElementById(id);
-			if (elt) {
-				var newOutput = this.evalContext.theme.createOutput(elt, this);
-				callback(newOutput);
-			} else {
-				console.error("Could not find element " + id);
-			}
-		});
+		if (this.elt) {
+			this.afterDomCreatedCallbacks.push(() => {
+				var elt: HTMLElement = document.getElementById(id);
+				if (elt) {
+					var newOutput = this.evalContext.theme.createOutput(elt, this);
+					callback(newOutput);
+				} else {
+					console.error("Could not find element " + id);
+				}
+			});
+		} else {
+			// we're feeding a string...
+			callback(this);
+		}
 	}
 
 
@@ -299,7 +307,7 @@ export class Output {
 		}
 		var attributes: ElementAttributes = { id: id };
 
-//		var attributes: ElementAttributes = { id: (printArgs as any).id };
+		//		var attributes: ElementAttributes = { id: (printArgs as any).id };
 
 		Output.addClass(attributes, "modal fade");
 		o.printStartTag("div", attributes);

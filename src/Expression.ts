@@ -1,7 +1,7 @@
 import { Eval } from './Eval';
 import { EvalConsole } from './EvalConsole';
 import { CommandDescription, EvalFunction, ParameterDefinition } from './EvalFunction';
-import { Output } from './Output';
+import { Output, RenderMode } from './Output';
 import { Type } from './Types';
 import { AnyView, ViewParent } from './View';
 import { ObjectView } from './views/ObjectView';
@@ -110,19 +110,11 @@ export class Render extends Expression<string> implements ViewParent {
 	}
 
 	calcValue(evalContext: Eval): any {
-		var output = new Output(evalContext, null, null);
+		var output = evalContext.theme.createOutput(null, null);
+
 		var value = this.expr.getValue(evalContext);
-		if (typeof value === "object") {
-			var view = new ObjectView();
-
-			view.initialize(evalContext, this, null);
-			view.beforeBuild(value, null, {});
-
-			view.build();
-			view.render(output);
-		} else {
-			output.printText(value);
-		}
+		var view = evalContext.instantiate(this, null, value, null, RenderMode.View, {});
+		view.render(output);
 		return output.toString();
 	}
 

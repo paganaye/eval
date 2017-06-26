@@ -151,11 +151,13 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	}
 
 	makeSortable(elt: HTMLElement) {
-		var Sortable = (window as any).Sortable;
-		var sortable = Sortable.create(elt, {
-			animation: 200,
-			handle: ".sort-handle"
-		});
+		if (elt) {
+			var Sortable = (window as any).Sortable;
+			var sortable = Sortable.create(elt, {
+				animation: 200,
+				handle: ".sort-handle"
+			});
+		}
 	}
 
 	buildOne(index: number, kind: string, active: boolean): number {

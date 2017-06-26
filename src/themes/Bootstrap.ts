@@ -279,7 +279,9 @@ export class BootstrapOutput extends Output {
 		else {
 			this.printAsync("button", attributes, printArgs.buttonText, (output) => {
 				var elt = output.getOutputElt();
-				elt.onclick = (ev) => action(ev);
+				if (elt) { 
+					elt.onclick = (ev) => action(ev);
+				}
 			});
 		}
 	}

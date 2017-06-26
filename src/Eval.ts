@@ -96,7 +96,16 @@ export class Eval {
 
 	getTypeDef(data: any, _type: Type | string): Type {
 		if (typeof _type == "string") _type = types[_type];
-		if (!_type) _type = types[typeof data] || types['object'];
+		if (!_type) {
+			switch (typeof data) {
+				case "object":
+					_type = Array.isArray(data) ? types['array'] : types['object'];
+					break;
+				default:
+					_type = types[typeof data] || types['object'];
+					break;
+			}
+		}
 		if (!_type.printView) {
 			// inherits from base type
 			var baseType = types[_type._kind] || types["object"];
