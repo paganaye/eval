@@ -86,7 +86,7 @@ export class ArrayPrintArgs extends PrintArgs {
 
 export class ArrayEntryPrintArgs extends PrintArgs {
 	id: string;
-	label: string;
+	printLabel: (output) => void;
 	deletable: boolean;
 	frozenDynamic: boolean;
 	entriesElementId: string;

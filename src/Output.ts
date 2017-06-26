@@ -453,7 +453,7 @@ export class Output {
 			href: "#" + printArgs.id + "-content", class: "sort-handle collapsible-title", "data-toggle": "collapse",
 			"data-parent": "#" + accordionId
 		}, (output) => {
-			this.printText(printArgs.label);
+			if (printArgs.printLabel) printArgs.printLabel(this);
 			if (printArgs.deletable) {
 				this.printButton({ buttonText: "×", class: "close" }, (ev: Event) => {
 					var elt = (ev.target as HTMLElement).parentElement;

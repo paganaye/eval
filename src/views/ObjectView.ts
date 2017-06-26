@@ -129,23 +129,19 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		});
 	}
 
-	printTemplate(output: Output) {
+
+	printTemplate(output: Output): void {
 		try {
-			var html = this.getTemplateResult(output);
-			output.printHTML(html);
+			var html: string;
+			var parser = new Parser(this.evalContext);
+			var template = this.type ? this.type.template : "";
+			var tree = parser.parseTemplate(output, template);
+			this.data = this.getValue();
+			this.evalContext.globalVariables = this;
+			tree.print(output);
 		} catch (error) {
 			output.printTag("div", { class: "error" }, error);
 		}
-	}
-
-	getTemplateResult(output: Output): string {
-		var html: string;
-		var parser = new Parser(this.evalContext);
-		var template = this.type ? this.type.template : "";
-		var tree = parser.parseTemplate(output, template);
-		this.data = this.getValue();
-		this.evalContext.globalVariables = this;
-		return tree.getValue() as string;
 	}
 
 	printProperty(property: Property, output: Output) {

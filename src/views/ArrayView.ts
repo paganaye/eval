@@ -27,25 +27,25 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 
 	protected onRender(output: Output): void {
 		var template = this.type.template;
-		var label: string;
+		var printLabel: (output) => void;
 		if (template) {
 			//TODO: evaluate expression here...
 			var parser = new Parser(this.evalContext);
 			this.evalContext.globalVariables = this;
 			try {
 				var expr = parser.parseTemplate(output, template);
-				label = expr.getValue();
+				printLabel = expr.print;
 			} catch (error) {
-				label = error;
+				printLabel = (o: Output) => o.printText(error);
 			}
 		}
 		else {
-			label = "#" + (this.getId());
+			printLabel = (o: Output) => o.printText("#" + (this.getId()));
 		}
 
 
 		var printArgs: ArrayEntryPrintArgs = {
-			id: this.getId(), deletable: true, label: label, frozenDynamic: false,
+			id: this.getId(), deletable: true, printLabel: printLabel, frozenDynamic: false,
 			entriesElementId: this.parentView.entriesElementId,
 			active: this.active
 		};
@@ -174,20 +174,20 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		var id = this.evalContext.nextId("entry");
 
 		var template = this.entryType.template;
-		var label: string;
+		var printLabel: (o: Output) => void;
 		if (template) {
 			//TODO: evaluate expression...
 			var parser = new Parser(this.evalContext);
 			this.evalContext.globalVariables = this;
 			try {
 				var expr = parser.parseTemplate(output, template);
-				label = expr.getValue();
+				printLabel = expr.print;
 			} catch (error) {
-				label = error;
+				printLabel = (o) => o.printText(error);
 			}
 		}
 		else {
-			label = "#" + (this.views.length + 1);
+			printLabel = (o) => o.printText("#" + (this.views.length + 1));
 		}
 		var view = this.createView(index, active) as ArrayEntryView;
 		this.viewById[view.getId()] = view;

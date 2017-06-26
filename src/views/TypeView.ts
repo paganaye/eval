@@ -42,22 +42,22 @@ export class TypeView extends ObjectView {
 		} else {
 			var data = this.data || {};
 			var template = this.type.template;
-			var text: string;
+			var printText: (o: Output) => void;
 			if (template) {
 				//TODO: evaluate expression here...
 				var parser = new Parser(this.evalContext);
 				this.evalContext.globalVariables = this;
 				try {
 					var expr = parser.parseTemplate(this.customOutput, template);
-					text = expr.getValue();
+					printText = expr.print;
 				} catch (error) {
-					text = error;
+					printText = (o) => o.printText(error);
 				}
 			}
 			else {
-				text = JSON.stringify(data);
+				printText = (o) => o.printText(JSON.stringify(data));
 			}
-			this.customOutput.printHTML(text);
+			printText(this.customOutput);
 			this.customOutput.domReplace();
 		}
 	}

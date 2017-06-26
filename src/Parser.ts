@@ -10,11 +10,12 @@ import {
 	FunctionCall,
 	GetMember,
 	GetVariable,
+	HTMLLiteral,
 	JsonArray,
 	JsonObject,
 	UnaryOp,
 } from './Expression';
-import { Output } from './Output';
+import { Output, RenderMode } from './Output';
 import { Token, Tokenizer, TokenType } from './Tokenizer';
 
 // we keep the same priorities than javascript but with less operators.
@@ -34,7 +35,7 @@ export enum Priority {
 class TemplateParts {
 	expressions: Expression<any>[] = [];
 
-	constructor(private output: Output) {
+	constructor(private evalContext: Eval) {
 
 	}
 
@@ -42,25 +43,19 @@ class TemplateParts {
 		this.expressions.push(part);
 	}
 
-	getValue(): string {
-		return "";
+	print(output: Output): void {
+		for (var e of this.expressions) {
+			var value = e.getValue(this.evalContext);
+			if (e instanceof HTMLLiteral) {
+				output.printHTML(value);
+			} else {
+				var view = this.evalContext.instantiate(null, null, value, null, RenderMode.View, {});
+				view.render(output);
+			}
+		}
 	}
 }
 
-// export class TemplatePart {
-// 	constructor(private expr: Expression<any>) {
-// 	}
-
-// 	calcValue(evalContext: Eval): any {
-// 		var output = evalContext.theme.createOutput(null, null);
-
-// 		var value = this.expr.getValue(evalContext);
-// 		var view = evalContext.instantiate(this, null, value, null, RenderMode.View, {});
-// 		view.render(output);
-// 		return output.toString();
-// 	}
-
-// }
 
 
 export class Parser {
@@ -89,16 +84,13 @@ export class Parser {
 	parseTemplate(output: Output, template: string): TemplateParts {
 		this.init(template, true);
 		//return this.parseExpression(Priority.None);
-		var parts: TemplateParts = new TemplateParts(output);
+		var parts: TemplateParts = new TemplateParts(this.evalContext);
 		while (this.token.type != TokenType.EOF) {
 			if (this.token.type == TokenType.Operator && this.token.stringValue == "{") {
 				this.tokenizer.inTemplate = false;
 				this.nextToken();
 				var expr = this.parseExpression(Priority.None);
-				if (expr instanceof GetVariable) {
-					//expr = new Render(expr);
-					debugger;
-				}
+
 				if (this.token.type == TokenType.Operator && this.token.stringValue as any == "}") {
 					parts.push(expr)
 					this.tokenizer.inTemplate = true;
@@ -107,7 +99,7 @@ export class Parser {
 					this.unexpectedToken("Expected closing character '}'");
 				}
 			} else if (this.token.type == TokenType.String) {
-				parts.push(new Const(this.token.stringValue));
+				parts.push(new HTMLLiteral(this.token.stringValue));
 				this.nextToken();
 			} else {
 				this.unexpectedToken();

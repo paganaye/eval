@@ -83,13 +83,24 @@ export abstract class Expression<T> implements HasValue, Publisher, Subscriber {
 }
 
 export class Const<T> extends Expression<T> {
-	constructor(private value: T) {
+	constructor(protected value: T) {
 		super();
 	}
 	calcValue(evalContext: Eval): any {
 		return this.value;
 	}
 }
+
+export class HTMLLiteral extends Const<string> {
+	constructor(value: string) {
+		super(value);
+	}
+
+	calcValue(evalContext: Eval): string {
+		return this.value as string;
+	}
+}
+
 
 export class GetVariable extends Expression<any> {
 	constructor(private variableName: any) {
