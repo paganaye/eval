@@ -33,8 +33,8 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 			var parser = new Parser(this.evalContext);
 			this.evalContext.globalVariables = this;
 			try {
-				var expr = parser.parseTemplate(template);
-				label = expr.getValue(this.evalContext);
+				var expr = parser.parseTemplate(output, template);
+				label = expr.getValue();
 			} catch (error) {
 				label = error;
 			}
@@ -88,16 +88,16 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 			}
 			this.entryType.fixedType = true;
 		}
-		if (Array.isArray(this.data)) {
-			for (var index = 0; index < this.data.length; index++) {
-				this.buildOne(index, null, index == 0);
-			}
-		}
 	}
 
 
 	onRender(output: Output): void {
 		output.printSection({ name: "array" }, (printArgs) => {
+			if (Array.isArray(this.data)) {
+				for (var index = 0; index < this.data.length; index++) {
+					this.buildOne(output, index, null, index == 0);
+				}
+			}
 
 
 			this.renderBody(output, (output) => {
@@ -128,13 +128,13 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 					buttonText: "Add",
 					entries: this.addButtonEntries
 				}, (ev, str) => {
-					var index = this.buildOne(null, str, true);
+					var index = this.buildOne(output, null, str, true);
 					this.renderOne(index, this.arrayEntriesOutput);
 					this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
 				});
 			} else {
 				output.printButton({ buttonText: "+" }, (ev: Event) => {
-					var index = this.buildOne(null, null, true);
+					var index = this.buildOne(output, null, null, true);
 					this.renderOne(index, this.arrayEntriesOutput);
 					this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
 				});
@@ -147,6 +147,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	}
 
 	renderBody(output: Output, printContent: (output) => void) {
+		debugger;
 		output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...7", printContent);
 	}
 
@@ -160,7 +161,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 		}
 	}
 
-	buildOne(index: number, kind: string, active: boolean): number {
+	buildOne(output: Output, index: number, kind: string, active: boolean): number {
 		if (typeof index === "number") {
 			var entry = this.data[index];
 		} else {
@@ -179,8 +180,8 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 			var parser = new Parser(this.evalContext);
 			this.evalContext.globalVariables = this;
 			try {
-				var expr = parser.parseTemplate(template);
-				label = expr.getValue(this.evalContext);
+				var expr = parser.parseTemplate(output, template);
+				label = expr.getValue();
 			} catch (error) {
 				label = error;
 			}

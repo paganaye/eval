@@ -104,24 +104,6 @@ export class GetVariable extends Expression<any> {
 
 }
 
-export class Render extends Expression<string> implements ViewParent {
-	constructor(private expr: Expression<any>) {
-		super();
-	}
-
-	calcValue(evalContext: Eval): any {
-		var output = evalContext.theme.createOutput(null, null);
-
-		var value = this.expr.getValue(evalContext);
-		var view = evalContext.instantiate(this, null, value, null, RenderMode.View, {});
-		view.render(output);
-		return output.toString();
-	}
-
-	valueChanged(view: AnyView): void {
-	}
-}
-
 
 export class UnaryOp extends Expression<any> {
 	constructor(private op1: Expression<any>, private operator: string) {

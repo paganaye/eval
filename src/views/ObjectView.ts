@@ -131,21 +131,21 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 
 	printTemplate(output: Output) {
 		try {
-			var html = this.getTemplateResult();
+			var html = this.getTemplateResult(output);
 			output.printHTML(html);
 		} catch (error) {
 			output.printTag("div", { class: "error" }, error);
 		}
 	}
 
-	getTemplateResult(): string {
+	getTemplateResult(output: Output): string {
 		var html: string;
 		var parser = new Parser(this.evalContext);
 		var template = this.type ? this.type.template : "";
-		var tree = parser.parseTemplate(template);
+		var tree = parser.parseTemplate(output, template);
 		this.data = this.getValue();
 		this.evalContext.globalVariables = this;
-		return tree.getValue(this.evalContext) as string;
+		return tree.getValue() as string;
 	}
 
 	printProperty(property: Property, output: Output) {
@@ -188,10 +188,6 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 		else {
 			super.showDialog(tab);
 		}
-	}
-
-	toString(): string {
-		return this.getTemplateResult();
 	}
 
 

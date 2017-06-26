@@ -174,7 +174,7 @@ export class TableView<T> extends ArrayView<any>
 						//var index = this.buildOne(null, null, true);
 						var index = this.data.length;
 						this.data[index] = modalView.getValue();
-						this.buildOne(index, null, true);
+						this.buildOne(this.arrayEntriesOutput, index, null, true);
 						this.renderOne(index, this.arrayEntriesOutput);
 						this.arrayEntriesOutput.domAppend(this.getTemporaryParentTag());
 						output.closeModal(modalId);

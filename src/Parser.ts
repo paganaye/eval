@@ -3,18 +3,18 @@ import { CommandCall } from './CommandCall';
 import { Eval } from './Eval';
 import { CommandDescription, EvalFunction, ParameterDefinition } from './EvalFunction';
 import {
-   BinaryOp,
-   Concat,
-   Const,
-   Expression,
-   FunctionCall,
-   GetMember,
-   GetVariable,
-   JsonArray,
-   JsonObject,
-   Render,
-   UnaryOp,
+	BinaryOp,
+	Concat,
+	Const,
+	Expression,
+	FunctionCall,
+	GetMember,
+	GetVariable,
+	JsonArray,
+	JsonObject,
+	UnaryOp,
 } from './Expression';
+import { Output } from './Output';
 import { Token, Tokenizer, TokenType } from './Tokenizer';
 
 // we keep the same priorities than javascript but with less operators.
@@ -31,6 +31,37 @@ export enum Priority {
 	LogicalOr = 5,
 	None = 0
 }
+class TemplateParts {
+	expressions: Expression<any>[] = [];
+
+	constructor(private output: Output) {
+
+	}
+
+	push(part: Expression<any>) {
+		this.expressions.push(part);
+	}
+
+	getValue(): string {
+		return "";
+	}
+}
+
+// export class TemplatePart {
+// 	constructor(private expr: Expression<any>) {
+// 	}
+
+// 	calcValue(evalContext: Eval): any {
+// 		var output = evalContext.theme.createOutput(null, null);
+
+// 		var value = this.expr.getValue(evalContext);
+// 		var view = evalContext.instantiate(this, null, value, null, RenderMode.View, {});
+// 		view.render(output);
+// 		return output.toString();
+// 	}
+
+// }
+
 
 export class Parser {
 	tokenizer: Tokenizer;
@@ -55,17 +86,18 @@ export class Parser {
 		return this.parseExpression(Priority.None);
 	}
 
-	parseTemplate(template: string): Expression<any> {
+	parseTemplate(output: Output, template: string): TemplateParts {
 		this.init(template, true);
 		//return this.parseExpression(Priority.None);
-		var parts: Expression<any>[] = [];
+		var parts: TemplateParts = new TemplateParts(output);
 		while (this.token.type != TokenType.EOF) {
 			if (this.token.type == TokenType.Operator && this.token.stringValue == "{") {
 				this.tokenizer.inTemplate = false;
 				this.nextToken();
 				var expr = this.parseExpression(Priority.None);
 				if (expr instanceof GetVariable) {
-					expr = new Render(expr);
+					//expr = new Render(expr);
+					debugger;
 				}
 				if (this.token.type == TokenType.Operator && this.token.stringValue as any == "}") {
 					parts.push(expr)
@@ -81,7 +113,7 @@ export class Parser {
 				this.unexpectedToken();
 			}
 		}
-		return new Concat(this.evalContext, parts);
+		return parts;
 	}
 
 	parseLeft(priority: Priority): Expression<any> {

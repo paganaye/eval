@@ -48,8 +48,8 @@ export class TypeView extends ObjectView {
 				var parser = new Parser(this.evalContext);
 				this.evalContext.globalVariables = this;
 				try {
-					var expr = parser.parseTemplate(template);
-					text = expr.getValue(this.evalContext);
+					var expr = parser.parseTemplate(this.customOutput, template);
+					text = expr.getValue();
 				} catch (error) {
 					text = error;
 				}

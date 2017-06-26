@@ -221,20 +221,15 @@ export class Output {
 				this.printEndTag();
 				break;
 		}
-		if (this.elt) {
-			this.afterDomCreatedCallbacks.push(() => {
-				var elt: HTMLElement = document.getElementById(id);
-				if (elt) {
-					var newOutput = this.evalContext.theme.createOutput(elt, this);
-					callback(newOutput);
-				} else {
-					console.error("Could not find element " + id);
-				}
-			});
-		} else {
-			// we're feeding a string...
-			callback(this);
-		}
+		this.afterDomCreatedCallbacks.push(() => {
+			var elt: HTMLElement = document.getElementById(id);
+			if (elt) {
+				var newOutput = this.evalContext.theme.createOutput(elt, this);
+				callback(newOutput);
+			} else {
+				console.error("Could not find element " + id);
+			}
+		});		
 	}
 
 
