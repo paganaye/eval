@@ -43,7 +43,7 @@ export class ObjectView extends View<Object, ObjectType, PrintArgs> {
 			var value = this.data[key];
 			if (typeof value === "string" && value.length == 0) continue;
 			if (typeof value === "object" && Object.keys(value).length == 0) continue;
-			this.addProperty({ name: key, type: { _kind: "string" }, tab: "orphans", visibility: "visible" });
+			this.addProperty({ name: key, type: null, tab: "orphans", visibility: "visible" });
 		}
 	}
 
