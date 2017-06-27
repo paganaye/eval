@@ -118,7 +118,6 @@ export class Output {
 	}
 
 	printPropertyView(printArgs: PropertyPrintArgs, view: AnyView): void {
-		debugger;
 		this.printHTML("TODO");
 	}
 

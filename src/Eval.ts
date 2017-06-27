@@ -196,6 +196,7 @@ export class Eval {
 					_kind: "object",
 					properties: [
 						{ name: "_kind", type: { _kind: "const", value: "pageTemplate" }, visibility: "hidden" },
+						{ name: "pluralName", type: { _kind: "string" } },
 						{ name: "description", type: { _kind: "string" } },
 						{ name: "template", type: { _kind: "string" } },
 
@@ -216,7 +217,7 @@ export class Eval {
 
 						{ name: "pageName", type: { _kind: "string" } },
 						{ name: "nameValidation", type: arrayOfValidationRegexp },
-						{ name: "pluralName", type: { _kind: "string" } },
+						{ name: "singularName", type: { _kind: "string" } },
 
 						{ name: "properties", type: propertiesType, tab: "properties" },
 

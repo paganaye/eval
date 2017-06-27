@@ -34,7 +34,7 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 			this.evalContext.globalVariables = this;
 			try {
 				var expr = parser.parseTemplate(output, template);
-				printLabel = expr.print;
+				printLabel = (o: Output) => expr.print(o);
 			} catch (error) {
 				printLabel = (o: Output) => o.printText(error);
 			}
@@ -45,7 +45,7 @@ export class ArrayEntryView extends View<any, Type, ArrayPrintArgs>
 
 
 		var printArgs: ArrayEntryPrintArgs = {
-			id: this.getId(), deletable: true, printLabel: printLabel, frozenDynamic: false,
+			id: this.getId(), deletable: true, printLabel: (o) => printLabel(o), frozenDynamic: false,
 			entriesElementId: this.parentView.entriesElementId,
 			active: this.active
 		};
@@ -147,7 +147,6 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 	}
 
 	renderBody(output: Output, printContent: (output) => void) {
-		debugger;
 		output.printAsync("div", { class: "array-entries", id: this.entriesElementId }, "...7", printContent);
 	}
 
@@ -181,7 +180,7 @@ export class ArrayView<T> extends View<any, ArrayType<T>, ArrayPrintArgs>
 			this.evalContext.globalVariables = this;
 			try {
 				var expr = parser.parseTemplate(output, template);
-				printLabel = expr.print;
+				printLabel = (o) => expr.print(o);
 			} catch (error) {
 				printLabel = (o) => o.printText(error);
 			}

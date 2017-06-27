@@ -13,7 +13,6 @@ export class TypeView extends ObjectView {
 	build(): void {
 		var structName = this.type.pageName;
 		this.evalContext.database.on("eval/type/" + structName, (data, error) => {
-			debugger;
 			if (data) {
 				this.type = data;
 				super.build();
@@ -33,7 +32,6 @@ export class TypeView extends ObjectView {
 	customOutput: Output;
 
 	renderView() {
-		debugger;
 		if (this.customOutput.getRenderMode() == RenderMode.Edit) {
 			if (this.type.properties) {
 				super.onRender(this.customOutput)

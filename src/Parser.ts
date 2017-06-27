@@ -33,6 +33,7 @@ export enum Priority {
 	LogicalOr = 5,
 	None = 0
 }
+
 class TemplateParts {
 	expressions: Expression<any>[] = [];
 
@@ -87,7 +88,6 @@ export class Parser {
 
 	parseTemplate(output: Output, template: string): TemplateParts {
 		this.init(template, true);
-		//return this.parseExpression(Priority.None);
 		var parts: TemplateParts = new TemplateParts(this.evalContext);
 		while (this.token.type != TokenType.EOF) {
 			if (this.token.type == TokenType.Operator && this.token.stringValue == "{") {
