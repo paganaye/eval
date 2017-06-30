@@ -112,7 +112,7 @@ export class BootstrapOutput extends Output {
 				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] },
 				 (output) => view.render(output), c => { 
 					// this is a drill down close...
-					
+					output.closeModal(modalId);					
 				 });
 				output.domReplace();
 			});

@@ -357,7 +357,9 @@ export class Output {
 			var modalArgs = printArgs as any as ModalPrintArgs;
 			modalArgs.buttons = ["Close"];
 			this.printModal(modalArgs, (output) => printContent(output), b => {
-
+				// this is not used anymore
+				alert("yay 2");
+				this.closeModal(modalArgs.id);
 			});
 		} else {
 			var attributes: ElementAttributes = { class: this.getClassPrefix() + printArgs.id };
