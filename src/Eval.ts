@@ -174,16 +174,17 @@ export class Eval {
 										{ name: "p1", type: { _kind: "string" } },
 										{
 											name: "p2", type: { _kind: "string" },
-											// visibility: "drilldown"
+											visibility: "drilldown"
 										},
-										{ name: "p3", type: { _kind: "string" }, tab:"tab1" },
-										{ name: "p4", type: { _kind: "string" }, tab:"tab2" },
-										{ name: "p5", type: { _kind: "string" }, tab:"tab2" }
+										{ name: "p3", type: { _kind: "string" }, tab: "tab1" },
+										{ name: "p4", type: { _kind: "string" }, tab: "tab2" },
+										{ name: "p5", type: { _kind: "string" }, tab: "tab2" }
 									],
 									template: "{p1} ({p2})"
 								}
 							},
-							visibility: "visible"
+							visibility: "visible",
+							tab: "reallyAdvanced"
 						}
 
 					],

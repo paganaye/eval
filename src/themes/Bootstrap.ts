@@ -105,11 +105,15 @@ export class BootstrapOutput extends Output {
 			this.printAsync("div", valueAttributes, "...", (output) => {
 				//output.setRenderMode(RenderMode.View);
 				output.printButton({ buttonText: "....", class: "float-right" }, () => {
-					$('#' + modalId).modal('show')
+					output.showModal(modalId);
 				})
 				output.printTag("div", {}, view.toString());
 				var modalId = this.evalContext.nextId("modal");
-				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] }, (output) => view.render(output), c => { });
+				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] },
+				 (output) => view.render(output), c => { 
+					// this is a drill down close...
+					
+				 });
 				output.domReplace();
 			});
 		}

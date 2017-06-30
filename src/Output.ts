@@ -228,7 +228,7 @@ export class Output {
 			} else {
 				console.error("Could not find element " + id);
 			}
-		});		
+		});
 	}
 
 
@@ -338,8 +338,13 @@ export class Output {
 	}
 
 	showModal(id: string) {
-		$('#' + id).modal('show');
+		alert("showing modal " + id);
 
+		$('#' + id).modal('show');
+		$('#' + id).on('hidden.bs.modal', function (e) {
+			// do something...
+			alert("modal " + id + "was closed");
+		});
 	}
 
 	closeModal(id: string) {
