@@ -337,13 +337,27 @@ export class Output {
 
 	}
 
-	showModal(id: string) {
-		alert("showing modal " + id);
+	static modals: String[] = [];
 
-		$('#' + id).modal('show');
-		$('#' + id).on('hidden.bs.modal', function (e) {
-			// do something...
-			alert("modal " + id + "was closed");
+	showModal(id: string) {
+		//alert("showing modal " + id);
+		var previousId = Output.modals[0];
+		if (previousId) {
+			var $previousElement = $("#" + previousId + " .modal-content");
+			$previousElement.animate({ "margin": "2em" });
+		}
+		Output.modals.push(id);
+		var $modal = $('#' + id);
+		var zIndex = 1050 + Output.modals.length * 10;
+		$modal.css('z-index', zIndex);
+		$modal.modal('show');
+		$(".modal-backdrop").last().css("z-index", zIndex - 1);
+		$modal.on('hidden.bs.modal', function (e) {
+			Output.modals.pop();
+			debugger;
+			if ($previousElement) {
+				$previousElement.animate({ "margin": "" });
+			}
 		});
 	}
 
