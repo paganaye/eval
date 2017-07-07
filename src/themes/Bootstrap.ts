@@ -103,21 +103,21 @@ export class BootstrapOutput extends Output {
 
 		if (visibility === "drilldown") {
 			this.printAsync("div", valueAttributes, "...", (output) => {
-				//output.setRenderMode(RenderMode.View);
-				output.printButton({ buttonText: "....", class: "float-right" }, () => {
+ 				var modalId = this.evalContext.nextId("modal");
+ 				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] },
+					(output) => view.render(output), c => {
+						// this is a drill down close...
+						output.closeModal(modalId);
+					});
+				output.printButton({ buttonText: "...", class: "float-right" }, () => {
 					output.showModal(modalId);
 				})
-				output.printTag("div", {}, view.toString());
-				var modalId = this.evalContext.nextId("modal");
-				output.printModal({ id: modalId, title: printArgs.label, buttons: ["Close"] },
-				 (output) => view.render(output), c => { 
-					// this is a drill down close...
-					output.closeModal(modalId);					
-				 });
-				output.domReplace();
-			});
-		}
-		else {
+				// output.printTag("div", {}, view.toString());
+ 				output.domReplace();
+ 			});
+			this.printEndTag(); // row or card
+ 		}
+ 		else {
 
 			this.printStartTag("div", valueAttributes);
 			view.render(this);

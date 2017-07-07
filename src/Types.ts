@@ -48,9 +48,25 @@ export interface StringType extends TypeDefinition<string> {
 	translate?: boolean;
 }
 
+export interface ImageType extends TypeDefinition<string> {
+	_kind: "image";
+	widtb?: number;
+	height?: number;
+	description?: string;
+	fullSizeImage?: string;
+	credits?: string;
+}
+
 export interface ValidationRegexp {
 	regexp: string;
 	message: string;
+	type?: Type;
+}
+
+
+export interface LinkType extends TypeDefinition<any> {
+	_kind: "link";
+	pageName?: string;
 }
 
 export interface BooleanType extends TypeDefinition<boolean> {
@@ -155,13 +171,13 @@ export interface VariantKind extends SelectEntry {
 }
 
 export type Type = NumberType | StringType | BooleanType | ConstType | VariableType
-	| SelectType | ObjectType | ArrayType<any> | VariantType | ButtonType | TableType<any>; // | VariantObject;
+	| SelectType | ObjectType | ArrayType<any> | VariantType | ButtonType
+	| TableType<any> | ImageType | LinkType; // | VariantObject;
 
 export interface VariantObject {
 	_kind: string;
 	[otherFields: string]: any;
 }
-
 
 export var arrayOfEnum: ArrayType<any> = {
 	_kind: "array", entryType: {
@@ -311,7 +327,7 @@ var entryTypeDefinition: VariantType = {
 };
 
 addType("array", "advanced", "Array", (type, addProperty) => {
-//	type.editView = "array";
+	//	type.editView = "array";
 	var arrayType = (type as ArrayType<object>);
 	var entryType = arrayType.entryType || (arrayType.entryType = {} as Type);
 	entryType._kind = "object";

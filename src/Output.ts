@@ -91,7 +91,7 @@ export class Output {
 		}
 	}
 
-	private startedTags: String[] = [];
+	private startedTags: { tag: String, id: String }[] = [];
 
 	printStartTag(tag: string, attributes: ElementAttributes, empty?: boolean) {
 		this.html.push("<" + tag);
@@ -102,12 +102,16 @@ export class Output {
 			this.html.push(" />");
 		} else {
 			this.html.push(">");
-			this.startedTags.push(tag);
+			this.startedTags.push({ tag: tag, id: attributes.id });
 		}
 	}
 
 	printEndTag() {
-		this.html.push("</" + this.startedTags.pop() + ">");
+		var tag = this.startedTags.pop();
+		this.html.push("</" + tag.tag + ">");
+		if (tag.id) {
+			this.html.push("<!-- " + tag.id + " -->");
+		}
 	}
 
 	printProperty(viewParent: ViewParent, propertyPrintArgs: PropertyPrintArgs, data: any, dataType: Type): AnyView {
@@ -305,7 +309,7 @@ export class Output {
 
 		Output.addClass(attributes, "modal fade");
 		o.printStartTag("div", attributes);
-		o.printHTML('  <div class="modal-dialog" role="document">');
+		o.printHTML('  <div class="modal-dialog modal-lg" role="document">');
 		o.printHTML('    <div class="modal-content">');
 		o.printHTML('      <div class="modal-header">');
 		o.printTag('h5', { class: "modal-title" }, printArgs.title);
@@ -341,7 +345,7 @@ export class Output {
 
 	showModal(id: string) {
 		//alert("showing modal " + id);
-		var previousId = Output.modals[0];
+		var previousId = Output.modals.length == 0 ? null : Output.modals[Output.modals.length - 1];
 		if (previousId) {
 			var $previousElement = $("#" + previousId + " .modal-content");
 			$previousElement.animate({ "margin": "2em" });

@@ -192,6 +192,42 @@ export class Eval {
 				};
 				pageType = carType;
 				break;
+			case "movie":
+				var movieType: ObjectType = {
+ 					_kind: "object",
+ 					properties: [
+						{ name: "title", type: { _kind: "string" } },
+						{ name: "poster", type: { _kind: "image" } },
+						{ name: "score", type: { _kind: "number" } },
+						{ name: "director", type: { _kind: "string" } },
+						{ name: "writer", type: { _kind: "string" } },
+						{ name: "stars", type: { _kind: "string" } },
+						{ name: "plotSummary", type: { _kind: "string" } },
+						{ name: "synopsis", type: { _kind: "string" } },
+						{ name: "country", type: { _kind: "array", entryType: { _kind: "link", pageName: "country" } } }
+						// { name: "language", type: { _kind: "array", entryType: { _kind: "link", pageName: "language" } } },
+						// { name: "genre", type: { _kind: "array", entryType: { kind: "film_genre" } } },
+						// {
+						// 	name: "box_office", type: {
+						// 		_kind: "object", properties: [
+						// 			{ name: "budget", type: { _kind: "number" } },
+						// 			{
+						// 				name: "gross", type: {
+						// 					_kind: "array", entryType: {
+						// 						_kind: "object", properties: [
+
+						// 						]
+						// 					}
+						// 				}
+						// 			}]
+						// 	}
+
+						// }
+						]
+ 				};
+				pageType = movieType;
+ 				break;
+			
 			case "pagetemplate":
 				var singlePage: ObjectType = {
 					_kind: "object",

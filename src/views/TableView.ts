@@ -14,15 +14,12 @@ interface Column {
 
 export class TableRowView extends View<any, Type, ArrayPrintArgs>
 {
-	innerView: AnyView;
-
 	constructor(evalContext: Eval, private parentView: TableView<any>, private index: number, private active: boolean) {
 		super()
 		this.initialize(evalContext, parentView, "#" + index);
 	}
 
 	build() {
-		this.innerView = this.evalContext.instantiate(this, "[" + this.index + ']', this.data, this.type, RenderMode.View, {});
 	}
 
 	protected onRender(output: Output): void {
@@ -74,7 +71,7 @@ export class TableRowView extends View<any, Type, ArrayPrintArgs>
 	}
 
 	getValue() {
-		return this.innerView.getValue();
+		return this.data;
 	}
 
 }
@@ -133,7 +130,8 @@ export class TableView<T> extends ArrayView<any>
 		}
 		output.printHTML("</tr></thead>");
 
-		output.printAsync("tbody", { id: "table" }, "", (output) => {
+		var tbodyId = this.evalContext.nextId("tbody");
+		output.printAsync("tbody", { id: tbodyId }, "", (output) => {
 			printContent(output);
 		});
 		output.printHTML("</tbody>");
